@@ -119,3 +119,15 @@ What can be improved:
 What next:
 - Install full Xcode, switch command line tools to Xcode, and run the app from Xcode.
 - Test the Touch Bar controls on the real MacBook Touch Bar.
+
+### 2026-04-28 - README Verification Notes
+
+What was done:
+- Updated README wording after rechecking `swift build`.
+- Clarified that source type-checking passes, but full SwiftPM builds are blocked by the current Command Line Tools SwiftPM/SDK mismatch.
+
+What can be improved:
+- Replace the warning with a successful build note after full Xcode is installed and selected.
+
+What next:
+- Install full Xcode and rerun `swift build` or run the package from Xcode.
