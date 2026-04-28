@@ -23,11 +23,27 @@ swift build
 
 If this fails with a SwiftPM manifest or SDK mismatch, install full Xcode and switch command line tools to Xcode first.
 
+## Build A Clickable App Bundle
+
+This fallback path avoids SwiftPM and compiles the app directly with `swiftc`:
+
+```sh
+Scripts/build-app.sh
+```
+
+Output:
+
+```text
+Build/TouchBar Pet.app
+```
+
 ## Run From Terminal
 
 ```sh
 swift run TouchBarPet
 ```
+
+If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
 When the app is active, the Touch Bar should show the pet face and action buttons.
 
@@ -50,6 +66,7 @@ Then run the `TouchBarPet` executable target from Xcode.
 - Feed, play, and rest actions
 - Local saved state in Application Support
 - Simple app window with matching controls
+- Fallback `.app` bundle build script
 
 ## Development Log
 

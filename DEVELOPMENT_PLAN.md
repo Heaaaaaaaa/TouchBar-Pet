@@ -34,6 +34,7 @@ The MVP is complete when:
 - [x] Create native Swift/AppKit project scaffold.
 - [x] Add Touch Bar pet MVP code.
 - [x] Add README with setup and run instructions.
+- [x] Add fallback `.app` bundle build script.
 - [ ] Build and run inside full Xcode.
 - [ ] Verify the Swift package builds with current Command Line Tools.
 - [x] Verify Swift source type-checks with `swiftc`.
@@ -131,3 +132,18 @@ What can be improved:
 
 What next:
 - Install full Xcode and rerun `swift build` or run the package from Xcode.
+
+### 2026-04-28 - Fallback App Bundle Build
+
+What was done:
+- Added `Resources/Info.plist` for a basic macOS app bundle.
+- Added `Scripts/build-app.sh` to compile the AppKit app directly with `swiftc`.
+- The script outputs `Build/TouchBar Pet.app` so the app can be opened from Finder without waiting for SwiftPM to work.
+- Verified the generated binary is an arm64 Mach-O executable and the app bundle plist is valid.
+
+What can be improved:
+- Replace the manual bundle path with a normal Xcode archive/export workflow later.
+- Add an app icon and code signing once the app is ready to share.
+
+What next:
+- Commit and push the fallback build workflow.

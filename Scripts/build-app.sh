@@ -1,0 +1,38 @@
+#!/bin/zsh
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+APP_NAME="TouchBarPet"
+APP_DISPLAY_NAME="TouchBar Pet"
+BUILD_DIR="$ROOT_DIR/Build"
+APP_BUNDLE="$BUILD_DIR/$APP_DISPLAY_NAME.app"
+CONTENTS_DIR="$APP_BUNDLE/Contents"
+MACOS_DIR="$CONTENTS_DIR/MacOS"
+INFO_PLIST="$ROOT_DIR/Resources/Info.plist"
+
+SDK_PATH="${SDKROOT:-}"
+
+if [[ -z "$SDK_PATH" ]]; then
+  if [[ -d "/Applications/Xcode.app" ]]; then
+    SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+  elif [[ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk" ]]; then
+    SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk"
+  else
+    SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+  fi
+fi
+
+mkdir -p "$MACOS_DIR"
+cp "$INFO_PLIST" "$CONTENTS_DIR/Info.plist"
+
+env CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-/tmp/touchbarpet-clang-cache}" \
+  swiftc \
+  -sdk "$SDK_PATH" \
+  -framework AppKit \
+  "$ROOT_DIR"/Sources/TouchBarPet/*.swift \
+  -o "$MACOS_DIR/$APP_NAME"
+
+chmod +x "$MACOS_DIR/$APP_NAME"
+touch "$APP_BUNDLE"
+
+echo "Built $APP_BUNDLE"
