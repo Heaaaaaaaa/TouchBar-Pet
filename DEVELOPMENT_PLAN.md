@@ -229,3 +229,15 @@ What can be improved:
 
 What next:
 - User should switch Keyboard Touch Bar settings and rerun the app from Xcode.
+
+### 2026-04-28 - Agent Handoff
+
+What was done:
+- Added `AGENT_HANDOFF.md` so another agent can continue the project quickly.
+- Summarized current state, verified commands, key files, known Touch Bar blocker, and next tasks.
+
+What can be improved:
+- Update the handoff after physical Touch Bar testing confirms the strip works.
+
+What next:
+- Commit and push the handoff file.
