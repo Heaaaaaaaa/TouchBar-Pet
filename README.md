@@ -2,6 +2,8 @@
 
 TouchBar Pet is a native macOS AppKit app for MacBook models with a Touch Bar. It shows a small pet in the Touch Bar while the app is active, with buttons to feed, play, and rest.
 
+GitHub repo: https://github.com/Heaaaaaaaa/TouchBar-Pet
+
 ## Current Status
 
 The first MVP scaffold is implemented as a Swift package so it can build with the current Swift Command Line Tools. Full Xcode is still recommended for normal Mac app development, signing, and Touch Bar testing.

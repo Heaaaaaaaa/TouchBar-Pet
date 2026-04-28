@@ -27,8 +27,8 @@ The MVP is complete when:
 ## Setup Checklist
 
 - [x] Create this development plan before app code.
-- [ ] Refresh GitHub CLI login for `Heaaaaaaaa`.
-- [ ] Create private GitHub repo `Heaaaaaaaa/TouchBar-Pet`.
+- [x] Refresh GitHub CLI login for `Heaaaaaaaa`.
+- [x] Create private GitHub repo `Heaaaaaaaa/TouchBar-Pet`.
 - [ ] Install full Xcode.
 - [ ] Switch command line tools to full Xcode with `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`.
 - [x] Create native Swift/AppKit project scaffold.
@@ -38,6 +38,7 @@ The MVP is complete when:
 - [ ] Verify the Swift package builds with current Command Line Tools.
 - [x] Verify Swift source type-checks with `swiftc`.
 - [ ] Verify on the physical Touch Bar.
+- [x] Push initial commits to GitHub.
 
 ## Development Steps
 
@@ -102,3 +103,19 @@ What can be improved:
 What next:
 - Refresh GitHub login, initialize Git, commit the scaffold, create the private repo, and push.
 - After Xcode is installed, run `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` and `swift build`.
+
+### 2026-04-28 - GitHub Repo Created
+
+What was done:
+- Refreshed GitHub CLI login for `Heaaaaaaaa`.
+- Initialized Git on branch `main`.
+- Created the private GitHub repo `Heaaaaaaaa/TouchBar-Pet`.
+- Pushed the initial app scaffold commit to GitHub.
+
+What can be improved:
+- Add release tags later once the app can be run from a signed `.app` bundle.
+- Add screenshots or short demo media after physical Touch Bar testing.
+
+What next:
+- Install full Xcode, switch command line tools to Xcode, and run the app from Xcode.
+- Test the Touch Bar controls on the real MacBook Touch Bar.
