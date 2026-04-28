@@ -2,9 +2,7 @@ import AppKit
 
 final class PetWindowController: NSWindowController {
     private let engine: PetEngine
-    private let faceLabel = NSTextField(labelWithString: "")
-    private let statusLabel = NSTextField(labelWithString: "")
-    private let hintLabel = NSTextField(labelWithString: "")
+    private let summaryView = PetSummaryView()
 
     init(engine: PetEngine) {
         self.engine = engine
@@ -27,26 +25,20 @@ final class PetWindowController: NSWindowController {
     }
 
     func render(_ state: PetState) {
-        faceLabel.stringValue = state.face
-        statusLabel.stringValue = state.statusLine
-        hintLabel.stringValue = state.careHint
+        summaryView.state = state
     }
 
     private func buildContent(in window: NSWindow) {
+        window.contentView?.wantsLayer = true
+        window.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+
         let stack = NSStackView()
         stack.orientation = .vertical
         stack.alignment = .centerX
         stack.spacing = 18
         stack.translatesAutoresizingMaskIntoConstraints = false
 
-        faceLabel.font = .monospacedSystemFont(ofSize: 44, weight: .semibold)
-        faceLabel.alignment = .center
-
-        statusLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        statusLabel.alignment = .center
-
-        hintLabel.font = .systemFont(ofSize: 13)
-        hintLabel.alignment = .center
+        summaryView.translatesAutoresizingMaskIntoConstraints = false
 
         let buttonStack = NSStackView()
         buttonStack.orientation = .horizontal
@@ -57,14 +49,14 @@ final class PetWindowController: NSWindowController {
         buttonStack.addArrangedSubview(makeButton(title: "Play", action: #selector(play)))
         buttonStack.addArrangedSubview(makeButton(title: "Rest", action: #selector(rest)))
 
-        stack.addArrangedSubview(faceLabel)
-        stack.addArrangedSubview(statusLabel)
-        stack.addArrangedSubview(hintLabel)
+        stack.addArrangedSubview(summaryView)
         stack.addArrangedSubview(buttonStack)
 
         window.contentView?.addSubview(stack)
 
         NSLayoutConstraint.activate([
+            summaryView.widthAnchor.constraint(equalToConstant: 340),
+            summaryView.heightAnchor.constraint(equalToConstant: 160),
             stack.centerXAnchor.constraint(equalTo: window.contentView!.centerXAnchor),
             stack.centerYAnchor.constraint(equalTo: window.contentView!.centerYAnchor),
             stack.leadingAnchor.constraint(greaterThanOrEqualTo: window.contentView!.leadingAnchor, constant: 24),

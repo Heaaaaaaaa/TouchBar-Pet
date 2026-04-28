@@ -38,6 +38,9 @@ The MVP is complete when:
 - [ ] Build and run inside full Xcode.
 - [ ] Verify the Swift package builds with current Command Line Tools.
 - [x] Verify Swift source type-checks with `swiftc`.
+- [x] Verify fallback `.app` bundle builds and launches.
+- [x] Verify window controls update visible pet state.
+- [x] Verify saved state restores after quit and reopen.
 - [ ] Verify on the physical Touch Bar.
 - [x] Push initial commits to GitHub.
 
@@ -147,3 +150,35 @@ What can be improved:
 
 What next:
 - Commit and push the fallback build workflow.
+
+### 2026-04-28 - Launch Check And Window Styling
+
+What was done:
+- Opened the generated app bundle successfully.
+- Confirmed the app process/window appears as `TouchBar Pet` with Feed, Play, and Rest controls.
+- Improved the window label colors so the pet face, stat line, and hint are easier to see in dark mode.
+- Reworked the window summary into one fixed-size attributed label after launch testing showed separate labels could visually collapse after updates.
+- Replaced the summary text field with a custom drawing view because live updates still caused text-field rendering problems.
+
+What can be improved:
+- Test the actual Touch Bar strip interaction by hand on the MacBook hardware.
+- Add a proper app icon and richer pet visuals.
+
+What next:
+- Rebuild the app bundle, relaunch it, and commit the launch/style polish.
+
+### 2026-04-28 - App Launch And Persistence Verification
+
+What was done:
+- Rebuilt `Build/TouchBar Pet.app`.
+- Relaunched the app after quitting the old running process.
+- Verified the custom-drawn pet summary stays visible after pressing Feed.
+- Verified the pet state is saved and restored after quitting and reopening the app.
+
+What can be improved:
+- Add a reset/debug action for development so testing does not leave the pet tired or hungry.
+- Add direct Touch Bar hardware screenshots or notes after manual testing on the physical Touch Bar.
+
+What next:
+- Commit and push the launch/persistence polish.
+- Test the Touch Bar controls by hand on the MacBook Touch Bar.
