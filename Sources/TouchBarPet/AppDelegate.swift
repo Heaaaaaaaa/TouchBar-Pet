@@ -12,7 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         buildMenu()
         windowController.showWindow(nil)
         windowController.window?.makeKeyAndOrderFront(nil)
-        windowController.window?.touchBar = touchBarController.makeTouchBar()
+        windowController.installTouchBar(touchBarController)
         startPetLoop()
 
         engine.onChange = { [weak self] state in

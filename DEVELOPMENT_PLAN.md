@@ -202,3 +202,30 @@ What can be improved:
 What next:
 - Commit and push the Xcode build fix.
 - Test the Touch Bar controls on the physical Touch Bar.
+
+### 2026-04-28 - Touch Bar Strip Layout Fix
+
+What was done:
+- Added a first-responder hosting view that explicitly provides the app Touch Bar from the active window.
+- Rebuilt the Touch Bar item as a wide custom scene closer to the reference photo: cyan strip, pixel pet, and compact Health/Hunger/Social stats.
+- Kept Feed, Play, and Rest as Touch Bar items after the scene where space allows.
+
+What can be improved:
+- If macOS is set to show the Expanded Control Strip, the user still needs to change Keyboard settings to App Controls or App Controls with Control Strip.
+- Add proper sprite frames later instead of the simple drawn pixel pet.
+
+What next:
+- Build, run, and ask the user to check the physical Touch Bar again.
+
+### 2026-04-28 - Touch Bar Troubleshooting Notes
+
+What was done:
+- Added README guidance for the case where the app window opens but the physical Touch Bar still shows brightness/volume controls.
+- Documented that macOS Keyboard settings must show App Controls or App Controls with Control Strip.
+- Noted that other Touch Bar pet apps should be quit while testing.
+
+What can be improved:
+- Add an in-app warning or checklist for Touch Bar system settings.
+
+What next:
+- User should switch Keyboard Touch Bar settings and rerun the app from Xcode.

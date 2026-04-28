@@ -3,46 +3,42 @@ import AppKit
 @MainActor
 final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     private enum ItemID {
-        static let pet = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.pet")
-        static let status = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.status")
+        static let scene = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.scene")
         static let feed = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.feed")
         static let play = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.play")
         static let rest = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.rest")
     }
 
     private let engine: PetEngine
-    private let petButton = NSButton(title: "(^_^)", target: nil, action: nil)
-    private let statusLabel = NSTextField(labelWithString: "")
-
-    init(engine: PetEngine) {
-        self.engine = engine
-        super.init()
-        petButton.target = self
-        petButton.action = #selector(play)
-        petButton.bezelStyle = .texturedRounded
-        petButton.font = .monospacedSystemFont(ofSize: 18, weight: .semibold)
-        statusLabel.alignment = .center
-    }
-
-    func makeTouchBar() -> NSTouchBar {
+    private let sceneView = PetTouchBarSceneView()
+    private lazy var touchBar: NSTouchBar = {
         let touchBar = NSTouchBar()
         touchBar.delegate = self
         touchBar.defaultItemIdentifiers = [
-            ItemID.pet,
-            .fixedSpaceSmall,
-            ItemID.status,
-            .fixedSpaceSmall,
+            ItemID.scene,
+            .flexibleSpace,
             ItemID.feed,
             ItemID.play,
             ItemID.rest
         ]
-        touchBar.principalItemIdentifier = ItemID.pet
+        touchBar.principalItemIdentifier = ItemID.scene
+        return touchBar
+    }()
+
+    init(engine: PetEngine) {
+        self.engine = engine
+        super.init()
+        sceneView.onTap = { [weak engine] in
+            engine?.play()
+        }
+    }
+
+    func makeTouchBar() -> NSTouchBar {
         return touchBar
     }
 
     func render(_ state: PetState) {
-        petButton.title = state.face
-        statusLabel.stringValue = "\(state.hunger)/\(state.mood)/\(state.energy)"
+        sceneView.state = state
     }
 
     func touchBar(
@@ -50,13 +46,9 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         makeItemForIdentifier identifier: NSTouchBarItem.Identifier
     ) -> NSTouchBarItem? {
         switch identifier {
-        case ItemID.pet:
+        case ItemID.scene:
             let item = NSCustomTouchBarItem(identifier: identifier)
-            item.view = petButton
-            return item
-        case ItemID.status:
-            let item = NSCustomTouchBarItem(identifier: identifier)
-            item.view = statusLabel
+            item.view = sceneView
             return item
         case ItemID.feed:
             return buttonItem(identifier: identifier, title: "Feed", action: #selector(feed))

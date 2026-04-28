@@ -56,6 +56,18 @@ open Package.swift
 
 Then run the `TouchBarPet` executable target from Xcode.
 
+## Touch Bar Troubleshooting
+
+If the app window opens but the Touch Bar still shows only brightness, volume, or other system controls:
+
+1. Open System Settings.
+2. Go to Keyboard.
+3. Set Touch Bar shows to `App Controls` or `App Controls with Control Strip`.
+4. Quit any other Touch Bar pet apps while testing.
+5. Click the TouchBar Pet window so it is the active app.
+
+The app now provides its custom Touch Bar from the active window responder chain. The Touch Bar should show a cyan pet strip with a pixel pet and Health/Hunger/Social stats.
+
 ## MVP Features
 
 - App-focused Touch Bar pet using `NSTouchBar`

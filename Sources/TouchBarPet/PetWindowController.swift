@@ -2,6 +2,7 @@ import AppKit
 
 final class PetWindowController: NSWindowController {
     private let engine: PetEngine
+    private let rootView = TouchBarHostingView()
     private let summaryView = PetSummaryView()
 
     init(engine: PetEngine) {
@@ -15,6 +16,7 @@ final class PetWindowController: NSWindowController {
         )
         window.title = "TouchBar Pet"
         window.center()
+        window.contentView = rootView
 
         super.init(window: window)
         buildContent(in: window)
@@ -28,9 +30,15 @@ final class PetWindowController: NSWindowController {
         summaryView.state = state
     }
 
+    func installTouchBar(_ controller: PetTouchBarController) {
+        rootView.touchBarProvider = { controller.makeTouchBar() }
+        window?.touchBar = controller.makeTouchBar()
+        window?.makeFirstResponder(rootView)
+    }
+
     private func buildContent(in window: NSWindow) {
-        window.contentView?.wantsLayer = true
-        window.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        rootView.wantsLayer = true
+        rootView.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
 
         let stack = NSStackView()
         stack.orientation = .vertical
@@ -52,15 +60,15 @@ final class PetWindowController: NSWindowController {
         stack.addArrangedSubview(summaryView)
         stack.addArrangedSubview(buttonStack)
 
-        window.contentView?.addSubview(stack)
+        rootView.addSubview(stack)
 
         NSLayoutConstraint.activate([
             summaryView.widthAnchor.constraint(equalToConstant: 340),
             summaryView.heightAnchor.constraint(equalToConstant: 160),
-            stack.centerXAnchor.constraint(equalTo: window.contentView!.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: window.contentView!.centerYAnchor),
-            stack.leadingAnchor.constraint(greaterThanOrEqualTo: window.contentView!.leadingAnchor, constant: 24),
-            stack.trailingAnchor.constraint(lessThanOrEqualTo: window.contentView!.trailingAnchor, constant: -24)
+            stack.centerXAnchor.constraint(equalTo: rootView.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: rootView.centerYAnchor),
+            stack.leadingAnchor.constraint(greaterThanOrEqualTo: rootView.leadingAnchor, constant: 24),
+            stack.trailingAnchor.constraint(lessThanOrEqualTo: rootView.trailingAnchor, constant: -24)
         ])
     }
 

@@ -50,6 +50,23 @@ struct PetState: Codable, Equatable {
 
         return "Happy and cozy"
     }
+
+    var touchBarStatsLine: String {
+        "Health: \(healthLevel)  Hunger: \(hungerLevel)  Social: \(socialLevel)"
+    }
+
+    private var healthLevel: Int {
+        let raw = ((100 - hunger) + mood + energy) / 30
+        return raw.clamped(to: 0...10)
+    }
+
+    private var hungerLevel: Int {
+        (hunger / 10).clamped(to: 0...10)
+    }
+
+    private var socialLevel: Int {
+        (mood / 10).clamped(to: 0...10)
+    }
 }
 
 extension Int {
