@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     private enum ItemID {
         static let pet = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.pet")

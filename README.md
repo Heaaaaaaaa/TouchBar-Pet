@@ -6,22 +6,20 @@ GitHub repo: https://github.com/Heaaaaaaaa/TouchBar-Pet
 
 ## Current Status
 
-The first MVP scaffold is implemented as a Swift package. Source type-checking works with the current tools, but full package builds are currently blocked on this Mac by a Command Line Tools SwiftPM/SDK mismatch. Full Xcode is recommended for normal Mac app development, signing, and Touch Bar testing.
+The first MVP scaffold is implemented as a Swift package. It builds with the full Xcode toolchain and can also create a clickable fallback app bundle with `Scripts/build-app.sh`.
 
 ## Requirements
 
 - macOS on Apple Silicon
 - A MacBook with Touch Bar for real Touch Bar testing
 - Full Xcode for the intended development workflow
-- Swift Command Line Tools for source type-checking
+- Accepted Xcode license agreement
 
 ## Build From Terminal
 
 ```sh
 swift build
 ```
-
-If this fails with a SwiftPM manifest or SDK mismatch, install full Xcode and switch command line tools to Xcode first.
 
 ## Build A Clickable App Bundle
 

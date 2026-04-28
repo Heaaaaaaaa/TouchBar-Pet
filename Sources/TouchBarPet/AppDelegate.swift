@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let store = PetStore()
     private lazy var engine = PetEngine(initialState: store.load())
@@ -34,9 +35,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startPetLoop() {
-        tickTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [weak self] _ in
-            self?.engine.tick()
-        }
+        tickTimer = Timer.scheduledTimer(
+            timeInterval: 1.5,
+            target: self,
+            selector: #selector(tickPet),
+            userInfo: nil,
+            repeats: true
+        )
+    }
+
+    @objc private func tickPet() {
+        engine.tick()
     }
 
     private func buildMenu() {

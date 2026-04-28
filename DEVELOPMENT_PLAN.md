@@ -29,14 +29,14 @@ The MVP is complete when:
 - [x] Create this development plan before app code.
 - [x] Refresh GitHub CLI login for `Heaaaaaaaa`.
 - [x] Create private GitHub repo `Heaaaaaaaa/TouchBar-Pet`.
-- [ ] Install full Xcode.
-- [ ] Switch command line tools to full Xcode with `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`.
+- [x] Install full Xcode.
+- [x] Switch command line tools to full Xcode with `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`.
 - [x] Create native Swift/AppKit project scaffold.
 - [x] Add Touch Bar pet MVP code.
 - [x] Add README with setup and run instructions.
 - [x] Add fallback `.app` bundle build script.
-- [ ] Build and run inside full Xcode.
-- [ ] Verify the Swift package builds with current Command Line Tools.
+- [ ] Build and run inside the Xcode IDE.
+- [x] Verify the Swift package builds with full Xcode toolchain.
 - [x] Verify Swift source type-checks with `swiftc`.
 - [x] Verify fallback `.app` bundle builds and launches.
 - [x] Verify window controls update visible pet state.
@@ -182,3 +182,23 @@ What can be improved:
 What next:
 - Commit and push the launch/persistence polish.
 - Test the Touch Bar controls by hand on the MacBook Touch Bar.
+
+### 2026-04-28 - Full Xcode Build Verified
+
+What was done:
+- Confirmed Xcode is installed at `/Applications/Xcode.app`.
+- Confirmed `xcode-select` points to `/Applications/Xcode.app/Contents/Developer`.
+- Accepted the Xcode license agreement so build tools can run.
+- Fixed Swift 6 main-actor isolation issues in the AppKit and Touch Bar controllers.
+- Replaced the top-level `main.swift` entry point with an explicit `@main` app entry point for Swift 6 compatibility.
+- Verified `swift build` completes successfully with the full Xcode toolchain.
+- Verified `Scripts/build-app.sh` still creates `Build/TouchBar Pet.app`.
+- Verified `swift run TouchBarPet` launches the app window.
+
+What can be improved:
+- Open the package in the Xcode IDE and run from the IDE scheme.
+- Add a signed app archive/export workflow later.
+
+What next:
+- Commit and push the Xcode build fix.
+- Test the Touch Bar controls on the physical Touch Bar.
