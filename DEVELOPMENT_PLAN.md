@@ -299,3 +299,17 @@ What can be improved:
 
 What next:
 - Build, commit, and push the manual-expand behavior.
+
+### 2026-05-06 - Pet Design And Movement Plan
+
+What was done:
+- Added `PET_DESIGN_PLAN.md`.
+- Planned five possible pets: Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy.
+- Defined movement patterns, touch actions, stats, implementation order, and shared animation-system ideas.
+
+What can be improved:
+- Convert the plan into actual `PetSpecies` and sprite-drawing code.
+- Add concept screenshots or generated pixel-art references later.
+
+What next:
+- Implement Cat as the first real animated species.
