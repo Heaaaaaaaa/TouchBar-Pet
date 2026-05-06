@@ -61,9 +61,17 @@ final class PetTouchBarSceneView: NSView {
 
         drawBackgroundDetails(in: rect, background: state.activeBackground)
 
-        NSColor(calibratedWhite: 1.0, alpha: 0.28).setStroke()
-        path.lineWidth = 1
+        NSColor.black.withAlphaComponent(0.42).setStroke()
+        path.lineWidth = 2
         path.stroke()
+
+        let innerPath = NSBezierPath(roundedRect: rect.insetBy(dx: 2, dy: 2), xRadius: 6, yRadius: 6)
+        NSColor.white.withAlphaComponent(0.34).setStroke()
+        innerPath.lineWidth = 1
+        innerPath.stroke()
+
+        NSColor.white.withAlphaComponent(0.16).setFill()
+        NSRect(x: rect.minX + 8, y: rect.minY + 4, width: rect.width - 16, height: 2).fill()
     }
 
     private func color(for background: PetBackground) -> NSColor {

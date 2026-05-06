@@ -91,6 +91,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Selectable pixel pets and Touch Bar backgrounds
 - Shared movement model with walk, eat, play, sleep, and special behavior modes
 - Smoother animation loop with throttled saved-state writes
+- Refined outlined pixel sprites for better readability on the physical Touch Bar
 
 ## Development Log
 

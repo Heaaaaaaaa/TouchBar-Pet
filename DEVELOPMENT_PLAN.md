@@ -377,3 +377,18 @@ What can be improved:
 
 What next:
 - Test the rebuilt app on the physical Touch Bar and tune the frame rate if needed.
+
+### 2026-05-06 - Pet Visual Refinement
+
+What was done:
+- Added a reusable pixel-outline pass so pets have clearer silhouettes on bright and dark Touch Bar backgrounds.
+- Refined Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy with stronger highlights, eyes, markings, wings, fins, leaves, and pot/flower detail.
+- Gave the ghost a softer blue outline/glow so it reads better on the night strip.
+- Improved the Touch Bar scene frame with a darker outer border, inner highlight, and top shine.
+
+What can be improved:
+- Compare against fresh physical Touch Bar photos and tune individual sprite scale if any pet appears too large.
+- Crop the generated bitmap concept sheet into sprite frames if the user wants more detailed art than code-drawn pixels.
+
+What next:
+- Build the app bundle, test each selected pet/background on the real Touch Bar, and adjust from photos.
