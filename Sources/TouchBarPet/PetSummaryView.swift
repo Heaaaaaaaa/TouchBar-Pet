@@ -19,23 +19,30 @@ final class PetSummaryView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
+        PetPixelArt.drawPet(
+            species: state.species,
+            state: state,
+            origin: NSPoint(x: bounds.midX - 24, y: 12),
+            scale: 6
+        )
+
         drawCentered(
-            state.face,
-            in: NSRect(x: 0, y: 6, width: bounds.width, height: 64),
-            font: .monospacedSystemFont(ofSize: 42, weight: .semibold),
+            state.species.displayName,
+            in: NSRect(x: 0, y: 66, width: bounds.width, height: 26),
+            font: .systemFont(ofSize: 20, weight: .semibold),
             color: .controlAccentColor
         )
 
         drawCentered(
             state.statusLine,
-            in: NSRect(x: 0, y: 84, width: bounds.width, height: 28),
-            font: .systemFont(ofSize: 18, weight: .semibold),
+            in: NSRect(x: 0, y: 98, width: bounds.width, height: 28),
+            font: .systemFont(ofSize: 15, weight: .semibold),
             color: .labelColor
         )
 
         drawCentered(
             state.careHint,
-            in: NSRect(x: 0, y: 126, width: bounds.width, height: 24),
+            in: NSRect(x: 0, y: 132, width: bounds.width, height: 24),
             font: .systemFont(ofSize: 15, weight: .medium),
             color: .secondaryLabelColor
         )

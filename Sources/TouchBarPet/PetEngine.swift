@@ -37,6 +37,18 @@ final class PetEngine {
         publish()
     }
 
+    func selectSpecies(_ species: PetSpecies) {
+        state.species = species
+        state.lastUpdated = Date()
+        publish()
+    }
+
+    func selectBackground(_ background: PetBackground) {
+        state.background = background
+        state.lastUpdated = Date()
+        publish()
+    }
+
     func tick() {
         state.animationFrame += 1
         state.hunger = (state.hunger + 1).clamped(to: 0...100)

@@ -47,6 +47,15 @@ If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
 The app runs as a menu-bar/background app. Use the `TBP` menu-bar item for Show Window, Hide Window, Feed, Play, Rest, and Show Touch Bar Pet.
 
+## Choosing Pets And Backgrounds
+
+Use the `TBP` menu-bar item:
+
+- `Pet` -> choose Cat, Puffer Fish, Ghost, Dragon, or Plant Buddy.
+- `Background` -> choose Auto, Aquarium, Night Sky, Grass, or Cozy Room.
+
+`Auto` chooses a matching background for the selected pet.
+
 ## Xcode Setup
 
 After installing full Xcode:
@@ -79,6 +88,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Local saved state in Application Support
 - Simple app window with matching controls
 - Fallback `.app` bundle build script
+- Selectable pixel pets and Touch Bar backgrounds
 
 ## Development Log
 

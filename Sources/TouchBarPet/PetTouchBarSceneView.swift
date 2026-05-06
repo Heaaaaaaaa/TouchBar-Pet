@@ -38,18 +38,100 @@ final class PetTouchBarSceneView: NSView {
 
         let trackRect = NSRect(x: 0, y: 2, width: 500, height: 26)
         drawTrack(in: trackRect)
-        drawPixelPet(origin: NSPoint(x: 308, y: 6), scale: 2.4)
+        PetPixelArt.drawPet(
+            species: state.species,
+            state: state,
+            origin: NSPoint(x: 300, y: 7),
+            scale: 2.35
+        )
         drawStats(in: NSRect(x: 520, y: 3, width: 330, height: 24))
     }
 
     private func drawTrack(in rect: NSRect) {
         let path = NSBezierPath(roundedRect: rect, xRadius: 8, yRadius: 8)
-        NSColor(calibratedRed: 0.24, green: 0.94, blue: 1.0, alpha: 1.0).setFill()
+        color(for: state.activeBackground).setFill()
         path.fill()
+
+        drawBackgroundDetails(in: rect, background: state.activeBackground)
 
         NSColor(calibratedWhite: 1.0, alpha: 0.28).setStroke()
         path.lineWidth = 1
         path.stroke()
+    }
+
+    private func color(for background: PetBackground) -> NSColor {
+        switch background {
+        case .auto:
+            return color(for: state.species.defaultBackground)
+        case .aquarium:
+            return NSColor(calibratedRed: 0.16, green: 0.88, blue: 0.98, alpha: 1.0)
+        case .night:
+            return NSColor(calibratedRed: 0.08, green: 0.10, blue: 0.34, alpha: 1.0)
+        case .grass:
+            return NSColor(calibratedRed: 0.34, green: 0.78, blue: 0.24, alpha: 1.0)
+        case .cozy:
+            return NSColor(calibratedRed: 0.46, green: 0.24, blue: 0.12, alpha: 1.0)
+        }
+    }
+
+    private func drawBackgroundDetails(in rect: NSRect, background: PetBackground) {
+        switch background {
+        case .auto:
+            drawBackgroundDetails(in: rect, background: state.species.defaultBackground)
+        case .aquarium:
+            drawAquariumDetails(in: rect)
+        case .night:
+            drawNightDetails(in: rect)
+        case .grass:
+            drawGrassDetails(in: rect)
+        case .cozy:
+            drawCozyDetails(in: rect)
+        }
+    }
+
+    private func drawAquariumDetails(in rect: NSRect) {
+        NSColor(calibratedWhite: 1.0, alpha: 0.65).setFill()
+        for x in stride(from: rect.minX + 28, to: rect.maxX - 30, by: 76) {
+            NSRect(x: x, y: rect.minY + 7, width: 2, height: 2).fill()
+            NSRect(x: x + 7, y: rect.minY + 13, width: 2, height: 2).fill()
+        }
+
+        NSColor(calibratedRed: 0.04, green: 0.35, blue: 0.50, alpha: 0.45).setFill()
+        for x in stride(from: rect.minX + 54, to: rect.maxX - 60, by: 118) {
+            NSBezierPath(ovalIn: NSRect(x: x, y: rect.minY + 11, width: 18, height: 7)).fill()
+        }
+    }
+
+    private func drawNightDetails(in rect: NSRect) {
+        NSColor(calibratedRed: 1.0, green: 0.88, blue: 0.36, alpha: 1.0).setFill()
+        NSBezierPath(ovalIn: NSRect(x: rect.minX + 42, y: rect.minY + 5, width: 11, height: 11)).fill()
+
+        NSColor.white.withAlphaComponent(0.75).setFill()
+        for x in stride(from: rect.minX + 86, to: rect.maxX - 24, by: 58) {
+            NSRect(x: x, y: rect.minY + 8, width: 2, height: 2).fill()
+        }
+    }
+
+    private func drawGrassDetails(in rect: NSRect) {
+        NSColor(calibratedRed: 0.18, green: 0.52, blue: 0.12, alpha: 0.75).setFill()
+        for x in stride(from: rect.minX + 8, to: rect.maxX - 8, by: 12) {
+            NSRect(x: x, y: rect.maxY - 6, width: 3, height: 5).fill()
+        }
+
+        NSColor.white.withAlphaComponent(0.9).setFill()
+        for x in stride(from: rect.minX + 44, to: rect.maxX - 30, by: 96) {
+            NSRect(x: x, y: rect.minY + 11, width: 3, height: 3).fill()
+        }
+    }
+
+    private func drawCozyDetails(in rect: NSRect) {
+        NSColor(calibratedRed: 0.26, green: 0.12, blue: 0.06, alpha: 0.5).setFill()
+        for x in stride(from: rect.minX, to: rect.maxX, by: 28) {
+            NSRect(x: x, y: rect.midY, width: 22, height: 1).fill()
+        }
+
+        NSColor(calibratedRed: 1.0, green: 0.52, blue: 0.08, alpha: 0.9).setFill()
+        NSBezierPath(ovalIn: NSRect(x: rect.minX + 245, y: rect.minY + 8, width: 24, height: 10)).fill()
     }
 
     private func drawStats(in rect: NSRect) {
@@ -69,29 +151,4 @@ final class PetTouchBarSceneView: NSView {
         )
     }
 
-    private func drawPixelPet(origin: NSPoint, scale: CGFloat) {
-        let orange = NSColor(calibratedRed: 1.0, green: 0.52, blue: 0.06, alpha: 1.0)
-        let darkOrange = NSColor(calibratedRed: 0.72, green: 0.28, blue: 0.02, alpha: 1.0)
-        let black = NSColor.black
-        let cream = NSColor(calibratedRed: 1.0, green: 0.78, blue: 0.36, alpha: 1.0)
-
-        let pixels: [(Int, Int, NSColor)] = [
-            (2, 0, orange), (3, 0, orange), (4, 0, orange), (5, 0, orange),
-            (1, 1, orange), (2, 1, orange), (3, 1, cream), (4, 1, cream), (5, 1, orange), (6, 1, orange),
-            (0, 2, darkOrange), (1, 2, orange), (2, 2, black), (3, 2, cream), (4, 2, black), (5, 2, orange), (6, 2, darkOrange),
-            (1, 3, orange), (2, 3, cream), (3, 3, darkOrange), (4, 3, cream), (5, 3, orange),
-            (2, 4, orange), (3, 4, orange), (4, 4, orange), (5, 4, orange), (6, 4, orange),
-            (5, 5, darkOrange), (6, 5, orange), (7, 5, orange)
-        ]
-
-        for (x, y, color) in pixels {
-            color.setFill()
-            NSRect(
-                x: origin.x + CGFloat(x) * scale,
-                y: origin.y + CGFloat(y) * scale,
-                width: scale,
-                height: scale
-            ).fill()
-        }
-    }
 }

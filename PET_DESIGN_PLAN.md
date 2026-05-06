@@ -269,3 +269,20 @@ It includes:
 - Four Touch Bar background strip concepts: aquarium, night sky, grass, and cozy room.
 
 Use `Assets/PixelArt/README.md` for the exact generation prompt and extraction notes.
+
+## Implemented V1 Selection
+
+The app now has code-drawn Touch Bar versions of:
+
+- Cat
+- Puffer Fish
+- Ghost
+- Dragon
+- Plant Buddy
+
+The menu-bar `TBP` item includes:
+
+- `Pet` submenu for choosing the species.
+- `Background` submenu for choosing Auto, Aquarium, Night Sky, Grass, or Cozy Room.
+
+This first implementation translates the generated concept sheet into deterministic AppKit pixel drawing instead of cropping bitmap frames. Bitmap extraction can still be added later for richer sprites.

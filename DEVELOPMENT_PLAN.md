@@ -328,3 +328,19 @@ What can be improved:
 
 What next:
 - Implement the Cat sprite and default Touch Bar background from the generated asset.
+
+### 2026-05-06 - Selectable Pets And Backgrounds
+
+What was done:
+- Added saved `PetSpecies` and `PetBackground` state with backward-compatible defaults for old save files.
+- Added code-drawn pixel versions of Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy based on the generated concept sheet.
+- Added Touch Bar background styles for Aquarium, Night Sky, Grass, and Cozy Room.
+- Added `TBP` menu-bar submenus for choosing pet species and background.
+- Updated the Touch Bar tray item, expanded Touch Bar scene, and optional window preview to use the selected pet.
+
+What can be improved:
+- Crop and use actual bitmap frames from `Assets/PixelArt/pet-background-concept-sheet.png` for richer animation.
+- Add more animation frames and pet-specific actions.
+
+What next:
+- Test species/background switching on the physical Touch Bar.

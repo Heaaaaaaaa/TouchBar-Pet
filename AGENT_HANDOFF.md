@@ -38,6 +38,7 @@ open "Build/TouchBar Pet.app"
 - `PET_DESIGN_PLAN.md`: pet species and movement design plan.
 - `Assets/PixelArt/pet-background-concept-sheet.png`: generated pixel-art concept sheet.
 - `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
+- `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
 
 ## Architecture Notes
 
@@ -47,6 +48,7 @@ open "Build/TouchBar Pet.app"
 - The experimental always-present mode uses private APIs through `TouchBarPrivate`.
 - The persistent Control Strip item is intentionally compact; tapping it or choosing `TBP` -> `Show Touch Bar Pet` should present the full modal Touch Bar.
 - Auto-expand was removed because it interfered with other Touch Bar tools. Expansion is manual via the small tray pet or `TBP` -> `Show Touch Bar Pet`.
+- `TBP` menu now has `Pet` and `Background` submenus. Species/background choices are saved in `PetState`.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.
