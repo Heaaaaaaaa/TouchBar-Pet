@@ -35,6 +35,9 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/PetTouchBarTrayView.swift`: compact persistent Control Strip tray item.
 - `Sources/TouchBarPet/PersistentTouchBarAPI.swift`: Swift wrapper around experimental private persistent Touch Bar bridge.
 - `Sources/TouchBarPrivate/`: Objective-C bridge for private Touch Bar system-tray/modal APIs.
+- `PET_DESIGN_PLAN.md`: pet species and movement design plan.
+- `Assets/PixelArt/pet-background-concept-sheet.png`: generated pixel-art concept sheet.
+- `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
 
 ## Architecture Notes
 

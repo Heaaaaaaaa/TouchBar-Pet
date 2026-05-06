@@ -256,3 +256,16 @@ Cat should replace the current single orange pixel pet because:
 - It gives useful base animations: idle, walk, sleep, play.
 
 After Cat works, use Puffer Fish to prove that the animation system supports unique species-specific behavior.
+
+## Generated Concept Asset
+
+The first generated pixel-art reference sheet is saved at:
+
+- `Assets/PixelArt/pet-background-concept-sheet.png`
+
+It includes:
+
+- Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy concept frames.
+- Four Touch Bar background strip concepts: aquarium, night sky, grass, and cozy room.
+
+Use `Assets/PixelArt/README.md` for the exact generation prompt and extraction notes.

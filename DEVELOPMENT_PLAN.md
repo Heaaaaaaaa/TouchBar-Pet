@@ -313,3 +313,18 @@ What can be improved:
 
 What next:
 - Implement Cat as the first real animated species.
+
+### 2026-05-06 - Pixel Pet And Background Concept Sheet
+
+What was done:
+- Used the `imagegen` skill to generate a pixel-art concept sheet.
+- Saved the asset into `Assets/PixelArt/pet-background-concept-sheet.png`.
+- Added `Assets/PixelArt/README.md` with the prompt, contents, dimensions, and recommended extraction path.
+- Linked the generated concept asset from `PET_DESIGN_PLAN.md`.
+
+What can be improved:
+- Crop the sheet into separate sprite/background files.
+- Convert the best cat frames into actual app rendering.
+
+What next:
+- Implement the Cat sprite and default Touch Bar background from the generated asset.
