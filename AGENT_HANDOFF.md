@@ -32,6 +32,7 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/TouchBarHostingView.swift`: first-responder view that provides custom Touch Bar.
 - `Sources/TouchBarPet/PetTouchBarController.swift`: `NSTouchBarDelegate` and Touch Bar item setup.
 - `Sources/TouchBarPet/PetTouchBarSceneView.swift`: cyan strip / pixel pet / stats drawing for Touch Bar.
+- `Sources/TouchBarPet/PetTouchBarTrayView.swift`: compact persistent Control Strip tray item.
 - `Sources/TouchBarPet/PersistentTouchBarAPI.swift`: Swift wrapper around experimental private persistent Touch Bar bridge.
 - `Sources/TouchBarPrivate/`: Objective-C bridge for private Touch Bar system-tray/modal APIs.
 
@@ -41,6 +42,7 @@ open "Build/TouchBar Pet.app"
 - It now launches as a menu-bar/accessory app with `TBP` in the menu bar and no normal window by default.
 - The normal public Touch Bar fallback is provided through `TouchBarHostingView.makeTouchBar()`.
 - The experimental always-present mode uses private APIs through `TouchBarPrivate`.
+- The persistent Control Strip item is intentionally compact; tapping it or choosing `TBP` -> `Show Touch Bar Pet` should present the full modal Touch Bar.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

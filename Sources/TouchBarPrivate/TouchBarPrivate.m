@@ -8,6 +8,7 @@ typedef void (*TBPCloseBoxFunction)(BOOL);
 typedef void (*TBPAddTrayItemFunction)(id, SEL, NSTouchBarItem *);
 typedef void (*TBPRemoveTrayItemFunction)(id, SEL, NSTouchBarItem *);
 typedef void (*TBPPresentModalFunction)(id, SEL, NSTouchBar *, NSString *);
+typedef void (*TBPPresentModalPlacementFunction)(id, SEL, NSTouchBar *, long long, NSString *);
 
 static void *TBPDFRHandle(void) {
     static void *handle = NULL;
@@ -66,19 +67,40 @@ BOOL TBPPresentPersistentTouchBar(NSTouchBar *touchBar, NSString *identifier) {
         return NO;
     }
 
-    SEL presentSelector = NSSelectorFromString(@"presentSystemModalFunctionBar:systemTrayItemIdentifier:");
-    if (![NSTouchBar respondsToSelector:presentSelector]) {
-        return NO;
-    }
-
     TBPCloseBoxFunction closeBox = TBPCloseBox();
     if (closeBox != NULL) {
         closeBox(NO);
     }
 
-    TBPPresentModalFunction present = (TBPPresentModalFunction)[NSTouchBar methodForSelector:presentSelector];
-    present([NSTouchBar class], presentSelector, touchBar, identifier);
-    return YES;
+    SEL selectors[] = {
+        NSSelectorFromString(@"presentSystemModalTouchBar:systemTrayItemIdentifier:"),
+        NSSelectorFromString(@"presentSystemModalFunctionBar:systemTrayItemIdentifier:")
+    };
+
+    for (NSUInteger index = 0; index < 2; index += 1) {
+        SEL selector = selectors[index];
+        if ([NSTouchBar respondsToSelector:selector]) {
+            TBPPresentModalFunction present = (TBPPresentModalFunction)[NSTouchBar methodForSelector:selector];
+            present([NSTouchBar class], selector, touchBar, identifier);
+            return YES;
+        }
+    }
+
+    SEL placementSelectors[] = {
+        NSSelectorFromString(@"presentSystemModalTouchBar:placement:systemTrayItemIdentifier:"),
+        NSSelectorFromString(@"presentSystemModalFunctionBar:placement:systemTrayItemIdentifier:")
+    };
+
+    for (NSUInteger index = 0; index < 2; index += 1) {
+        SEL selector = placementSelectors[index];
+        if ([NSTouchBar respondsToSelector:selector]) {
+            TBPPresentModalPlacementFunction present = (TBPPresentModalPlacementFunction)[NSTouchBar methodForSelector:selector];
+            present([NSTouchBar class], selector, touchBar, 1, identifier);
+            return YES;
+        }
+    }
+
+    return NO;
 }
 
 BOOL TBPRemovePersistentTouchBar(NSString *identifier) {

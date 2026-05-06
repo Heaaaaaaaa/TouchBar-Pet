@@ -12,7 +12,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     private let engine: PetEngine
     private let sceneView = PetTouchBarSceneView()
-    private let persistentSceneView = PetTouchBarSceneView()
+    private let trayView = PetTouchBarTrayView()
     private var isPersistentInstalled = false
     private lazy var touchBar: NSTouchBar = {
         let touchBar = NSTouchBar()
@@ -34,7 +34,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         sceneView.onTap = { [weak engine] in
             engine?.play()
         }
-        persistentSceneView.onTap = { [weak self] in
+        trayView.onTap = { [weak self] in
             self?.presentPersistentTouchBar()
         }
     }
@@ -45,7 +45,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     func render(_ state: PetState) {
         sceneView.state = state
-        persistentSceneView.state = state
+        trayView.state = state
     }
 
     func installPersistentTouchBar() {
@@ -55,7 +55,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         }
 
         isPersistentInstalled = PersistentTouchBarAPI.install(
-            view: persistentSceneView,
+            view: trayView,
             identifier: ItemID.persistent
         )
         presentPersistentTouchBar()

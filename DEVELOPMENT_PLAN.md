@@ -258,3 +258,18 @@ What can be improved:
 
 What next:
 - Build, run, and test by putting another app frontmost while watching the physical Touch Bar.
+
+### 2026-05-06 - Persistent Tray Item Correction
+
+What was done:
+- Confirmed the previous commit `78359db` was already clean and pushed before further edits.
+- Split the persistent Control Strip tray item from the full-width pet scene.
+- Added a compact tray view with a small pixel pet so the Control Strip item is not just a blank blue rectangle.
+- Updated the private API bridge to try both modern `presentSystemModalTouchBar...` and older `presentSystemModalFunctionBar...` selectors.
+
+What can be improved:
+- Verify on the physical Touch Bar whether tapping the compact tray item now opens the full pet bar.
+- If the full modal still does not present, inspect which private selector exists on this macOS version.
+
+What next:
+- Build, rebuild app bundle, test, commit, and push.
