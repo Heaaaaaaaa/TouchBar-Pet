@@ -273,3 +273,17 @@ What can be improved:
 
 What next:
 - Build, rebuild app bundle, test, commit, and push.
+
+### 2026-05-06 - Recover From Touch Bar Close Button
+
+What was done:
+- Converted the persistent tray item from a plain custom view into a real borderless `NSButton`, so tapping the small item should reliably request the full pet bar again.
+- Added a short keep-alive timer that re-presents the persistent Touch Bar every 2 seconds.
+- Called the private close-box setting during tray installation as well as modal presentation.
+
+What can be improved:
+- If the close button still appears, investigate private API placement values or a different modal presentation selector.
+- Add a user setting to disable keep-alive if it becomes annoying.
+
+What next:
+- Build and push this close-button recovery fix.

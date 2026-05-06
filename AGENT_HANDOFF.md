@@ -43,6 +43,7 @@ open "Build/TouchBar Pet.app"
 - The normal public Touch Bar fallback is provided through `TouchBarHostingView.makeTouchBar()`.
 - The experimental always-present mode uses private APIs through `TouchBarPrivate`.
 - The persistent Control Strip item is intentionally compact; tapping it or choosing `TBP` -> `Show Touch Bar Pet` should present the full modal Touch Bar.
+- A 2-second keep-alive timer re-presents the full Touch Bar if the private modal collapses back to the tray item.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

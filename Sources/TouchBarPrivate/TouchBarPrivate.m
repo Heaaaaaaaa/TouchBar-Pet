@@ -44,6 +44,11 @@ BOOL TBPInstallPersistentTouchBarView(NSView *view, NSString *identifier) {
         return NO;
     }
 
+    TBPCloseBoxFunction closeBox = TBPCloseBox();
+    if (closeBox != NULL) {
+        closeBox(NO);
+    }
+
     SEL addSelector = NSSelectorFromString(@"addSystemTrayItem:");
     TBPPresenceFunction presence = TBPPresence();
 

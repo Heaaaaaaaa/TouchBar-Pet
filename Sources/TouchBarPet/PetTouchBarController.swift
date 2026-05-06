@@ -45,7 +45,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     func render(_ state: PetState) {
         sceneView.state = state
-        trayView.state = state
+        trayView.petState = state
     }
 
     func installPersistentTouchBar() {

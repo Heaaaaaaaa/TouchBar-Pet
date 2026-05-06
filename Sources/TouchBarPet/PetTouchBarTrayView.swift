@@ -1,10 +1,10 @@
 import AppKit
 
 @MainActor
-final class PetTouchBarTrayView: NSView {
-    var state: PetState = .initial {
+final class PetTouchBarTrayView: NSButton {
+    var petState: PetState = .initial {
         didSet {
-            setAccessibilityLabel("TouchBar Pet. \(state.touchBarStatsLine)")
+            setAccessibilityLabel("TouchBar Pet. \(petState.touchBarStatsLine)")
             needsDisplay = true
         }
     }
@@ -21,6 +21,11 @@ final class PetTouchBarTrayView: NSView {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        title = ""
+        isBordered = false
+        bezelStyle = .regularSquare
+        target = self
+        action = #selector(tapped)
         setContentHuggingPriority(.required, for: .horizontal)
         setContentCompressionResistancePriority(.required, for: .horizontal)
     }
@@ -29,13 +34,11 @@ final class PetTouchBarTrayView: NSView {
         nil
     }
 
-    override func mouseDown(with event: NSEvent) {
+    @objc private func tapped() {
         onTap?()
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-
         let background = NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 2), xRadius: 7, yRadius: 7)
         NSColor(calibratedRed: 0.24, green: 0.94, blue: 1.0, alpha: 1.0).setFill()
         background.fill()
