@@ -20,7 +20,10 @@ let package = Package(
         ),
         .executableTarget(
             name: "TouchBarPet",
-            dependencies: ["TouchBarPrivate"]
+            dependencies: ["TouchBarPrivate"],
+            resources: [
+                .copy("Resources")
+            ]
         )
     ]
 )

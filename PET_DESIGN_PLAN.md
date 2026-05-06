@@ -310,3 +310,20 @@ What can still improve:
 - Crop the actual bitmap sheet into separate PNG sprite frames if richer high-resolution pixel art is desired.
 - Add per-species soundless micro-events, like cat toy dots and puffer loop-swims.
 - Add a reset/debug menu item so testing can quickly restore a happy default pet.
+
+## Implemented V3 Direct Bitmap Sprites
+
+The app now directly uses extracted PNG sprites from the generated concept sheet:
+
+- `Scripts/extract-pixel-sprites.py` crops the sheet into 15 transparent-ish sprite PNGs.
+- Extracted sprites live in `Sources/TouchBarPet/Resources/PixelArt/Sprites/`.
+- `PetBitmapArt.swift` chooses the correct sprite for each species and behavior mode.
+- `PetPixelArt.swift` now tries bitmap sprites first, then falls back to the deterministic code-drawn pixel art if an asset is unavailable.
+- `Package.swift` includes `Sources/TouchBarPet/Resources` as SwiftPM resources.
+- `Scripts/build-app.sh` copies the sprite resources into `Build/TouchBar Pet.app/Contents/Resources`.
+
+What can still improve:
+
+- Fine-tune crop rectangles after physical Touch Bar screenshots.
+- Extract the generated background strips as bitmap backgrounds too.
+- Replace the flood-fill extraction with hand-cleaned transparent sprites if any dark canvas edges remain visible.

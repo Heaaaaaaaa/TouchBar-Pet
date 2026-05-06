@@ -39,6 +39,9 @@ open "Build/TouchBar Pet.app"
 - `Assets/PixelArt/pet-background-concept-sheet.png`: generated pixel-art concept sheet.
 - `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
 - `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
+- `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
+- `Sources/TouchBarPet/Resources/PixelArt/Sprites/`: extracted PNG pet poses used by the app.
+- `Scripts/extract-pixel-sprites.py`: regenerates the PNG sprites from `Assets/PixelArt/pet-background-concept-sheet.png`.
 
 ## Architecture Notes
 
@@ -57,6 +60,8 @@ open "Build/TouchBar Pet.app"
 - `AppDelegate` throttles state saves to every 6 seconds instead of saving on every animation frame.
 - `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.
+- `PetPixelArt.drawPet(...)` first tries `PetBitmapArt.drawPet(...)`; the code-drawn sprites are now the fallback path.
+- `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.

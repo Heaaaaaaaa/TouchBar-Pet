@@ -39,6 +39,30 @@ Recommended first extraction:
 2. Cyan aquarium background or grassy daytime background for the default Touch Bar strip.
 3. Puffer fish frames after the cat animation system works.
 
+## Extracted App Sprites
+
+The app now uses extracted bitmap pets from this generated sheet.
+
+Generated sprite files live at:
+
+- `Sources/TouchBarPet/Resources/PixelArt/Sprites/`
+
+Regenerate them with:
+
+```sh
+Scripts/extract-pixel-sprites.py
+```
+
+The extraction script crops 15 pet poses:
+
+- Cat: idle, walk, sleep
+- Puffer Fish: idle, swim, puff
+- Ghost: idle, dash, sleep
+- Dragon: idle, run, fire
+- Plant Buddy: sprout, flower, thirsty
+
+The Swift renderer loads these PNGs first and falls back to code-drawn sprites if a file is missing.
+
 ## Original Generation Prompt
 
 ```text

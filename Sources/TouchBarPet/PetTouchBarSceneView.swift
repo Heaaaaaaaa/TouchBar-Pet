@@ -211,6 +211,10 @@ final class PetTouchBarSceneView: NSView {
     }
 
     private func nominalSpriteWidth(for species: PetSpecies, scale: CGFloat) -> CGFloat {
+        if let assetSize = PetBitmapArt.preferredSize(species: species, state: state, scale: scale) {
+            return assetSize.width
+        }
+
         switch species {
         case .cat:
             return 10.0 * scale
@@ -226,6 +230,10 @@ final class PetTouchBarSceneView: NSView {
     }
 
     private func nominalSpriteHeight(for species: PetSpecies, scale: CGFloat) -> CGFloat {
+        if let assetSize = PetBitmapArt.preferredSize(species: species, state: state, scale: scale) {
+            return assetSize.height
+        }
+
         switch species {
         case .cat:
             return 6.0 * scale

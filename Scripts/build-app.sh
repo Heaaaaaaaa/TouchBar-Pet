@@ -8,6 +8,7 @@ BUILD_DIR="$ROOT_DIR/Build"
 APP_BUNDLE="$BUILD_DIR/$APP_DISPLAY_NAME.app"
 CONTENTS_DIR="$APP_BUNDLE/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
+RESOURCES_DIR="$CONTENTS_DIR/Resources"
 INFO_PLIST="$ROOT_DIR/Resources/Info.plist"
 
 SDK_PATH="${SDKROOT:-}"
@@ -22,8 +23,10 @@ if [[ -z "$SDK_PATH" ]]; then
   fi
 fi
 
-mkdir -p "$MACOS_DIR"
+mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 cp "$INFO_PLIST" "$CONTENTS_DIR/Info.plist"
+rm -rf "$RESOURCES_DIR/PixelArt"
+cp -R "$ROOT_DIR/Sources/TouchBarPet/Resources/PixelArt" "$RESOURCES_DIR/PixelArt"
 
 clang \
   -fobjc-arc \

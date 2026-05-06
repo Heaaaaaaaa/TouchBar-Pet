@@ -8,6 +8,10 @@ enum PetPixelArt {
     }
 
     static func drawPet(species: PetSpecies, state: PetState, origin: NSPoint, scale: CGFloat) {
+        if PetBitmapArt.drawPet(species: species, state: state, origin: origin, scale: scale) {
+            return
+        }
+
         switch species {
         case .cat:
             drawCat(state: state, origin: origin, scale: scale)

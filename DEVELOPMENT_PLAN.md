@@ -392,3 +392,21 @@ What can be improved:
 
 What next:
 - Build the app bundle, test each selected pet/background on the real Touch Bar, and adjust from photos.
+
+### 2026-05-06 - Direct Asset Sprite Rendering
+
+What was done:
+- Added `Scripts/extract-pixel-sprites.py` to crop the generated concept sheet into 15 pet pose PNG files.
+- Added the extracted sprites under `Sources/TouchBarPet/Resources/PixelArt/Sprites/`.
+- Added `PetBitmapArt.swift` so the renderer directly loads and draws the extracted asset sprites for each selected pet and behavior.
+- Kept the code-drawn `PetPixelArt` sprites as a fallback if a bitmap asset is missing.
+- Updated `Package.swift` so SwiftPM copies resources.
+- Updated `Scripts/build-app.sh` so the clickable app bundle includes the sprite PNG resources.
+
+What can be improved:
+- Extract the background strips from the concept sheet and use them as bitmap scene backgrounds.
+- Fine-tune crop rectangles if physical Touch Bar photos show unwanted dark edges or extra pixels.
+- Hand-clean transparent sprite edges if the automatic flood-fill cleanup is not perfect.
+
+What next:
+- Build the app bundle, run it, and compare the asset sprites on the real Touch Bar.
