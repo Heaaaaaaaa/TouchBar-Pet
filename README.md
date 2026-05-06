@@ -1,12 +1,14 @@
 # TouchBar Pet
 
-TouchBar Pet is a native macOS AppKit app for MacBook models with a Touch Bar. It shows a small pet in the Touch Bar while the app is active, with buttons to feed, play, and rest.
+TouchBar Pet is a native macOS AppKit app for MacBook models with a Touch Bar. It runs from the menu bar and shows a small pet in the Touch Bar with controls to feed, play, and rest.
 
 GitHub repo: https://github.com/Heaaaaaaaa/TouchBar-Pet
 
 ## Current Status
 
 The first MVP scaffold is implemented as a Swift package. It builds with the full Xcode toolchain and can also create a clickable fallback app bundle with `Scripts/build-app.sh`.
+
+The background Touch Bar mode uses private macOS Touch Bar APIs because public `NSTouchBar` only stays visible for the frontmost app. This is for personal/local use, not App Store distribution.
 
 ## Requirements
 
@@ -43,7 +45,7 @@ swift run TouchBarPet
 
 If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
-When the app is active, the Touch Bar should show the pet face and action buttons.
+The app runs as a menu-bar/background app. Use the `TBP` menu-bar item for Show Window, Hide Window, Feed, Play, Rest, and Show Touch Bar Pet.
 
 ## Xcode Setup
 
@@ -54,7 +56,7 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 open Package.swift
 ```
 
-Then run the `TouchBarPet` executable target from Xcode.
+Then run the `TouchBarPet` executable target from Xcode. The window no longer opens automatically; look for the `TBP` menu-bar item.
 
 ## Touch Bar Troubleshooting
 
@@ -64,13 +66,13 @@ If the app window opens but the Touch Bar still shows only brightness, volume, o
 2. Go to Keyboard.
 3. Set Touch Bar shows to `App Controls` or `App Controls with Control Strip`.
 4. Quit any other Touch Bar pet apps while testing.
-5. Click the TouchBar Pet window so it is the active app.
+5. Click `TBP` in the menu bar and choose `Show Touch Bar Pet`.
 
-The app now provides its custom Touch Bar from the active window responder chain. The Touch Bar should show a cyan pet strip with a pixel pet and Health/Hunger/Social stats.
+The app uses an experimental persistent Touch Bar path plus the normal active-window fallback. The Touch Bar should show a cyan pet strip with a pixel pet and Health/Hunger/Social stats.
 
 ## MVP Features
 
-- App-focused Touch Bar pet using `NSTouchBar`
+- Background/menu-bar app with experimental persistent Touch Bar support
 - Animated ASCII pet face
 - Hunger, mood, and energy stats
 - Feed, play, and rest actions

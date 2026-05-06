@@ -4,7 +4,7 @@
 
 Build a native macOS app called TouchBar Pet for an M1 MacBook with Touch Bar. The pet appears in the Touch Bar while the app is active, shows a small animated ASCII face, and lets the user feed, play with, and rest the pet from Touch Bar controls.
 
-The first version uses Apple-supported AppKit Touch Bar APIs through `NSTouchBar`. It is app-focused, not a system-wide always-on Touch Bar modification.
+The first version started with Apple-supported AppKit Touch Bar APIs through `NSTouchBar`. The current build adds an experimental always-present mode using private Touch Bar APIs because public `NSTouchBar` disappears when another app becomes frontmost.
 
 References:
 
@@ -41,7 +41,7 @@ The MVP is complete when:
 - [x] Verify fallback `.app` bundle builds and launches.
 - [x] Verify window controls update visible pet state.
 - [x] Verify saved state restores after quit and reopen.
-- [ ] Verify on the physical Touch Bar.
+- [ ] Verify experimental persistent mode on the physical Touch Bar while another app is frontmost.
 - [x] Push initial commits to GitHub.
 
 ## Development Steps
@@ -241,3 +241,20 @@ What can be improved:
 
 What next:
 - Commit and push the handoff file.
+
+### 2026-05-06 - Background And Persistent Touch Bar Experiment
+
+What was done:
+- Changed launch behavior to a menu-bar/background app using activation policy `accessory`.
+- Stopped opening the main window automatically; the `TBP` menu-bar item can show or hide it.
+- Added menu-bar Feed, Play, Rest, and Show Touch Bar Pet actions.
+- Added an Objective-C bridge to experimental private Touch Bar APIs for system-tray/persistent Touch Bar presentation.
+- Updated the fallback app-bundle build script to compile the Objective-C bridge.
+
+What can be improved:
+- Confirm whether the private persistent API still works on this exact macOS/Xcode version.
+- If private API behavior differs, inspect the installed Grace Avery persistence app bundle for hints.
+- Improve the menu-bar icon beyond the simple `TBP` text.
+
+What next:
+- Build, run, and test by putting another app frontmost while watching the physical Touch Bar.

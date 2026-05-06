@@ -3,6 +3,7 @@ import AppKit
 @MainActor
 final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     private enum ItemID {
+        static let persistent = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.persistent")
         static let scene = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.scene")
         static let feed = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.feed")
         static let play = NSTouchBarItem.Identifier("com.heaaaaaaaa.touchbarpet.play")
@@ -11,6 +12,8 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     private let engine: PetEngine
     private let sceneView = PetTouchBarSceneView()
+    private let persistentSceneView = PetTouchBarSceneView()
+    private var isPersistentInstalled = false
     private lazy var touchBar: NSTouchBar = {
         let touchBar = NSTouchBar()
         touchBar.delegate = self
@@ -31,6 +34,9 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         sceneView.onTap = { [weak engine] in
             engine?.play()
         }
+        persistentSceneView.onTap = { [weak self] in
+            self?.presentPersistentTouchBar()
+        }
     }
 
     func makeTouchBar() -> NSTouchBar {
@@ -39,6 +45,32 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     func render(_ state: PetState) {
         sceneView.state = state
+        persistentSceneView.state = state
+    }
+
+    func installPersistentTouchBar() {
+        guard !isPersistentInstalled else {
+            presentPersistentTouchBar()
+            return
+        }
+
+        isPersistentInstalled = PersistentTouchBarAPI.install(
+            view: persistentSceneView,
+            identifier: ItemID.persistent
+        )
+        presentPersistentTouchBar()
+    }
+
+    func presentPersistentTouchBar() {
+        _ = PersistentTouchBarAPI.present(
+            touchBar: makeTouchBar(),
+            identifier: ItemID.persistent
+        )
+    }
+
+    func removePersistentTouchBar() {
+        _ = PersistentTouchBarAPI.remove(identifier: ItemID.persistent)
+        isPersistentInstalled = false
     }
 
     func touchBar(

@@ -25,10 +25,19 @@ fi
 mkdir -p "$MACOS_DIR"
 cp "$INFO_PLIST" "$CONTENTS_DIR/Info.plist"
 
+clang \
+  -fobjc-arc \
+  -isysroot "$SDK_PATH" \
+  -I "$ROOT_DIR/Sources/TouchBarPrivate/include" \
+  -c "$ROOT_DIR/Sources/TouchBarPrivate/TouchBarPrivate.m" \
+  -o "$BUILD_DIR/TouchBarPrivate.o"
+
 env CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-/tmp/touchbarpet-clang-cache}" \
   swiftc \
   -sdk "$SDK_PATH" \
   -framework AppKit \
+  -I "$ROOT_DIR/Sources/TouchBarPrivate/include" \
+  "$BUILD_DIR/TouchBarPrivate.o" \
   "$ROOT_DIR"/Sources/TouchBarPet/*.swift \
   -o "$MACOS_DIR/$APP_NAME"
 

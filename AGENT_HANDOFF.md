@@ -5,9 +5,9 @@
 - Repo: `https://github.com/Heaaaaaaaa/TouchBar-Pet`
 - Local path: `/Users/hea/Library/CloudStorage/OneDrive-Heriot-WattUniversity/HW/TouchBar Pet`
 - Branch: `main`
-- Latest pushed commit at handoff time: `0aa3311 Add custom Touch Bar scene`
+- Latest pushed commit at handoff time before this note: `c343392 Add agent handoff notes`
 - Goal: native macOS Touch Bar pet for an M1 MacBook Pro Touch Bar.
-- User wants the pet on the physical Touch Bar like the reference photo: cyan strip, pixel pet, and compact stats.
+- User wants the pet to stay on the physical Touch Bar while other apps are frontmost, like Grace Avery's persistent Touchbar Pet: cyan strip, pixel pet, compact stats.
 
 ## Verified Commands
 
@@ -32,11 +32,15 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/TouchBarHostingView.swift`: first-responder view that provides custom Touch Bar.
 - `Sources/TouchBarPet/PetTouchBarController.swift`: `NSTouchBarDelegate` and Touch Bar item setup.
 - `Sources/TouchBarPet/PetTouchBarSceneView.swift`: cyan strip / pixel pet / stats drawing for Touch Bar.
+- `Sources/TouchBarPet/PersistentTouchBarAPI.swift`: Swift wrapper around experimental private persistent Touch Bar bridge.
+- `Sources/TouchBarPrivate/`: Objective-C bridge for private Touch Bar system-tray/modal APIs.
 
 ## Architecture Notes
 
 - The app is AppKit, not SwiftUI.
-- The custom Touch Bar is provided through `TouchBarHostingView.makeTouchBar()`.
+- It now launches as a menu-bar/accessory app with `TBP` in the menu bar and no normal window by default.
+- The normal public Touch Bar fallback is provided through `TouchBarHostingView.makeTouchBar()`.
+- The experimental always-present mode uses private APIs through `TouchBarPrivate`.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.
@@ -44,29 +48,31 @@ open "Build/TouchBar Pet.app"
 
 ## Known Issue / User Blocker
 
-The user reported: window opens, but physical Touch Bar still shows brightness/volume controls.
+The user reported: Touch Bar shows the pet only when this app is frontmost, then disappears when another app comes frontmost.
 
 Most likely causes:
 
-- macOS Keyboard setting is showing `Expanded Control Strip` instead of app controls.
-- Another app named `Touchbar Pet` with bundle id `com.graceavery.TouchbarPetPersistence` was observed running and may conflict/confuse testing.
-- Xcode may remain the active app after Run; user must click the TouchBar Pet window.
+- Public `NSTouchBar` is frontmost-app only by design.
+- Always-present behavior requires private Touch Bar APIs and may vary by macOS version.
+- A stale Xcode debug process may keep an old app copy running.
+- Another app named `Touchbar Pet` with bundle id `com.graceavery.TouchbarPetPersistence` was observed previously and may conflict/confuse testing.
 
 Tell user to check:
 
-1. System Settings -> Keyboard.
-2. Set `Touch Bar shows` to `App Controls` or `App Controls with Control Strip`.
-3. Quit other Touch Bar pet apps.
-4. Run this app again and click its window.
+1. Stop old Xcode runs before testing.
+2. Launch `Build/TouchBar Pet.app`.
+3. Confirm `TBP` appears in the menu bar and no window opens.
+4. Put Safari/Xcode/another app frontmost and watch the physical Touch Bar.
+5. If it does not appear, use the `TBP` menu-bar item -> `Show Touch Bar Pet`.
 
 ## Next Best Tasks
 
-1. Confirm physical Touch Bar display after the Keyboard setting change.
-2. If still not visible, move Touch Bar ownership into a custom `NSWindow` or `NSViewController` subclass and test again.
+1. Confirm whether the private persistent Touch Bar appears while another app is frontmost.
+2. If not, inspect runtime availability of `presentSystemModalFunctionBar:systemTrayItemIdentifier:` and `DFRElementSetControlStripPresenceForIdentifier`.
 3. Add a reset/debug action because testing can leave the pet hungry/tired.
 4. Improve the pixel pet sprite and animation frames.
 5. Add app icon and signing/export workflow.
-6. Consider a menu bar companion later, but keep v1 app-focused and Apple-supported.
+6. Decide whether to keep private persistent APIs in main or make them an opt-in build.
 
 ## Do Not Forget
 

@@ -14,8 +14,13 @@ let package = Package(
         )
     ],
     targets: [
+        .target(
+            name: "TouchBarPrivate",
+            publicHeadersPath: "include"
+        ),
         .executableTarget(
-            name: "TouchBarPet"
+            name: "TouchBarPet",
+            dependencies: ["TouchBarPrivate"]
         )
     ]
 )

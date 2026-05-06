@@ -16,7 +16,7 @@ final class PetTouchBarSceneView: NSView {
     }
 
     override var intrinsicContentSize: NSSize {
-        NSSize(width: 760, height: 30)
+        NSSize(width: 860, height: 30)
     }
 
     override init(frame frameRect: NSRect) {
@@ -36,10 +36,10 @@ final class PetTouchBarSceneView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        let trackRect = NSRect(x: 0, y: 2, width: 420, height: 26)
+        let trackRect = NSRect(x: 0, y: 2, width: 500, height: 26)
         drawTrack(in: trackRect)
-        drawPixelPet(origin: NSPoint(x: 258, y: 6), scale: 2.4)
-        drawStats(in: NSRect(x: 438, y: 3, width: 315, height: 24))
+        drawPixelPet(origin: NSPoint(x: 308, y: 6), scale: 2.4)
+        drawStats(in: NSRect(x: 520, y: 3, width: 330, height: 24))
     }
 
     private func drawTrack(in rect: NSRect) {

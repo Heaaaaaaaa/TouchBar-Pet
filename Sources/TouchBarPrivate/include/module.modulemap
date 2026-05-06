@@ -1,0 +1,4 @@
+module TouchBarPrivate {
+    header "TouchBarPrivate.h"
+    export *
+}
