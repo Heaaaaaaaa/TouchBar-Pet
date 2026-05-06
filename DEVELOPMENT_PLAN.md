@@ -287,3 +287,15 @@ What can be improved:
 
 What next:
 - Build and push this close-button recovery fix.
+
+### 2026-05-06 - Manual Expand Only
+
+What was done:
+- Removed the automatic 2-second Touch Bar re-present timer because it interfered with other Touch Bar tools.
+- Kept the compact tray button and the `TBP` menu-bar `Show Touch Bar Pet` command as manual ways to expand the pet.
+
+What can be improved:
+- Add a setting later for optional auto-expand, defaulting off.
+
+What next:
+- Build, commit, and push the manual-expand behavior.

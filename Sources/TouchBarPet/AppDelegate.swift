@@ -8,14 +8,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowController: PetWindowController?
     private var statusItem: NSStatusItem?
     private var tickTimer: Timer?
-    private var touchBarKeepAliveTimer: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         buildMenu()
         buildStatusItem()
         touchBarController.installPersistentTouchBar()
         startPetLoop()
-        startTouchBarKeepAlive()
 
         engine.onChange = { [weak self] state in
             self?.windowController?.render(state)
@@ -30,7 +28,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         store.save(engine.state)
         touchBarController.removePersistentTouchBar()
         tickTimer?.invalidate()
-        touchBarKeepAliveTimer?.invalidate()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -49,20 +46,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func tickPet() {
         engine.tick()
-    }
-
-    private func startTouchBarKeepAlive() {
-        touchBarKeepAliveTimer = Timer.scheduledTimer(
-            timeInterval: 2.0,
-            target: self,
-            selector: #selector(refreshPersistentTouchBar),
-            userInfo: nil,
-            repeats: true
-        )
-    }
-
-    @objc private func refreshPersistentTouchBar() {
-        touchBarController.presentPersistentTouchBar()
     }
 
     private func buildMenu() {
