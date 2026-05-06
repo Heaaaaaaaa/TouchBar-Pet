@@ -77,18 +77,19 @@ If the app window opens but the Touch Bar still shows only brightness, volume, o
 4. Quit any other Touch Bar pet apps while testing.
 5. Click `TBP` in the menu bar and choose `Show Touch Bar Pet`.
 
-The app uses an experimental persistent Touch Bar path plus the normal active-window fallback. The Touch Bar should show a cyan pet strip with a pixel pet and Health/Hunger/Social stats.
+The app uses an experimental persistent Touch Bar path plus the normal active-window fallback. The Touch Bar should show a long pixel-art scene strip with a moving pet and compact stats.
 
 ## MVP Features
 
 - Background/menu-bar app with experimental persistent Touch Bar support
-- Animated ASCII pet face
+- Animated pixel pet scene based on the generated concept asset sheet
 - Hunger, mood, and energy stats
 - Feed, play, and rest actions
 - Local saved state in Application Support
 - Simple app window with matching controls
 - Fallback `.app` bundle build script
 - Selectable pixel pets and Touch Bar backgrounds
+- Shared movement model with walk, eat, play, sleep, and special behavior modes
 
 ## Development Log
 

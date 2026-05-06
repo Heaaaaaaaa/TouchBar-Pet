@@ -344,3 +344,20 @@ What can be improved:
 
 What next:
 - Test species/background switching on the physical Touch Bar.
+
+### 2026-05-06 - Asset-Inspired Movement System
+
+What was done:
+- Added `PetBehaviorMode`, direction, position, velocity, and action countdown fields to saved pet state.
+- Updated the pet engine so feed, play, rest, and normal ticks choose movement modes and move the pet across the Touch Bar strip.
+- Reworked `PetPixelArt.swift` to use richer code-drawn sprites based on `Assets/PixelArt/pet-background-concept-sheet.png`.
+- Expanded the Touch Bar scene strip so it uses dynamic width, larger moving sprites, shadows, snacks, sleep cues, sparkles, and more detailed background strips.
+- Updated pet-specific Touch Bar stats for Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy.
+
+What can be improved:
+- Crop the generated concept sheet into actual sprite/background PNG resources if the code-drawn version still looks too simple.
+- Add a menu reset action for returning hunger, mood, and energy to testing-friendly values.
+- Tune sprite sizes after another physical Touch Bar photo check.
+
+What next:
+- Build the app bundle, test on the physical Touch Bar, and adjust scale/spacing from real photos.

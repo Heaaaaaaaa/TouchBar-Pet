@@ -286,3 +286,27 @@ The menu-bar `TBP` item includes:
 - `Background` submenu for choosing Auto, Aquarium, Night Sky, Grass, or Cozy Room.
 
 This first implementation translates the generated concept sheet into deterministic AppKit pixel drawing instead of cropping bitmap frames. Bitmap extraction can still be added later for richer sprites.
+
+## Implemented V2 Movement And Asset Translation
+
+The app now follows the movement-system plan more closely:
+
+- Added `PetBehaviorMode`: idle, walk, eat, play, sleep, and special.
+- Added saved runtime movement fields: horizontal position, velocity, direction, and action countdown.
+- Pet actions now trigger visible behavior:
+  - Feed shows a species-specific snack and moves the pet toward it.
+  - Play triggers a jump, dash, puff, flame, ghost sparkle, or bloom depending on species.
+  - Rest switches to a sleep pose and recovers energy during ticks.
+- The expanded Touch Bar scene now uses the generated asset sheet as the visual reference:
+  - Cat has walk, play/stretch, and sleep/curl poses.
+  - Puffer Fish has swim and puff poses with bubbles.
+  - Ghost has bob, glow, sleep/blink, and special sparkle behavior.
+  - Dragon has wing-flap and fire-puff behavior.
+  - Plant Buddy has sway, bloom, and droop/water behavior.
+- Background strips now include more asset-like pixel details: aquarium bubbles/fish/rocks, night moon/stars/clouds, grass blades/flowers, and cozy room floor/fire/rug shapes.
+
+What can still improve:
+
+- Crop the actual bitmap sheet into separate PNG sprite frames if richer high-resolution pixel art is desired.
+- Add per-species soundless micro-events, like cat toy dots and puffer loop-swims.
+- Add a reset/debug menu item so testing can quickly restore a happy default pet.

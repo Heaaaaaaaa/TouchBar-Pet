@@ -5,7 +5,7 @@
 - Repo: `https://github.com/Heaaaaaaaa/TouchBar-Pet`
 - Local path: `/Users/hea/Library/CloudStorage/OneDrive-Heriot-WattUniversity/HW/TouchBar Pet`
 - Branch: `main`
-- Latest pushed commit at handoff time before this note: `c343392 Add agent handoff notes`
+- Latest pushed commit before the asset-inspired movement work: `801ad21 Add selectable pixel pets and backgrounds`
 - Goal: native macOS Touch Bar pet for an M1 MacBook Pro Touch Bar.
 - User wants the pet to stay on the physical Touch Bar while other apps are frontmost, like Grace Avery's persistent Touchbar Pet: cyan strip, pixel pet, compact stats.
 
@@ -51,6 +51,10 @@ open "Build/TouchBar Pet.app"
 - `TBP` menu now has `Pet` and `Background` submenus. Species/background choices are saved in `PetState`.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
+- `PetState` now stores `PetBehaviorMode`, direction, normalized Touch Bar position, velocity, and action countdown so movement survives redraws/saves.
+- `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions.
+- `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
+- `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.
 
@@ -78,7 +82,7 @@ Tell user to check:
 1. Confirm whether the private persistent Touch Bar appears while another app is frontmost.
 2. If not, inspect runtime availability of `presentSystemModalFunctionBar:systemTrayItemIdentifier:` and `DFRElementSetControlStripPresenceForIdentifier`.
 3. Add a reset/debug action because testing can leave the pet hungry/tired.
-4. Improve the pixel pet sprite and animation frames.
+4. Tune sprite sizes/spacing from another physical Touch Bar photo.
 5. Add app icon and signing/export workflow.
 6. Decide whether to keep private persistent APIs in main or make them an opt-in build.
 
