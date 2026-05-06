@@ -5,13 +5,11 @@ enum PetBitmapArt {
     private static var imageCache: [String: NSImage] = [:]
 
     static func preferredSize(species: PetSpecies, state: PetState, scale: CGFloat) -> NSSize? {
-        guard let image = image(for: spriteName(species: species, state: state)) else {
+        guard image(for: spriteName(species: species, state: state)) != nil else {
             return nil
         }
 
-        let height = preferredHeight(species: species, state: state, scale: scale)
-        let ratio = image.size.width / max(image.size.height, 1)
-        return NSSize(width: height * ratio, height: height)
+        return stableSlotSize(species: species, scale: scale)
     }
 
     @discardableResult
@@ -25,7 +23,7 @@ enum PetBitmapArt {
             return false
         }
 
-        let rect = NSRect(origin: origin, size: size)
+        let rect = drawRect(for: image, species: species, state: state, in: NSRect(origin: origin, size: size))
         draw(image: image, in: rect, direction: direction(for: species, state: state))
         return true
     }
@@ -85,18 +83,64 @@ enum PetBitmapArt {
         }
     }
 
-    private static func preferredHeight(species: PetSpecies, state: PetState, scale: CGFloat) -> CGFloat {
+    private static func stableSlotSize(species: PetSpecies, scale: CGFloat) -> NSSize {
         switch species {
         case .cat:
-            return (state.behaviorMode == .sleep ? 7.4 : 8.3) * scale
+            return NSSize(width: 14.8 * scale, height: 8.6 * scale)
         case .pufferFish:
-            return (state.behaviorMode == .special || state.hunger > 72 ? 8.4 : 7.9) * scale
+            return NSSize(width: 13.4 * scale, height: 8.6 * scale)
         case .ghost:
-            return (state.behaviorMode == .sleep ? 7.8 : 8.2) * scale
+            return NSSize(width: 11.8 * scale, height: 8.6 * scale)
         case .dragon:
-            return (state.behaviorMode == .special || state.behaviorMode == .play ? 8.2 : 8.4) * scale
+            return NSSize(width: 15.8 * scale, height: 8.7 * scale)
         case .plantBuddy:
-            return (state.behaviorMode == .play || state.mood > 58 ? 8.3 : 7.9) * scale
+            return NSSize(width: 11.0 * scale, height: 8.7 * scale)
+        }
+    }
+
+    private static func drawRect(for image: NSImage, species: PetSpecies, state: PetState, in slot: NSRect) -> NSRect {
+        let maxHeight = slot.height * heightFill(species: species, state: state)
+        let maxWidth = slot.width * widthFill(species: species, state: state)
+        let ratio = image.size.width / max(image.size.height, 1)
+        var drawHeight = maxHeight
+        var drawWidth = drawHeight * ratio
+
+        if drawWidth > maxWidth {
+            drawWidth = maxWidth
+            drawHeight = drawWidth / max(ratio, 0.01)
+        }
+
+        return NSRect(
+            x: slot.midX - drawWidth / 2,
+            y: slot.maxY - drawHeight,
+            width: drawWidth,
+            height: drawHeight
+        )
+    }
+
+    private static func heightFill(species: PetSpecies, state: PetState) -> CGFloat {
+        switch species {
+        case .cat:
+            return state.behaviorMode == .sleep ? 0.88 : 0.98
+        case .pufferFish:
+            return state.behaviorMode == .special || state.hunger > 72 ? 0.98 : 0.92
+        case .ghost:
+            return 0.98
+        case .dragon:
+            return 0.98
+        case .plantBuddy:
+            return state.behaviorMode == .play || state.mood > 58 ? 0.98 : 0.92
+        }
+    }
+
+    private static func widthFill(species: PetSpecies, state: PetState) -> CGFloat {
+        switch species {
+        case .dragon:
+            return state.behaviorMode == .special || state.behaviorMode == .play ? 1.0 : 0.90
+        case .cat:
+            return state.behaviorMode == .sleep ? 0.98 : 0.92
+        case .pufferFish, .ghost, .plantBuddy:
+            return 0.94
         }
     }
 

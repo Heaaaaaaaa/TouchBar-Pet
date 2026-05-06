@@ -410,3 +410,18 @@ What can be improved:
 
 What next:
 - Build the app bundle, run it, and compare the asset sprites on the real Touch Bar.
+
+### 2026-05-06 - Bitmap Movement Jitter Fix
+
+What was done:
+- Fixed a movement bug caused by different bitmap frame crop sizes.
+- Changed `PetBitmapArt` so each species draws inside a stable slot size instead of changing the sprite width/height every frame.
+- Bottom-centered each bitmap frame inside its slot so idle, walk, sleep, puff, dash, and fire frames do not shift the pet position.
+- Centered bitmap sprites in the compact tray item and preview window using the same stable size calculation.
+
+What can be improved:
+- Use hand-cleaned sprite canvases with identical dimensions for every frame of a species.
+- Tune per-species slot sizes from another physical Touch Bar video/photo if the pet looks too small or too large.
+
+What next:
+- Rebuild and test the Touch Bar movement again with the asset sprites.

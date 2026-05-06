@@ -19,11 +19,18 @@ final class PetSummaryView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
+        let spriteScale: CGFloat = 6
+        let spriteSize = PetBitmapArt.preferredSize(
+            species: state.species,
+            state: state,
+            scale: spriteScale
+        ) ?? NSSize(width: 48, height: 42)
+
         PetPixelArt.drawPet(
             species: state.species,
             state: state,
-            origin: NSPoint(x: bounds.midX - 24, y: 12),
-            scale: 6
+            origin: NSPoint(x: bounds.midX - spriteSize.width / 2, y: 10),
+            scale: spriteScale
         )
 
         drawCentered(

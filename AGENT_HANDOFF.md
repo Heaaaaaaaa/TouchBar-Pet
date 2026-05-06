@@ -61,6 +61,7 @@ open "Build/TouchBar Pet.app"
 - `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.
 - `PetPixelArt.drawPet(...)` first tries `PetBitmapArt.drawPet(...)`; the code-drawn sprites are now the fallback path.
+- `PetBitmapArt` uses stable per-species drawing slots so bitmap frames with different crop sizes do not make the pet jump during movement.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

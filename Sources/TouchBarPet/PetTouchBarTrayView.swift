@@ -43,11 +43,18 @@ final class PetTouchBarTrayView: NSButton {
         trayColor(for: petState.activeBackground).setFill()
         background.fill()
 
+        let spriteScale: CGFloat = 2.0
+        let spriteSize = PetBitmapArt.preferredSize(
+            species: petState.species,
+            state: petState,
+            scale: spriteScale
+        ) ?? NSSize(width: 18, height: 14)
+
         PetPixelArt.drawPet(
             species: petState.species,
             state: petState,
-            origin: NSPoint(x: 13, y: 8),
-            scale: 2.0
+            origin: NSPoint(x: bounds.midX - spriteSize.width / 2, y: bounds.midY - spriteSize.height / 2),
+            scale: spriteScale
         )
     }
 
