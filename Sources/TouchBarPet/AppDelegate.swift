@@ -13,6 +13,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowController: PetWindowController?
     private var statusItem: NSStatusItem?
     private var tickTimer: Timer?
+    private var saveTimer: Timer?
+    private var lastFrameDate = Date()
+    private var selectedMenuSpecies: PetSpecies?
+    private var selectedMenuBackground: PetBackground?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         buildMenu()
@@ -23,8 +27,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         engine.onChange = { [weak self] state in
             self?.windowController?.render(state)
             self?.touchBarController.render(state)
-            self?.updateMenuSelection(state)
-            self?.store.save(state)
+            self?.updateMenuSelectionIfNeeded(state)
+            self?.scheduleSave()
         }
 
         engine.publish()
@@ -34,6 +38,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         store.save(engine.state)
         touchBarController.removePersistentTouchBar()
         tickTimer?.invalidate()
+        saveTimer?.invalidate()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -41,17 +46,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func startPetLoop() {
-        tickTimer = Timer.scheduledTimer(
-            timeInterval: 1.5,
+        lastFrameDate = Date()
+
+        let timer = Timer(
+            timeInterval: 1.0 / 12.0,
             target: self,
             selector: #selector(tickPet),
             userInfo: nil,
             repeats: true
         )
+
+        timer.tolerance = 0.015
+        RunLoop.main.add(timer, forMode: .common)
+        tickTimer = timer
     }
 
     @objc private func tickPet() {
-        engine.tick()
+        let now = Date()
+        let elapsed = now.timeIntervalSince(lastFrameDate)
+        lastFrameDate = now
+
+        engine.tick(elapsed: elapsed)
     }
 
     private func buildMenu() {
@@ -144,6 +159,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         updateMenuItems(in: menu, baseTag: MenuTag.speciesBase, selectedRawValue: state.species.rawValue)
         updateMenuItems(in: menu, baseTag: MenuTag.backgroundBase, selectedRawValue: state.background.rawValue)
+        selectedMenuSpecies = state.species
+        selectedMenuBackground = state.background
+    }
+
+    private func updateMenuSelectionIfNeeded(_ state: PetState) {
+        guard selectedMenuSpecies != state.species || selectedMenuBackground != state.background else {
+            return
+        }
+
+        updateMenuSelection(state)
     }
 
     private func updateMenuItems(in menu: NSMenu, baseTag: Int, selectedRawValue: String) {
@@ -183,6 +208,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func showPersistentTouchBar() {
         touchBarController.presentPersistentTouchBar()
+    }
+
+    private func scheduleSave() {
+        guard saveTimer == nil else {
+            return
+        }
+
+        saveTimer = Timer.scheduledTimer(
+            timeInterval: 6.0,
+            target: self,
+            selector: #selector(flushScheduledSave),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    @objc private func flushScheduledSave() {
+        saveTimer?.invalidate()
+        saveTimer = nil
+        store.save(engine.state)
     }
 
     @objc private func selectSpecies(_ sender: NSMenuItem) {

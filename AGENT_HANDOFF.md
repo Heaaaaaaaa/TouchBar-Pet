@@ -53,6 +53,8 @@ open "Build/TouchBar Pet.app"
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - `PetState` now stores `PetBehaviorMode`, direction, normalized Touch Bar position, velocity, and action countdown so movement survives redraws/saves.
 - `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions.
+- The app loop now calls `PetEngine.tick(elapsed:)` at roughly 12 FPS. `PetEngine` separately accumulates care/stat ticks every 1.5 seconds so animation is smooth without making hunger/energy change too fast.
+- `AppDelegate` throttles state saves to every 6 seconds instead of saving on every animation frame.
 - `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

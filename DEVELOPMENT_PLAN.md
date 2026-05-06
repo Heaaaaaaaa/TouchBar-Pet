@@ -361,3 +361,19 @@ What can be improved:
 
 What next:
 - Build the app bundle, test on the physical Touch Bar, and adjust scale/spacing from real photos.
+
+### 2026-05-06 - Smoother Animation Loop
+
+What was done:
+- Split smooth animation updates from slower care/stat decay.
+- Changed the app loop from one redraw every 1.5 seconds to roughly 12 redraws per second.
+- Kept hunger, mood, and energy changes on the previous 1.5-second care cadence so stats do not drain too fast.
+- Throttled saved-state writes to avoid writing JSON on every animation frame.
+- Adjusted movement speed values to be time-based instead of one large jump per old timer tick.
+
+What can be improved:
+- If the physical Touch Bar still feels heavy, cache static background strip drawing and redraw only the pet layer.
+- Add a menu option for Low Power / Smooth animation speed.
+
+What next:
+- Test the rebuilt app on the physical Touch Bar and tune the frame rate if needed.

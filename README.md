@@ -90,6 +90,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Fallback `.app` bundle build script
 - Selectable pixel pets and Touch Bar backgrounds
 - Shared movement model with walk, eat, play, sleep, and special behavior modes
+- Smoother animation loop with throttled saved-state writes
 
 ## Development Log
 

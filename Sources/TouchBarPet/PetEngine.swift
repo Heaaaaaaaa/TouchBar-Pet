@@ -1,6 +1,9 @@
 import Foundation
 
 final class PetEngine {
+    private let careTickInterval: TimeInterval = 1.5
+    private var careAccumulator: TimeInterval = 0
+
     private(set) var state: PetState
     var onChange: ((PetState) -> Void)?
 
@@ -18,7 +21,7 @@ final class PetEngine {
         state.mood = (state.mood + 5).clamped(to: 0...100)
         state.energy = (state.energy - 2).clamped(to: 0...100)
         state.behaviorMode = .eat
-        state.actionTicksRemaining = 8
+        state.actionTicksRemaining = 32
         state.lastUpdated = Date()
         publish()
     }
@@ -28,7 +31,7 @@ final class PetEngine {
         state.mood = (state.mood + 22).clamped(to: 0...100)
         state.energy = (state.energy - 12).clamped(to: 0...100)
         state.behaviorMode = state.species.specialPlayMode
-        state.actionTicksRemaining = 8
+        state.actionTicksRemaining = 32
         state.lastUpdated = Date()
         publish()
     }
@@ -39,7 +42,7 @@ final class PetEngine {
         state.energy = (state.energy + 24).clamped(to: 0...100)
         state.behaviorMode = .sleep
         state.velocityX = 0
-        state.actionTicksRemaining = 10
+        state.actionTicksRemaining = 44
         state.lastUpdated = Date()
         publish()
     }
@@ -57,8 +60,36 @@ final class PetEngine {
         publish()
     }
 
-    func tick() {
+    func tick(elapsed: TimeInterval) {
+        let elapsed = elapsed.clamped(to: 0.0...0.25)
         state.animationFrame = (state.animationFrame + 1) % 10_000
+
+        careAccumulator += elapsed
+        let careTicks = min(Int(careAccumulator / careTickInterval), 4)
+
+        if careTicks > 0 {
+            careAccumulator -= TimeInterval(careTicks) * careTickInterval
+
+            for _ in 0..<careTicks {
+                applyCareTick()
+            }
+        }
+
+        if state.actionTicksRemaining > 0 {
+            state.actionTicksRemaining -= 1
+        }
+
+        chooseBehaviorMode()
+        updateMovement(elapsed: elapsed)
+        state.lastUpdated = Date()
+        publish()
+    }
+
+    func tick() {
+        tick(elapsed: careTickInterval)
+    }
+
+    private func applyCareTick() {
         state.hunger = (state.hunger + 1).clamped(to: 0...100)
 
         if state.behaviorMode == .sleep {
@@ -72,15 +103,6 @@ final class PetEngine {
         } else {
             state.mood = (state.mood + 1).clamped(to: 0...100)
         }
-
-        if state.actionTicksRemaining > 0 {
-            state.actionTicksRemaining -= 1
-        }
-
-        chooseBehaviorMode()
-        updateMovement()
-        state.lastUpdated = Date()
-        publish()
     }
 
     private func chooseBehaviorMode() {
@@ -103,32 +125,32 @@ final class PetEngine {
             return
         }
 
-        state.behaviorMode = state.animationFrame % 10 < 7 ? .walk : .idle
+        state.behaviorMode = state.animationFrame % 72 < 54 ? .walk : .idle
     }
 
-    private func updateMovement() {
+    private func updateMovement(elapsed: TimeInterval) {
         let baseSpeed = state.species.baseMovementSpeed
 
         switch state.behaviorMode {
         case .sleep:
             state.velocityX = 0
         case .idle:
-            updateIdleMovement(baseSpeed: baseSpeed)
+            updateIdleMovement(baseSpeed: baseSpeed, elapsed: elapsed)
         case .walk:
-            moveInCurrentDirection(speed: baseSpeed)
+            moveInCurrentDirection(step: baseSpeed * elapsed)
         case .eat:
-            moveTowardSnack(speed: max(baseSpeed * 1.4, 0.018))
+            moveTowardSnack(step: max(baseSpeed * 1.4, 0.040) * elapsed)
         case .play:
-            moveInCurrentDirection(speed: max(baseSpeed * 2.1, 0.028))
+            moveInCurrentDirection(step: max(baseSpeed * 2.1, 0.055) * elapsed)
         case .special:
-            updateSpecialMovement(baseSpeed: baseSpeed)
+            updateSpecialMovement(baseSpeed: baseSpeed, elapsed: elapsed)
         }
     }
 
-    private func updateIdleMovement(baseSpeed: Double) {
+    private func updateIdleMovement(baseSpeed: Double, elapsed: TimeInterval) {
         switch state.species {
         case .pufferFish, .ghost:
-            moveInCurrentDirection(speed: baseSpeed * 0.45)
+            moveInCurrentDirection(step: baseSpeed * 0.45 * elapsed)
         case .plantBuddy:
             state.velocityX = 0
             state.positionX = 0.5
@@ -137,44 +159,44 @@ final class PetEngine {
         }
     }
 
-    private func updateSpecialMovement(baseSpeed: Double) {
+    private func updateSpecialMovement(baseSpeed: Double, elapsed: TimeInterval) {
         switch state.species {
         case .pufferFish:
             state.velocityX = 0
         case .ghost:
-            moveInCurrentDirection(speed: max(baseSpeed * 2.4, 0.032))
+            moveInCurrentDirection(step: max(baseSpeed * 2.4, 0.065) * elapsed)
         case .dragon:
-            moveInCurrentDirection(speed: max(baseSpeed * 1.8, 0.034))
+            moveInCurrentDirection(step: max(baseSpeed * 1.8, 0.070) * elapsed)
         case .cat:
-            moveInCurrentDirection(speed: max(baseSpeed * 2.0, 0.030))
+            moveInCurrentDirection(step: max(baseSpeed * 2.0, 0.060) * elapsed)
         case .plantBuddy:
             state.velocityX = 0
             state.positionX = 0.5
         }
     }
 
-    private func moveTowardSnack(speed: Double) {
+    private func moveTowardSnack(step: Double) {
         let snackX = state.species.snackPositionX
         let distance = snackX - state.positionX
 
-        guard abs(distance) > speed else {
+        guard abs(distance) > step else {
             state.positionX = snackX
             state.velocityX = 0
             return
         }
 
         state.direction = distance > 0 ? .right : .left
-        state.velocityX = state.direction.multiplier * speed
+        state.velocityX = state.direction.multiplier * step
         state.positionX = (state.positionX + state.velocityX).clamped(to: 0.04...0.94)
     }
 
-    private func moveInCurrentDirection(speed: Double) {
-        guard speed > 0 else {
+    private func moveInCurrentDirection(step: Double) {
+        guard step > 0 else {
             state.velocityX = 0
             return
         }
 
-        state.velocityX = state.direction.multiplier * speed
+        state.velocityX = state.direction.multiplier * step
         state.positionX += state.velocityX
 
         if state.positionX <= 0.04 {
@@ -217,13 +239,13 @@ private extension PetSpecies {
     var baseMovementSpeed: Double {
         switch self {
         case .cat:
-            return 0.022
+            return 0.060
         case .pufferFish:
-            return 0.015
+            return 0.044
         case .ghost:
-            return 0.014
+            return 0.040
         case .dragon:
-            return 0.024
+            return 0.066
         case .plantBuddy:
             return 0
         }
