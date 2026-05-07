@@ -748,3 +748,16 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and retest the dragon fire pose, cozy background, and Plant Buddy food on the physical Touch Bar.
+
+### 2026-05-07 - Restore Dragon Cozy Background
+
+What was done:
+- Restored the dragon/cozy background to the original generated room strip with the visible fireplace after the previous cleanup made it too plain.
+- Adjusted the dragon fire crop from an over-short version to a middle crop so the flame appears again without restoring the oversized full fireball.
+- Updated the asset notes so future work does not flatten the cozy background by accident.
+
+What can be improved:
+- Make a dedicated cozy background variant with fireplace only and no sleeping pet/candle if the original decorative details feel confusing later.
+
+What next:
+- Rebuild and retest the dragon sleeping/background state and dragon fire pose on the physical Touch Bar.

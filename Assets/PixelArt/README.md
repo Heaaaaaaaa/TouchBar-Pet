@@ -86,9 +86,7 @@ The food renderer loads the extracted cat fish, puffer pellets, ghost star, drag
 
 Note: the ghost crop rectangles are intentionally tight vertically because the generated sheet places the dragon row close underneath. Looser ghost crops can pull dragon pixels into the extracted ghost sprites.
 
-Note: the dragon fire crop is intentionally shortened so the large generated fireball does not become a yellow block on the physical Touch Bar, and so the next-row blue pixels do not appear below the dragon foot.
-
-Note: the cozy background is cleaned during extraction to remove generated fireplace/candle/sleeping-pet leftovers that competed with the active pet.
+Note: the dragon fire crop is intentionally shorter than the original generated sprite so the fire remains visible without turning into an oversized yellow block, and so the next-row blue pixels do not appear below the dragon foot.
 
 Note: the Plant Buddy food crop is isolated to the blue water drops so green sprout leftovers from the food concept sheet do not appear as another plant.
 

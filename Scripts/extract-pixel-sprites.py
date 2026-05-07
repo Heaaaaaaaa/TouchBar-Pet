@@ -3,7 +3,7 @@ from collections import deque
 from pathlib import Path
 from statistics import median
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +27,7 @@ SPRITES = {
     "ghost-sleep": (820, 370, 210, 130),
     "dragon-idle": (165, 505, 230, 165),
     "dragon-run": (475, 505, 260, 165),
-    "dragon-fire": (820, 495, 185, 158),
+    "dragon-fire": (820, 495, 225, 158),
     "plant-sprout": (175, 675, 190, 155),
     "plant-flower": (490, 660, 200, 180),
     "plant-thirsty": (815, 665, 205, 175),
@@ -149,44 +149,6 @@ def isolate_blue_water_food(image):
     return image
 
 
-def clean_cozy_background(image):
-    image = image.convert("RGBA")
-    width, height = image.size
-    draw = ImageDraw.Draw(image)
-    left = 5
-    right = width - 6
-    top = 5
-    bottom = height - 7
-    wall_bottom = top + 35
-
-    draw.rectangle((left, top, right, wall_bottom), fill=(132, 72, 34, 255))
-    draw.rectangle((left, wall_bottom, right, bottom), fill=(75, 40, 29, 255))
-
-    for y in range(top + 9, wall_bottom, 11):
-        draw.rectangle((left + 3, y, right - 3, y + 1), fill=(83, 43, 27, 255))
-
-    for row, y in enumerate(range(top, wall_bottom, 11)):
-        offset = 44 if row % 2 else 0
-        for x in range(left + offset, right, 94):
-            draw.rectangle((x, y + 1, x + 2, min(y + 10, wall_bottom)), fill=(92, 48, 28, 255))
-
-    for y in range(wall_bottom + 8, bottom, 10):
-        draw.rectangle((left + 4, y, right - 4, y + 1), fill=(45, 24, 20, 255))
-
-    for x in range(left + 20, right, 116):
-        draw.rectangle((x, wall_bottom + 1, x + 2, bottom - 2), fill=(56, 30, 23, 255))
-
-    rug_top = wall_bottom + 14
-    rug_left = left + 170
-    rug_right = right - 170
-    draw.rectangle((rug_left, rug_top, rug_right, min(rug_top + 12, bottom - 3)), fill=(112, 44, 48, 255))
-    draw.rectangle((rug_left + 10, rug_top + 3, rug_right - 10, min(rug_top + 8, bottom - 4)), fill=(144, 67, 47, 255))
-
-    draw.rectangle((left + 3, top + 3, right - 3, top + 4), fill=(188, 111, 52, 255))
-    draw.rectangle((left + 3, wall_bottom - 2, right - 3, wall_bottom), fill=(50, 28, 23, 255))
-    return image
-
-
 def main():
     source = Image.open(SHEET)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -202,8 +164,6 @@ def main():
     for name, crop in BACKGROUNDS.items():
         x, y, width, height = crop
         background = source.crop((x, y, x + width, y + height))
-        if name == "cozy":
-            background = clean_cozy_background(background)
         background.save(BACKGROUND_OUT_DIR / f"{name}.png")
 
     if FOOD_SHEET.exists():
