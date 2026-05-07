@@ -47,6 +47,8 @@ If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
 The app runs as a menu-bar/background app. Use the `TBP` menu-bar item for Show Window, Hide Window, Feed, Play, Rest, and Show Touch Bar Pet.
 
+The expanded Touch Bar strip is also directly touchable: tap the moving pet/scene area for the species-specific pet action, or tap the inline `Feed`, `Play`, and `Rest` chips inside the strip.
+
 The red close button on the small window only hides the window. The app keeps running from the `TBP` menu-bar item, and `TBP` -> `Show Touch Bar Pet` forces the persistent Touch Bar item to reinstall and show again.
 
 ## Choosing Pets And Backgrounds
@@ -129,6 +131,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Stable per-behavior asset poses to avoid rapid walk/idle flicker
 - Procedural natural motion over bitmap sprites: bobbing, squash/stretch, hover, drift, and sway
 - Inline high-contrast Touch Bar stat badge so text stays visible before the Control Strip
+- Inline Touch Bar action chips so Feed, Play, and Rest work from the physical Touch Bar scene
 
 ## Development Log
 

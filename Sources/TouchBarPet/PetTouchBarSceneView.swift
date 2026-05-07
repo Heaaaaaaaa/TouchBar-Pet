@@ -1,15 +1,35 @@
 import AppKit
 
+enum PetTouchBarSceneAction {
+    case petTap
+    case feed
+    case play
+    case rest
+}
+
 @MainActor
-final class PetTouchBarSceneView: NSView {
+final class PetTouchBarSceneView: NSControl {
+    private struct SceneLayout {
+        let trackRect: NSRect
+        let motionRect: NSRect
+        let statsRect: NSRect
+        let feedRect: NSRect?
+        let playRect: NSRect?
+        let restRect: NSRect?
+    }
+
+    private let statsWidth: CGFloat = 122
+    private let actionWidth: CGFloat = 112
+    private let actionGap: CGFloat = 4
+
     var state: PetState = .initial {
         didSet {
-            setAccessibilityLabel(state.touchBarStatsLine)
+            setAccessibilityLabel("TouchBar Pet. \(state.touchBarStatsLine). Touch the pet scene to play, or use Feed, Play, and Rest inside the strip.")
             needsDisplay = true
         }
     }
 
-    var onTap: (() -> Void)?
+    var onAction: ((PetTouchBarSceneAction) -> Void)?
 
     override var isFlipped: Bool {
         true
@@ -30,36 +50,74 @@ final class PetTouchBarSceneView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        onTap?()
+        let point = convert(event.locationInWindow, from: nil)
+        onAction?(action(at: point))
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-
-        let statsWidth: CGFloat = 122
-        // Keep the status badge in the part of the physical Touch Bar that remains
-        // visible before the Control Strip compresses or clips trailing content.
-        let trackWidth = min(max(340, bounds.width - 4), 580)
-        let trackRect = NSRect(x: 0, y: 1, width: trackWidth, height: 28)
-        let motionRect = NSRect(
-            x: trackRect.minX,
-            y: trackRect.minY,
-            width: max(190, trackRect.width - statsWidth - 22),
-            height: trackRect.height
-        )
+        let sceneLayout = layout(in: bounds)
         let petScale = scaleForCurrentSpecies()
-        let petOrigin = petOrigin(in: motionRect, scale: petScale)
+        let petOrigin = petOrigin(in: sceneLayout.motionRect, scale: petScale)
 
-        drawTrack(in: trackRect)
-        drawInteractionCue(in: motionRect, petOrigin: petOrigin, scale: petScale)
-        drawPetShadow(in: trackRect, petOrigin: petOrigin, scale: petScale)
+        drawTrack(in: sceneLayout.trackRect)
+        drawInteractionCue(in: sceneLayout.motionRect, petOrigin: petOrigin, scale: petScale)
+        drawPetShadow(in: sceneLayout.trackRect, petOrigin: petOrigin, scale: petScale)
         PetPixelArt.drawPet(
             species: state.species,
             state: state,
             origin: petOrigin,
             scale: petScale
         )
-        drawStats(in: NSRect(x: trackRect.maxX - statsWidth - 8, y: 4, width: statsWidth, height: 22))
+        drawActionChips(sceneLayout)
+        drawStats(in: sceneLayout.statsRect)
+    }
+
+    private func layout(in bounds: NSRect) -> SceneLayout {
+        // Keep the status badge in the part of the physical Touch Bar that remains
+        // visible before the Control Strip compresses or clips trailing content.
+        let trackWidth = min(max(340, bounds.width - 4), 580)
+        let trackRect = NSRect(x: 0, y: 1, width: trackWidth, height: 28)
+        let statsRect = NSRect(x: trackRect.maxX - statsWidth - 8, y: 4, width: statsWidth, height: 22)
+        let availableForActions = trackRect.width - statsWidth - 232
+        let shouldShowActions = availableForActions >= actionWidth
+        let actionStartX = statsRect.minX - actionWidth - 10
+        let feedRect = shouldShowActions ? NSRect(x: actionStartX, y: 5, width: 34, height: 20) : nil
+        let playRect = shouldShowActions ? NSRect(x: actionStartX + 34 + actionGap, y: 5, width: 34, height: 20) : nil
+        let restRect = shouldShowActions ? NSRect(x: actionStartX + 68 + actionGap * 2, y: 5, width: 36, height: 20) : nil
+        let motionRightEdge = shouldShowActions ? actionStartX - 10 : statsRect.minX - 10
+        let motionRect = NSRect(
+            x: trackRect.minX,
+            y: trackRect.minY,
+            width: max(190, motionRightEdge - trackRect.minX),
+            height: trackRect.height
+        )
+
+        return SceneLayout(
+            trackRect: trackRect,
+            motionRect: motionRect,
+            statsRect: statsRect,
+            feedRect: feedRect,
+            playRect: playRect,
+            restRect: restRect
+        )
+    }
+
+    private func action(at point: NSPoint) -> PetTouchBarSceneAction {
+        let sceneLayout = layout(in: bounds)
+
+        if sceneLayout.feedRect?.contains(point) == true {
+            return .feed
+        }
+
+        if sceneLayout.playRect?.contains(point) == true {
+            return .play
+        }
+
+        if sceneLayout.restRect?.contains(point) == true {
+            return .rest
+        }
+
+        return .petTap
     }
 
     private func drawTrack(in rect: NSRect) {
@@ -426,6 +484,41 @@ final class PetTouchBarSceneView: NSView {
         NSRect(x: point.x + 3, y: point.y + 8, width: 2, height: 3).fill()
         NSRect(x: point.x - 3, y: point.y + 3, width: 3, height: 2).fill()
         NSRect(x: point.x + 8, y: point.y + 3, width: 3, height: 2).fill()
+    }
+
+    private func drawActionChips(_ sceneLayout: SceneLayout) {
+        drawActionChip(title: "Feed", rect: sceneLayout.feedRect)
+        drawActionChip(title: "Play", rect: sceneLayout.playRect)
+        drawActionChip(title: "Rest", rect: sceneLayout.restRect)
+    }
+
+    private func drawActionChip(title: String, rect: NSRect?) {
+        guard let rect else {
+            return
+        }
+
+        let path = NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6)
+        NSColor.black.withAlphaComponent(0.52).setFill()
+        path.fill()
+
+        NSColor.white.withAlphaComponent(0.42).setStroke()
+        path.lineWidth = 1
+        path.stroke()
+
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.monospacedSystemFont(ofSize: 9, weight: .heavy),
+            .foregroundColor: NSColor.white.withAlphaComponent(0.96),
+            .paragraphStyle: paragraph
+        ]
+
+        NSString(string: title).draw(
+            with: rect.insetBy(dx: 1, dy: 4),
+            options: [.usesLineFragmentOrigin],
+            attributes: attributes
+        )
     }
 
     private func drawTinyText(_ text: String, at point: NSPoint, size: CGFloat, color: NSColor) {

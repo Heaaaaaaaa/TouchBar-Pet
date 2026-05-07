@@ -604,3 +604,18 @@ What can be improved:
 
 What next:
 - Rebuild and retest the same video path: show pet, show window, close window, then click `Show Touch Bar Pet`.
+
+### 2026-05-07 - Inline Touch Bar Actions
+
+What was done:
+- Changed the drawn Touch Bar pet strip from a passive view into a touchable control.
+- Added inline `Feed`, `Play`, and `Rest` chips inside the Touch Bar scene so the physical Touch Bar can trigger care actions without opening the window.
+- Kept tapping the moving pet/scene area mapped to the species-specific pet tap action from `PET_DESIGN_PLAN.md`.
+- Removed the separate trailing Touch Bar action buttons from the default layout so the inline scene has enough visible width before the Control Strip.
+
+What can be improved:
+- Replace text chips with tiny pixel icons if the labels feel too busy on the physical Touch Bar.
+- Add pressed/highlight feedback on the chip that was touched.
+
+What next:
+- Rebuild the app bundle and physically test tap scene, Feed, Play, and Rest from the Touch Bar while the app window is hidden.

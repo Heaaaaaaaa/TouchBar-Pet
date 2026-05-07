@@ -125,20 +125,23 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     private func makeTouchBar() -> NSTouchBar {
         let touchBar = NSTouchBar()
         touchBar.delegate = self
-        touchBar.defaultItemIdentifiers = [
-            ItemID.scene,
-            .flexibleSpace,
-            ItemID.feed,
-            ItemID.play,
-            ItemID.rest
-        ]
+        touchBar.defaultItemIdentifiers = [ItemID.scene]
         touchBar.principalItemIdentifier = ItemID.scene
         return touchBar
     }
 
     private func configureSceneView(_ view: PetTouchBarSceneView) {
-        view.onTap = { [weak engine] in
-            engine?.tapPet()
+        view.onAction = { [weak engine] action in
+            switch action {
+            case .petTap:
+                engine?.tapPet()
+            case .feed:
+                engine?.feed()
+            case .play:
+                engine?.play()
+            case .rest:
+                engine?.rest()
+            }
         }
     }
 
