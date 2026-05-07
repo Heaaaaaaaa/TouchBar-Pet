@@ -48,21 +48,45 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         trayView.petState = state
     }
 
-    func installPersistentTouchBar() {
-        guard !isPersistentInstalled else {
-            presentPersistentTouchBar()
-            return
+    @discardableResult
+    func installPersistentTouchBar() -> Bool {
+        if !isPersistentInstalled {
+            isPersistentInstalled = PersistentTouchBarAPI.install(
+                view: trayView,
+                identifier: ItemID.persistent
+            )
         }
 
+        return presentPersistentTouchBar()
+    }
+
+    @discardableResult
+    func presentPersistentTouchBar() -> Bool {
+        if !isPersistentInstalled {
+            isPersistentInstalled = PersistentTouchBarAPI.install(
+                view: trayView,
+                identifier: ItemID.persistent
+            )
+        }
+
+        if PersistentTouchBarAPI.present(
+            touchBar: makeTouchBar(),
+            identifier: ItemID.persistent
+        ) {
+            return true
+        }
+
+        _ = PersistentTouchBarAPI.remove(identifier: ItemID.persistent)
         isPersistentInstalled = PersistentTouchBarAPI.install(
             view: trayView,
             identifier: ItemID.persistent
         )
-        presentPersistentTouchBar()
-    }
 
-    func presentPersistentTouchBar() {
-        _ = PersistentTouchBarAPI.present(
+        guard isPersistentInstalled else {
+            return false
+        }
+
+        return PersistentTouchBarAPI.present(
             touchBar: makeTouchBar(),
             identifier: ItemID.persistent
         )

@@ -574,3 +574,18 @@ What can be improved:
 
 What next:
 - Rebuild and test each pet's tap/feed/play/rest behavior on the physical Touch Bar.
+
+### 2026-05-07 - Window Close Recovery Fix
+
+What was done:
+- Changed the red window close button to hide the window instead of closing/releasing it.
+- Kept the `PetWindowController` window alive with `isReleasedWhenClosed = false`.
+- Added a window-hidden callback so closing or hiding the window immediately asks the persistent Touch Bar pet to reappear.
+- Made `PetTouchBarController.presentPersistentTouchBar()` recover from stale persistent Touch Bar state by removing and reinstalling the persistent tray item if the first present call fails.
+
+What can be improved:
+- Add a small debug log or menu item showing whether private Touch Bar present/install calls succeed.
+- Consider separating the window fallback Touch Bar object from the persistent Touch Bar object if future AppKit focus changes still disturb persistence.
+
+What next:
+- Rebuild the app bundle, open Show Window, press the red close button, then use `TBP` -> `Show Touch Bar Pet` to confirm the bar returns.

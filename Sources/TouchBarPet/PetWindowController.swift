@@ -1,9 +1,10 @@
 import AppKit
 
-final class PetWindowController: NSWindowController {
+final class PetWindowController: NSWindowController, NSWindowDelegate {
     private let engine: PetEngine
     private let rootView = TouchBarHostingView()
     private let summaryView = PetSummaryView()
+    var onWindowHidden: (() -> Void)?
 
     init(engine: PetEngine) {
         self.engine = engine
@@ -15,10 +16,12 @@ final class PetWindowController: NSWindowController {
             defer: false
         )
         window.title = "TouchBar Pet"
+        window.isReleasedWhenClosed = false
         window.center()
         window.contentView = rootView
 
         super.init(window: window)
+        window.delegate = self
         buildContent(in: window)
     }
 
@@ -34,6 +37,12 @@ final class PetWindowController: NSWindowController {
         rootView.touchBarProvider = { controller.makeTouchBar() }
         window?.touchBar = controller.makeTouchBar()
         window?.makeFirstResponder(rootView)
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        sender.orderOut(nil)
+        onWindowHidden?()
+        return false
     }
 
     private func buildContent(in window: NSWindow) {
