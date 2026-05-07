@@ -699,3 +699,19 @@ What can be improved:
 
 What next:
 - Decide whether to keep the current AppKit-drawn food or extract/crop this generated sheet into `Resources/PixelArt/Foods/`.
+
+### 2026-05-07 - Bitmap Food Asset Integration
+
+What was done:
+- Extended `Scripts/extract-pixel-sprites.py` to crop the generated food concept sheet into app-ready PNGs.
+- Added five food sprites under `Sources/TouchBarPet/Resources/PixelArt/Foods/`: cat fish, puffer pellets, ghost star, dragon meat, and plant water.
+- Added `PetBitmapFood.swift` so the Touch Bar scene loads bitmap food assets from the app bundle or source resources.
+- Updated `PetTouchBarSceneView.drawSnack(...)` to use the bitmap food first and keep the AppKit-drawn food as fallback.
+- Updated README, asset notes, and agent handoff notes with the new food asset path.
+
+What can be improved:
+- Create tighter transparent food sprites from a dedicated transparent/chroma-key sheet if any dark presentation pixels remain visible on the physical Touch Bar.
+- Add a short sparkle or pulse on the tapped food location to make touch feedback more obvious.
+
+What next:
+- Build the app bundle and physically test each species food on the Touch Bar backgrounds.

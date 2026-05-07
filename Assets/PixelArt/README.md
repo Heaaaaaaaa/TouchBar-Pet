@@ -37,7 +37,7 @@ The food concept sheet is also `1254 x 1254`, PNG, RGB.
 
 ## Intended Use
 
-Use this as the visual reference/source sheet for the next sprite implementation step. The current app still draws pixel pets in code; the next implementation can either:
+Use this as the visual reference/source sheet for app sprites. The current app loads extracted PNG assets first and keeps code-drawn artwork as a fallback. Future sprite work can either:
 
 - crop sprites from this sheet into separate PNG assets, or
 - manually translate the best sprite shapes into deterministic AppKit drawing code.
@@ -60,6 +60,10 @@ Generated background strip files live at:
 
 - `Sources/TouchBarPet/Resources/PixelArt/Backgrounds/`
 
+Generated food sprite files live at:
+
+- `Sources/TouchBarPet/Resources/PixelArt/Foods/`
+
 Regenerate them with:
 
 ```sh
@@ -77,6 +81,8 @@ The extraction script crops 15 pet poses:
 The Swift renderer loads these PNGs first and falls back to code-drawn sprites if a file is missing.
 
 The background renderer loads the extracted aquarium, night, grass, and cozy PNG strips first and falls back to AppKit-drawn background details if a file is missing.
+
+The food renderer loads the extracted cat fish, puffer pellets, ghost star, dragon snack, and plant water PNGs first and falls back to AppKit-drawn food if a file is missing.
 
 Note: the ghost crop rectangles are intentionally tight vertically because the generated sheet places the dragon row close underneath. Looser ghost crops can pull dragon pixels into the extracted ghost sprites.
 

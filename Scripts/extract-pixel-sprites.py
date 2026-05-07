@@ -8,8 +8,10 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SHEET = ROOT / "Assets" / "PixelArt" / "pet-background-concept-sheet.png"
+FOOD_SHEET = ROOT / "Assets" / "PixelArt" / "food-concept-sheet.png"
 OUT_DIR = ROOT / "Sources" / "TouchBarPet" / "Resources" / "PixelArt" / "Sprites"
 BACKGROUND_OUT_DIR = ROOT / "Sources" / "TouchBarPet" / "Resources" / "PixelArt" / "Backgrounds"
+FOOD_OUT_DIR = ROOT / "Sources" / "TouchBarPet" / "Resources" / "PixelArt" / "Foods"
 
 # Crops are from the generated concept sheet. They intentionally keep a little
 # breathing room so the flood-fill background removal can find the dark canvas.
@@ -36,6 +38,14 @@ BACKGROUNDS = {
     "night": (30, 928, 1194, 82),
     "grass": (30, 1027, 1194, 82),
     "cozy": (30, 1127, 1194, 82),
+}
+
+FOODS = {
+    "cat-fish": (54, 570, 205, 150),
+    "puffer-pellets": (300, 528, 215, 190),
+    "ghost-star": (545, 512, 210, 210),
+    "dragon-meat": (780, 522, 220, 195),
+    "plant-water": (1010, 535, 210, 180),
 }
 
 
@@ -105,6 +115,7 @@ def main():
     source = Image.open(SHEET)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     BACKGROUND_OUT_DIR.mkdir(parents=True, exist_ok=True)
+    FOOD_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for name, crop in SPRITES.items():
         x, y, width, height = crop
@@ -117,8 +128,19 @@ def main():
         background = source.crop((x, y, x + width, y + height))
         background.save(BACKGROUND_OUT_DIR / f"{name}.png")
 
+    if FOOD_SHEET.exists():
+        food_source = Image.open(FOOD_SHEET)
+
+        for name, crop in FOODS.items():
+            x, y, width, height = crop
+            food = food_source.crop((x, y, x + width, y + height))
+            food = remove_connected_background(food, threshold=32)
+            food.save(FOOD_OUT_DIR / f"{name}.png")
+
     print(f"Extracted {len(SPRITES)} sprites into {OUT_DIR}")
     print(f"Extracted {len(BACKGROUNDS)} backgrounds into {BACKGROUND_OUT_DIR}")
+    if FOOD_SHEET.exists():
+        print(f"Extracted {len(FOODS)} foods into {FOOD_OUT_DIR}")
 
 
 if __name__ == "__main__":

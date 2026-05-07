@@ -42,9 +42,11 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
 - `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
 - `Sources/TouchBarPet/PetBitmapBackground.swift`: direct PNG background-strip loader/renderer for extracted concept-sheet Touch Bar backgrounds.
+- `Sources/TouchBarPet/PetBitmapFood.swift`: direct PNG food loader/renderer for extracted concept-sheet food sprites.
 - `Sources/TouchBarPet/Resources/PixelArt/Sprites/`: extracted PNG pet poses used by the app.
 - `Sources/TouchBarPet/Resources/PixelArt/Backgrounds/`: extracted PNG Touch Bar background strips used by the app.
-- `Scripts/extract-pixel-sprites.py`: regenerates the PNG sprites from `Assets/PixelArt/pet-background-concept-sheet.png`.
+- `Sources/TouchBarPet/Resources/PixelArt/Foods/`: extracted PNG food sprites used by the app.
+- `Scripts/extract-pixel-sprites.py`: regenerates pet, background, and food PNG assets from the generated concept sheets.
 - Ghost crop rectangles are intentionally shorter than the full row so the extracted ghost sprites do not include dragon-row pixels underneath.
 
 ## Architecture Notes
@@ -71,6 +73,7 @@ open "Build/TouchBar Pet.app"
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.
 - `PetPixelArt.drawPet(...)` first tries `PetBitmapArt.drawPet(...)`; the code-drawn sprites are now the fallback path.
 - `PetTouchBarSceneView.drawTrack(...)` first tries `PetBitmapBackground.drawBackground(...)`; the old AppKit-drawn background details are now the fallback path.
+- `PetTouchBarSceneView.drawSnack(...)` first tries `PetBitmapFood.drawFood(...)`; the older AppKit-drawn snacks are now the fallback path.
 - `PetBitmapArt` uses stable per-species drawing slots so bitmap frames with different crop sizes do not make the pet jump during movement.
 - Do not alternate incompatible bitmap poses frame-by-frame; Cat/Ghost/Dragon now keep one moving pose until the behavior mode changes.
 - `PetBitmapArt` also applies procedural sprite motion over the bitmap poses: bobbing, squash/stretch, drift, hover, and plant sway. This is the current replacement for true same-canvas walk frames.
@@ -78,8 +81,8 @@ open "Build/TouchBar Pet.app"
 - `PetState.touchBarStatsLine` uses compact colon labels like `G:8 H:2 M:7` because full words were clipped by the Touch Bar Control Strip.
 - `PetTouchBarSceneView` draws the status as a darker in-scene badge inside a capped scene strip. Do not move it back into a separate trailing Touch Bar item unless there is a better Control Strip-safe layout.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
-- `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
-- Touch Bar food is code-drawn per species in `PetTouchBarSceneView.drawSnack(...)`: cat fish, puffer pellets, ghost soul-star, dragon flame/meat snack, and plant water drops.
+- `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws asset snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
+- Touch Bar food comes from `Resources/PixelArt/Foods/`: cat fish, puffer pellets, ghost star, dragon meat, and plant water. If a PNG is missing, the code-drawn food fallback still appears.
 - Feed, Play, and Rest are available in the app window and the `TBP` menu. In the expanded Touch Bar scene, avoid visible action buttons: empty-space taps place food, pet taps play, and status-badge taps rest.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.
 

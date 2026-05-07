@@ -131,6 +131,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Refined outlined pixel sprites for better readability on the physical Touch Bar
 - Direct bitmap sprite rendering from extracted generated asset-sheet pets
 - Direct bitmap background rendering from extracted generated asset-sheet Touch Bar strips
+- Direct bitmap food rendering from extracted generated asset-sheet food sprites
 - Stable bitmap sprite slots to avoid movement jitter between animation frames
 - Stable per-behavior asset poses to avoid rapid walk/idle flicker
 - Procedural natural motion over bitmap sprites: bobbing, squash/stretch, hover, drift, and sway

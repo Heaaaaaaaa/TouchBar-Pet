@@ -420,6 +420,11 @@ final class PetTouchBarSceneView: NSView {
     private func drawSnack(in rect: NSRect) {
         let snackCenterX = sceneX(for: petState.snackPositionX, in: rect, scale: scaleForCurrentSpecies())
         let snackCenter = NSPoint(x: snackCenterX, y: rect.midY)
+
+        if PetBitmapFood.drawFood(species: petState.species, centeredAt: snackCenter) {
+            return
+        }
+
         drawSnackShadow(center: snackCenter)
 
         switch petState.species {
