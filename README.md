@@ -47,7 +47,7 @@ If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
 The app runs as a menu-bar/background app. Use the `TBP` menu-bar item for Show Window, Hide Window, Feed, Play, Rest, and Show Touch Bar Pet.
 
-The red close button on the small window only hides the window. The app keeps running from the `TBP` menu-bar item, and the Touch Bar pet can be shown again with `TBP` -> `Show Touch Bar Pet`.
+The red close button on the small window only hides the window. The app keeps running from the `TBP` menu-bar item, and `TBP` -> `Show Touch Bar Pet` forces the persistent Touch Bar item to reinstall and show again.
 
 ## Choosing Pets And Backgrounds
 

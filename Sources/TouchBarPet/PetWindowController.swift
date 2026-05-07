@@ -34,8 +34,8 @@ final class PetWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func installTouchBar(_ controller: PetTouchBarController) {
-        rootView.touchBarProvider = { controller.makeTouchBar() }
-        window?.touchBar = controller.makeTouchBar()
+        rootView.touchBarProvider = { controller.makeWindowTouchBar() }
+        window?.touchBar = controller.makeWindowTouchBar()
         window?.makeFirstResponder(rootView)
     }
 

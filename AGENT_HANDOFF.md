@@ -55,7 +55,8 @@ open "Build/TouchBar Pet.app"
 - The persistent Control Strip item is intentionally compact; tapping it or choosing `TBP` -> `Show Touch Bar Pet` should present the full modal Touch Bar.
 - Auto-expand was removed because it interfered with other Touch Bar tools. Expansion is manual via the small tray pet or `TBP` -> `Show Touch Bar Pet`.
 - The main window red close button is intentionally converted into hide/orderOut via `windowShouldClose`; do not let it release the window because that can detach AppKit Touch Bar state and break persistent presentation.
-- `PetTouchBarController.presentPersistentTouchBar()` retries by removing/reinstalling the persistent tray item if the private present call fails.
+- `PetTouchBarController` intentionally uses separate persistent/window `NSTouchBar` objects and separate persistent/window scene views. Do not share the same scene view between the window fallback and persistent bar.
+- `PetTouchBarController.presentPersistentTouchBar(forceReinstall:)` retries by removing/reinstalling the persistent tray item and creating fresh persistent `NSTouchBar`/scene-view objects if the private present call fails. Menu-driven Show/Hide Window recovery uses `forceReinstall: true`.
 - `TBP` menu now has `Pet` and `Background` submenus. Species/background choices are saved in `PetState`.
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.

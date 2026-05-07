@@ -190,7 +190,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let controller = PetWindowController(engine: engine)
         controller.onWindowHidden = { [weak self] in
-            self?.touchBarController.presentPersistentTouchBar()
+            self?.touchBarController.presentPersistentTouchBar(forceReinstall: true)
         }
         controller.installTouchBar(touchBarController)
         controller.render(engine.state)
@@ -207,11 +207,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func hideWindow() {
         windowController?.window?.orderOut(nil)
-        touchBarController.presentPersistentTouchBar()
+        touchBarController.presentPersistentTouchBar(forceReinstall: true)
     }
 
     @objc private func showPersistentTouchBar() {
-        touchBarController.presentPersistentTouchBar()
+        touchBarController.presentPersistentTouchBar(forceReinstall: true)
     }
 
     private func scheduleSave() {

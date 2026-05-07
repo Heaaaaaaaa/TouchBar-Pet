@@ -11,40 +11,32 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     }
 
     private let engine: PetEngine
-    private let sceneView = PetTouchBarSceneView()
+    private var persistentSceneView = PetTouchBarSceneView()
+    private let windowSceneView = PetTouchBarSceneView()
     private let trayView = PetTouchBarTrayView()
+    private var latestState = PetState.initial
     private var isPersistentInstalled = false
-    private lazy var touchBar: NSTouchBar = {
-        let touchBar = NSTouchBar()
-        touchBar.delegate = self
-        touchBar.defaultItemIdentifiers = [
-            ItemID.scene,
-            .flexibleSpace,
-            ItemID.feed,
-            ItemID.play,
-            ItemID.rest
-        ]
-        touchBar.principalItemIdentifier = ItemID.scene
-        return touchBar
-    }()
+    private lazy var persistentTouchBar = makeTouchBar()
+    private lazy var windowTouchBar = makeTouchBar()
 
     init(engine: PetEngine) {
         self.engine = engine
         super.init()
-        sceneView.onTap = { [weak engine] in
-            engine?.tapPet()
-        }
+        configureSceneView(persistentSceneView)
+        configureSceneView(windowSceneView)
         trayView.onTap = { [weak self] in
             self?.presentPersistentTouchBar()
         }
     }
 
-    func makeTouchBar() -> NSTouchBar {
-        return touchBar
+    func makeWindowTouchBar() -> NSTouchBar {
+        return windowTouchBar
     }
 
     func render(_ state: PetState) {
-        sceneView.state = state
+        latestState = state
+        persistentSceneView.state = state
+        windowSceneView.state = state
         trayView.petState = state
     }
 
@@ -61,7 +53,11 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     }
 
     @discardableResult
-    func presentPersistentTouchBar() -> Bool {
+    func presentPersistentTouchBar(forceReinstall: Bool = false) -> Bool {
+        if forceReinstall {
+            resetPersistentTouchBarState()
+        }
+
         if !isPersistentInstalled {
             isPersistentInstalled = PersistentTouchBarAPI.install(
                 view: trayView,
@@ -70,13 +66,13 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         }
 
         if PersistentTouchBarAPI.present(
-            touchBar: makeTouchBar(),
+            touchBar: persistentTouchBar,
             identifier: ItemID.persistent
         ) {
             return true
         }
 
-        _ = PersistentTouchBarAPI.remove(identifier: ItemID.persistent)
+        resetPersistentTouchBarState()
         isPersistentInstalled = PersistentTouchBarAPI.install(
             view: trayView,
             identifier: ItemID.persistent
@@ -87,7 +83,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         }
 
         return PersistentTouchBarAPI.present(
-            touchBar: makeTouchBar(),
+            touchBar: persistentTouchBar,
             identifier: ItemID.persistent
         )
     }
@@ -97,6 +93,15 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         isPersistentInstalled = false
     }
 
+    private func resetPersistentTouchBarState() {
+        _ = PersistentTouchBarAPI.remove(identifier: ItemID.persistent)
+        isPersistentInstalled = false
+        persistentSceneView = PetTouchBarSceneView()
+        configureSceneView(persistentSceneView)
+        persistentSceneView.state = latestState
+        persistentTouchBar = makeTouchBar()
+    }
+
     func touchBar(
         _ touchBar: NSTouchBar,
         makeItemForIdentifier identifier: NSTouchBarItem.Identifier
@@ -104,7 +109,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         switch identifier {
         case ItemID.scene:
             let item = NSCustomTouchBarItem(identifier: identifier)
-            item.view = sceneView
+            item.view = touchBar === persistentTouchBar ? persistentSceneView : windowSceneView
             return item
         case ItemID.feed:
             return buttonItem(identifier: identifier, title: "Feed", action: #selector(feed))
@@ -114,6 +119,26 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
             return buttonItem(identifier: identifier, title: "Rest", action: #selector(rest))
         default:
             return nil
+        }
+    }
+
+    private func makeTouchBar() -> NSTouchBar {
+        let touchBar = NSTouchBar()
+        touchBar.delegate = self
+        touchBar.defaultItemIdentifiers = [
+            ItemID.scene,
+            .flexibleSpace,
+            ItemID.feed,
+            ItemID.play,
+            ItemID.rest
+        ]
+        touchBar.principalItemIdentifier = ItemID.scene
+        return touchBar
+    }
+
+    private func configureSceneView(_ view: PetTouchBarSceneView) {
+        view.onTap = { [weak engine] in
+            engine?.tapPet()
         }
     }
 

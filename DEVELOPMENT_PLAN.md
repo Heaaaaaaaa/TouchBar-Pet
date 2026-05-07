@@ -589,3 +589,18 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle, open Show Window, press the red close button, then use `TBP` -> `Show Touch Bar Pet` to confirm the bar returns.
+
+### 2026-05-07 - Separate Persistent And Window Touch Bars
+
+What was done:
+- Inspected the physical Touch Bar video and confirmed the failure path: the pet is visible, the app window is shown/closed, then `Show Touch Bar Pet` leaves the Touch Bar on system controls.
+- Split the persistent Touch Bar and the window fallback Touch Bar into separate `NSTouchBar` instances.
+- Split the scene view into separate persistent/window scene views so AppKit window focus/close behavior cannot detach the persistent scene view.
+- Changed `TBP` -> `Show Touch Bar Pet`, Hide Window, and red-close recovery to force-remove/reinstall the persistent tray item and create fresh persistent `NSTouchBar` and scene-view objects before presenting.
+
+What can be improved:
+- Add a visible debug/status menu item for the private install and present return values.
+- If macOS still refuses the private persistent bar after window focus changes, add a stronger reset action that recreates the tray view and private API bridge state too.
+
+What next:
+- Rebuild and retest the same video path: show pet, show window, close window, then click `Show Touch Bar Pet`.
