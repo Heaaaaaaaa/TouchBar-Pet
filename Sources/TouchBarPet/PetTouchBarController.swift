@@ -32,7 +32,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         self.engine = engine
         super.init()
         sceneView.onTap = { [weak engine] in
-            engine?.play()
+            engine?.tapPet()
         }
         trayView.onTap = { [weak self] in
             self?.presentPersistentTouchBar()

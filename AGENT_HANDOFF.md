@@ -58,9 +58,10 @@ open "Build/TouchBar Pet.app"
 - `PetWindowController.installTouchBar(_:)` sets both `window.touchBar` and the root view responder provider.
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - `PetState` now stores `PetBehaviorMode`, direction, normalized Touch Bar position, velocity, and action countdown so movement survives redraws/saves.
-- `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions.
+- `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions. Species-specific movement/touch behavior is centralized in compact `PetProfile` and `PetActionEffect` helpers inside `PetEngine.swift`.
+- `PetTouchBarController` scene taps call `engine.tapPet()` instead of generic Play, so Tap can mean cat jump, puffer puff, ghost boo, dragon fire, or plant sun sparkle.
 - The app loop calls `PetEngine.tick(elapsed:)` at roughly 18 FPS. `PetEngine` separately accumulates care/stat ticks every 3.0 seconds so animation is smooth without making hunger/energy change too fast.
-- Automatic sleep uses hysteresis: non-plant pets enter sleep at energy `18` or below, then stay asleep until energy reaches `58`. This avoids rapid walk/sleep flicker.
+- Automatic sleep uses species-specific hysteresis from `PetProfile`; pets enter sleep at low energy and stay asleep until the species wake threshold is reached. This avoids rapid walk/sleep flicker.
 - `AppDelegate` throttles state saves to every 6 seconds instead of saving on every animation frame.
 - `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.

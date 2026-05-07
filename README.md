@@ -62,6 +62,8 @@ The small badge inside the Touch Bar scene shows three short stats. Each number 
 
 Important: `H` means hunger, so a higher `H` means the pet is more hungry and should be fed. Most other stats are better when higher.
 
+The main window shows the full four best stats for each pet. The Touch Bar badge shows the most important three so it stays readable in the narrow strip.
+
 Species badges:
 
 - Cat: `P` = pet health, `H` = hunger, `S` = social mood
@@ -74,9 +76,14 @@ Example: `P:0 H:10 C:0` means the puffer fish has very low health, is very hungr
 
 ## Pet Behavior Logic
 
-Pets normally move for a while, pause briefly, and keep using energy while awake. When energy reaches `18` or lower, the pet goes to sleep. It stays asleep until energy recovers to `58`, then wakes up and starts moving again.
+Pets normally move for a while, pause briefly, and keep using energy while awake. Sleep timing is species-specific: high-energy pets like dragons tire sooner, while ghosts and puffer fish float for longer. A sleeping pet now stays asleep until it has recovered enough energy, then wakes and starts moving again.
 
-Feed lowers hunger, Play increases mood but uses energy, and Rest forces a short nap.
+Touch actions are also species-specific:
+
+- Tap the scene: Cat jumps, Puffer Fish puffs, Ghost says `boo`, Dragon breathes fire, Plant Buddy opens toward sun.
+- Feed: shows the right snack and lowers hunger/water need.
+- Play: increases mood and triggers faster or happier movement.
+- Rest: starts a nap or calm rest state.
 
 ## Xcode Setup
 

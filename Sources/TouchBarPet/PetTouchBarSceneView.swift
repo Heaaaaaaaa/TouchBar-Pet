@@ -201,7 +201,7 @@ final class PetTouchBarSceneView: NSView {
         case .cat:
             return 2.75
         case .pufferFish:
-            return state.behaviorMode == .special || state.hunger > 72 ? 2.55 : 3.0
+            return state.behaviorMode != .sleep && (state.behaviorMode == .special || state.hunger > 72) ? 2.55 : 3.0
         case .ghost:
             return 2.95
         case .dragon:
@@ -249,7 +249,7 @@ final class PetTouchBarSceneView: NSView {
         case .cat:
             return 6.0 * scale
         case .pufferFish:
-            return (state.behaviorMode == .special || state.hunger > 72 ? 7.0 : 5.0) * scale
+            return (state.behaviorMode != .sleep && (state.behaviorMode == .special || state.hunger > 72) ? 7.0 : 5.0) * scale
         case .ghost:
             return 6.0 * scale
         case .dragon:
@@ -266,6 +266,10 @@ final class PetTouchBarSceneView: NSView {
         case .cat:
             return state.behaviorMode == .play ? -5 : 0
         case .pufferFish:
+            if state.behaviorMode == .sleep {
+                return CGFloat(sin(frame * 0.28) * 0.6)
+            }
+
             return CGFloat(sin(frame * 0.9) * 2.2)
         case .ghost:
             let float = CGFloat(sin(frame * 0.7) * 2.7)
@@ -282,6 +286,10 @@ final class PetTouchBarSceneView: NSView {
             drawSnack(in: rect)
         }
 
+        if state.behaviorMode == .play {
+            drawPlayCue(in: rect, petOrigin: petOrigin, scale: scale)
+        }
+
         if state.behaviorMode == .sleep {
             drawTinyText(
                 "z",
@@ -291,9 +299,8 @@ final class PetTouchBarSceneView: NSView {
             )
         }
 
-        if state.behaviorMode == .special && state.species == .ghost {
-            drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
-            drawSparkle(at: NSPoint(x: petOrigin.x + 28, y: rect.minY + 5))
+        if state.behaviorMode == .special {
+            drawSpecialCue(in: rect, petOrigin: petOrigin, scale: scale)
         }
     }
 
@@ -323,6 +330,51 @@ final class PetTouchBarSceneView: NSView {
         }
     }
 
+    private func drawPlayCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
+        switch state.species {
+        case .cat:
+            let toyX = rect.minX + CGFloat(snackPositionX(for: state.species)) * rect.width
+            NSColor(calibratedRed: 1.0, green: 0.32, blue: 0.58, alpha: 1.0).setFill()
+            NSBezierPath(ovalIn: NSRect(x: toyX, y: rect.midY - 2, width: 6, height: 6)).fill()
+            NSColor.white.withAlphaComponent(0.8).setFill()
+            NSRect(x: toyX + 2, y: rect.midY - 5, width: 2, height: 3).fill()
+        case .pufferFish:
+            drawBubble(at: NSPoint(x: petOrigin.x - 7, y: rect.minY + 7), size: 4)
+            drawBubble(at: NSPoint(x: petOrigin.x - 14, y: rect.minY + 14), size: 3)
+        case .ghost:
+            drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
+            drawSparkle(at: NSPoint(x: petOrigin.x + 30, y: rect.minY + 5))
+        case .dragon:
+            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) - 2, y: rect.minY + 11))
+        case .plantBuddy:
+            drawSunSpark(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 5, y: rect.minY + 6))
+            drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 10))
+        }
+    }
+
+    private func drawSpecialCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
+        switch state.species {
+        case .cat:
+            drawPlayCue(in: rect, petOrigin: petOrigin, scale: scale)
+        case .pufferFish:
+            drawBubble(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 6), size: 5)
+            drawBubble(at: NSPoint(x: petOrigin.x + 28, y: rect.minY + 8), size: 4)
+            drawBubble(at: NSPoint(x: petOrigin.x + 12, y: rect.minY + 3), size: 3)
+        case .ghost:
+            drawTinyText(
+                "boo",
+                at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 3, y: rect.minY + 5),
+                size: 10,
+                color: NSColor(calibratedRed: 0.78, green: 0.92, blue: 1.0, alpha: 0.98)
+            )
+            drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
+        case .dragon:
+            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 1, y: rect.minY + 9))
+        case .plantBuddy:
+            drawSunSpark(at: NSPoint(x: petOrigin.x + 24, y: rect.minY + 5))
+        }
+    }
+
     private func drawPetShadow(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
         guard state.species != .ghost else {
             return
@@ -348,6 +400,32 @@ final class PetTouchBarSceneView: NSView {
         NSColor(calibratedRed: 1.0, green: 0.90, blue: 0.32, alpha: 1.0).setFill()
         NSRect(x: point.x + 2, y: point.y, width: 2, height: 6).fill()
         NSRect(x: point.x, y: point.y + 2, width: 6, height: 2).fill()
+    }
+
+    private func drawBubble(at point: NSPoint, size: CGFloat) {
+        NSColor.white.withAlphaComponent(0.85).setStroke()
+        let bubble = NSBezierPath(ovalIn: NSRect(x: point.x, y: point.y, width: size, height: size))
+        bubble.lineWidth = 1
+        bubble.stroke()
+    }
+
+    private func drawFlame(at point: NSPoint) {
+        NSColor(calibratedRed: 1.0, green: 0.30, blue: 0.06, alpha: 0.95).setFill()
+        NSRect(x: point.x, y: point.y + 2, width: 7, height: 5).fill()
+        NSColor(calibratedRed: 1.0, green: 0.82, blue: 0.18, alpha: 0.98).setFill()
+        NSRect(x: point.x + 2, y: point.y, width: 4, height: 7).fill()
+        NSColor(calibratedRed: 1.0, green: 0.95, blue: 0.52, alpha: 1.0).setFill()
+        NSRect(x: point.x + 3, y: point.y + 2, width: 2, height: 3).fill()
+    }
+
+    private func drawSunSpark(at point: NSPoint) {
+        NSColor(calibratedRed: 1.0, green: 0.88, blue: 0.22, alpha: 0.98).setFill()
+        NSBezierPath(ovalIn: NSRect(x: point.x, y: point.y, width: 8, height: 8)).fill()
+        NSColor(calibratedRed: 1.0, green: 0.96, blue: 0.55, alpha: 0.95).setFill()
+        NSRect(x: point.x + 3, y: point.y - 3, width: 2, height: 3).fill()
+        NSRect(x: point.x + 3, y: point.y + 8, width: 2, height: 3).fill()
+        NSRect(x: point.x - 3, y: point.y + 3, width: 3, height: 2).fill()
+        NSRect(x: point.x + 8, y: point.y + 3, width: 3, height: 2).fill()
     }
 
     private func drawTinyText(_ text: String, at point: NSPoint, size: CGFloat, color: NSColor) {

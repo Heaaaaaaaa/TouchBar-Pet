@@ -129,12 +129,12 @@ struct PetState: Codable, Equatable {
     }
 
     var statusLine: String {
-        "\(species.displayName)  Hunger \(hunger)  Mood \(mood)  Energy \(energy)"
+        speciesStatsLine
     }
 
     var careHint: String {
         if hunger >= 75 {
-            return "Hungry: feed me"
+            return "\(species.primaryNeedName): feed me"
         }
 
         if energy <= 25 {
@@ -146,6 +146,21 @@ struct PetState: Codable, Equatable {
         }
 
         return "Happy and cozy"
+    }
+
+    var speciesStatsLine: String {
+        switch species {
+        case .cat:
+            return "Health \(healthLevel)  Hunger \(hungerLevel)  Social \(socialLevel)  Energy \(energyLevel)"
+        case .pufferFish:
+            return "Health \(healthLevel)  Hunger \(hungerLevel)  Calm \(calmLevel)  Energy \(energyLevel)"
+        case .ghost:
+            return "Glow \(glowLevel)  Hunger \(hungerLevel)  Mood \(socialLevel)  Energy \(energyLevel)"
+        case .dragon:
+            return "Health \(healthLevel)  Hunger \(hungerLevel)  Fire \(fireLevel)  Energy \(energyLevel)"
+        case .plantBuddy:
+            return "Health \(healthLevel)  Water \(waterLevel)  Sun \(sunLevel)  Growth \(growthLevel)"
+        }
     }
 
     var touchBarStatsLine: String {
@@ -170,6 +185,10 @@ struct PetState: Codable, Equatable {
 
     private var hungerLevel: Int {
         (hunger / 10).clamped(to: 0...10)
+    }
+
+    private var energyLevel: Int {
+        (energy / 10).clamped(to: 0...10)
     }
 
     private var socialLevel: Int {
@@ -258,6 +277,23 @@ struct PetState: Codable, Equatable {
         positionX = try container.decodeIfPresent(Double.self, forKey: .positionX) ?? 0.42
         velocityX = try container.decodeIfPresent(Double.self, forKey: .velocityX) ?? 0.018
         actionTicksRemaining = try container.decodeIfPresent(Int.self, forKey: .actionTicksRemaining) ?? 0
+    }
+}
+
+private extension PetSpecies {
+    var primaryNeedName: String {
+        switch self {
+        case .plantBuddy:
+            return "Needs water"
+        case .pufferFish:
+            return "Hungry for pellets"
+        case .ghost:
+            return "Hungry for stars"
+        case .dragon:
+            return "Hungry for a snack"
+        case .cat:
+            return "Hungry"
+        }
     }
 }
 

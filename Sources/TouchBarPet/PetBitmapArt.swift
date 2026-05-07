@@ -52,6 +52,10 @@ enum PetBitmapArt {
 
             return "cat-idle"
         case .pufferFish:
+            if state.behaviorMode == .sleep {
+                return "puffer-idle"
+            }
+
             if state.behaviorMode == .special || state.hunger > 72 {
                 return "puffer-puff"
             }
@@ -82,6 +86,10 @@ enum PetBitmapArt {
 
             return "dragon-idle"
         case .plantBuddy:
+            if state.behaviorMode == .sleep {
+                return "plant-sprout"
+            }
+
             if state.hunger > 72 || state.energy < 22 {
                 return "plant-thirsty"
             }
@@ -218,6 +226,15 @@ enum PetBitmapArt {
     }
 
     private static func pufferMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        if state.behaviorMode == .sleep {
+            let drift = CGFloat(sin(frame * .pi / 18))
+            return SpriteMotion(
+                offsetY: -drift * 0.16 * scale,
+                scaleX: 1.0 + drift * 0.004,
+                opacity: 0.82
+            )
+        }
+
         if state.behaviorMode == .special || state.hunger > 72 {
             let puff = CGFloat(sin(frame * .pi / 8))
             return SpriteMotion(

@@ -3,7 +3,7 @@ import AppKit
 final class PetSummaryView: NSView {
     var state: PetState = .initial {
         didSet {
-            setAccessibilityLabel("\(state.face) \(state.statusLine) \(state.careHint)")
+            setAccessibilityLabel("\(state.face) \(state.species.displayName) \(state.statusLine) \(state.careHint)")
             needsDisplay = true
         }
     }

@@ -553,3 +553,24 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and watch a longer physical Touch Bar test to tune the exact sleep timing.
+
+### 2026-05-07 - Compact Species Logic Pass
+
+What was done:
+- Refactored pet behavior into compact species profiles for movement speed, default position, snack position, activity cycle, sleep threshold, wake threshold, and energy drain/recovery.
+- Added species-specific touch effects for Tap, Feed, Play, and Rest.
+- Changed scene tap from generic Play to a dedicated pet tap action:
+  - Cat jumps toward a toy dot.
+  - Puffer Fish puffs and shows bubbles.
+  - Ghost says `boo` and sparkles.
+  - Dragon breathes fire.
+  - Plant Buddy opens toward sun/sparkles.
+- Added species-specific action cues in the Touch Bar scene.
+- Updated the main-window status line to use the four best stats from `PET_DESIGN_PLAN.md`, while keeping the Touch Bar badge to the most readable three stats.
+
+What can be improved:
+- Add true additional sprite frames for cat stretch, fish loop, ghost shy/hide, dragon wing flap, and plant closed-flower rest.
+- Add a small reset/debug action for testing all stats without waiting.
+
+What next:
+- Rebuild and test each pet's tap/feed/play/rest behavior on the physical Touch Bar.

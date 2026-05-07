@@ -259,6 +259,22 @@ After Cat works, use Puffer Fish to prove that the animation system supports uni
 
 ## Generated Concept Asset
 
+## Implementation Status
+
+Current implementation uses the plan as the behavior target:
+
+- Shared movement state exists: `positionX`, `velocityX`, `animationFrame`, `behaviorMode`, `direction`, and action countdown.
+- Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy are selectable.
+- Touch actions are species-specific:
+  - Tap: jump, puff, boo, fire, or sun sparkle.
+  - Feed: shows a themed snack and lowers hunger/water need.
+  - Play: happier/faster movement or flowering.
+  - Rest: sleep/calm rest.
+- Main-window stats use the four best stats from this plan.
+- Touch Bar badge stays compact with the top three stats so it remains readable beside the Control Strip.
+
+Next improvement is to add true extra sprite frames for stretch, loop, shy/hide, wing flap, and closed-flower rest.
+
 The first generated pixel-art reference sheet is saved at:
 
 - `Assets/PixelArt/pet-background-concept-sheet.png`

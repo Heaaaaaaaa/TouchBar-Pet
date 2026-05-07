@@ -2,10 +2,6 @@ import Foundation
 
 final class PetEngine {
     private let careTickInterval: TimeInterval = 3.0
-    private let sleepEnergyThreshold = 18
-    private let wakeEnergyThreshold = 58
-    private let behaviorCycleFrames = 360
-    private let activeWalkFrames = 250
     private var careAccumulator: TimeInterval = 0
 
     private(set) var state: PetState
@@ -21,34 +17,19 @@ final class PetEngine {
     }
 
     func feed() {
-        state.hunger = (state.hunger - 25).clamped(to: 0...100)
-        state.mood = (state.mood + 5).clamped(to: 0...100)
-        state.energy = (state.energy - 2).clamped(to: 0...100)
-        state.behaviorMode = .eat
-        state.actionTicksRemaining = 32
-        state.lastUpdated = Date()
-        publish()
+        applyAction(.feed)
     }
 
     func play() {
-        state.hunger = (state.hunger + 10).clamped(to: 0...100)
-        state.mood = (state.mood + 22).clamped(to: 0...100)
-        state.energy = (state.energy - 12).clamped(to: 0...100)
-        state.behaviorMode = state.species.specialPlayMode
-        state.actionTicksRemaining = 32
-        state.lastUpdated = Date()
-        publish()
+        applyAction(.play)
     }
 
     func rest() {
-        state.hunger = (state.hunger + 4).clamped(to: 0...100)
-        state.mood = (state.mood + 4).clamped(to: 0...100)
-        state.energy = (state.energy + 24).clamped(to: 0...100)
-        state.behaviorMode = .sleep
-        state.velocityX = 0
-        state.actionTicksRemaining = 44
-        state.lastUpdated = Date()
-        publish()
+        applyAction(.rest)
+    }
+
+    func tapPet() {
+        applyAction(.tap)
     }
 
     func selectSpecies(_ species: PetSpecies) {
@@ -96,16 +77,20 @@ final class PetEngine {
     private func applyCareTick() {
         state.hunger = (state.hunger + 1).clamped(to: 0...100)
 
+        let profile = state.species.profile
+
         switch state.behaviorMode {
         case .sleep:
-            state.energy = (state.energy + 2).clamped(to: 0...100)
+            state.energy = (state.energy + profile.sleepEnergyRecovery).clamped(to: 0...100)
         case .play, .special:
-            state.energy = (state.energy - 2).clamped(to: 0...100)
+            state.energy = (state.energy - profile.specialEnergyDrain).clamped(to: 0...100)
         case .walk, .eat:
-            state.energy = (state.energy - 1).clamped(to: 0...100)
+            state.energy = (state.energy - profile.walkEnergyDrain).clamped(to: 0...100)
         case .idle:
             if state.species != .plantBuddy {
-                state.energy = (state.energy - 1).clamped(to: 0...100)
+                state.energy = (state.energy - profile.idleEnergyDrain).clamped(to: 0...100)
+            } else if state.mood > 62 && state.hunger < 72 {
+                state.energy = (state.energy + 1).clamped(to: 0...100)
             }
         }
 
@@ -128,12 +113,14 @@ final class PetEngine {
             return
         }
 
-        if state.behaviorMode == .sleep && state.energy < wakeEnergyThreshold {
+        let profile = state.species.profile
+
+        if state.behaviorMode == .sleep && state.energy < profile.wakeEnergyThreshold {
             state.velocityX = 0
             return
         }
 
-        if state.energy <= sleepEnergyThreshold {
+        if state.energy <= profile.sleepEnergyThreshold {
             beginSleep()
             return
         }
@@ -143,25 +130,52 @@ final class PetEngine {
             return
         }
 
-        let cycleFrame = state.animationFrame % behaviorCycleFrames
-        state.behaviorMode = cycleFrame < activeWalkFrames ? .walk : .idle
+        let cycleFrame = state.animationFrame % profile.behaviorCycleFrames
+
+        if shouldUseAutomaticSpecial(profile: profile, cycleFrame: cycleFrame) {
+            state.behaviorMode = .special
+            return
+        }
+
+        state.behaviorMode = cycleFrame < profile.activeFrames ? .walk : .idle
     }
 
     private func choosePlantBehaviorMode() {
+        let profile = state.species.profile
         state.velocityX = 0
         state.positionX = 0.5
 
-        if state.energy <= sleepEnergyThreshold || state.hunger >= 82 {
+        if state.hunger >= 82 {
             state.behaviorMode = .idle
             return
         }
 
-        state.behaviorMode = state.animationFrame % behaviorCycleFrames < activeWalkFrames ? .play : .idle
+        let cycleFrame = state.animationFrame % profile.behaviorCycleFrames
+        state.behaviorMode = cycleFrame < profile.activeFrames && state.energy > 32 ? .play : .idle
     }
 
     private func beginSleep() {
         state.behaviorMode = .sleep
         state.velocityX = 0
+    }
+
+    private func shouldUseAutomaticSpecial(profile: PetProfile, cycleFrame: Int) -> Bool {
+        guard profile.automaticSpecialFrames > 0 else {
+            return false
+        }
+
+        switch state.species {
+        case .cat:
+            return state.energy >= 78 && state.mood >= 58 && cycleFrame < profile.automaticSpecialFrames
+        case .pufferFish:
+            return state.hunger >= 72 || cycleFrame < profile.automaticSpecialFrames
+        case .ghost:
+            return state.mood >= 74 && cycleFrame < profile.automaticSpecialFrames
+        case .dragon:
+            return state.energy >= 62 && state.mood >= 54 && cycleFrame < profile.automaticSpecialFrames
+        case .plantBuddy:
+            return false
+        }
     }
 
     private func updateMovement(elapsed: TimeInterval) {
@@ -214,6 +228,26 @@ final class PetEngine {
             state.velocityX = 0
             state.positionX = 0.5
         }
+    }
+
+    private func applyAction(_ action: PetAction) {
+        let effect = state.species.effect(for: action)
+        state.hunger = (state.hunger + effect.hungerDelta).clamped(to: 0...100)
+        state.mood = (state.mood + effect.moodDelta).clamped(to: 0...100)
+        state.energy = (state.energy + effect.energyDelta).clamped(to: 0...100)
+        state.behaviorMode = effect.mode
+        state.actionTicksRemaining = effect.durationFrames
+
+        if effect.mode == .sleep || state.species == .plantBuddy {
+            state.velocityX = 0
+        }
+
+        if state.species == .plantBuddy {
+            state.positionX = 0.5
+        }
+
+        state.lastUpdated = Date()
+        publish()
     }
 
     private func moveTowardSnack(step: Double) {
@@ -277,49 +311,90 @@ final class PetEngine {
 }
 
 private extension PetSpecies {
-    var baseMovementSpeed: Double {
+    var profile: PetProfile {
         switch self {
         case .cat:
-            return 0.060
+            return PetProfile(
+                baseMovementSpeed: 0.052,
+                defaultPositionX: 0.36,
+                snackPositionX: 0.76,
+                sleepEnergyThreshold: 16,
+                wakeEnergyThreshold: 56,
+                behaviorCycleFrames: 420,
+                activeFrames: 300,
+                automaticSpecialFrames: 48
+            )
         case .pufferFish:
-            return 0.044
+            return PetProfile(
+                baseMovementSpeed: 0.038,
+                defaultPositionX: 0.58,
+                snackPositionX: 0.68,
+                sleepEnergyThreshold: 14,
+                wakeEnergyThreshold: 52,
+                behaviorCycleFrames: 360,
+                activeFrames: 300,
+                automaticSpecialFrames: 26,
+                idleEnergyDrain: 0,
+                walkEnergyDrain: 1,
+                specialEnergyDrain: 1,
+                sleepEnergyRecovery: 2
+            )
         case .ghost:
-            return 0.040
+            return PetProfile(
+                baseMovementSpeed: 0.034,
+                defaultPositionX: 0.52,
+                snackPositionX: 0.72,
+                sleepEnergyThreshold: 12,
+                wakeEnergyThreshold: 48,
+                behaviorCycleFrames: 390,
+                activeFrames: 280,
+                automaticSpecialFrames: 34,
+                idleEnergyDrain: 0,
+                walkEnergyDrain: 1,
+                specialEnergyDrain: 1,
+                sleepEnergyRecovery: 2
+            )
         case .dragon:
-            return 0.066
+            return PetProfile(
+                baseMovementSpeed: 0.060,
+                defaultPositionX: 0.46,
+                snackPositionX: 0.70,
+                sleepEnergyThreshold: 20,
+                wakeEnergyThreshold: 62,
+                behaviorCycleFrames: 430,
+                activeFrames: 290,
+                automaticSpecialFrames: 42,
+                specialEnergyDrain: 2,
+                sleepEnergyRecovery: 3
+            )
         case .plantBuddy:
-            return 0
+            return PetProfile(
+                baseMovementSpeed: 0,
+                defaultPositionX: 0.5,
+                snackPositionX: 0.50,
+                sleepEnergyThreshold: 0,
+                wakeEnergyThreshold: 0,
+                behaviorCycleFrames: 500,
+                activeFrames: 310,
+                automaticSpecialFrames: 0,
+                idleEnergyDrain: 0,
+                walkEnergyDrain: 0,
+                specialEnergyDrain: 0,
+                sleepEnergyRecovery: 1
+            )
         }
+    }
+
+    var baseMovementSpeed: Double {
+        profile.baseMovementSpeed
     }
 
     var defaultPositionX: Double {
-        switch self {
-        case .cat:
-            return 0.36
-        case .pufferFish:
-            return 0.58
-        case .ghost:
-            return 0.52
-        case .dragon:
-            return 0.46
-        case .plantBuddy:
-            return 0.5
-        }
+        profile.defaultPositionX
     }
 
     var snackPositionX: Double {
-        switch self {
-        case .cat:
-            return 0.76
-        case .pufferFish:
-            return 0.68
-        case .ghost:
-            return 0.72
-        case .dragon:
-            return 0.70
-        case .plantBuddy:
-            return 0.50
-        }
+        profile.snackPositionX
     }
 
     var specialPlayMode: PetBehaviorMode {
@@ -330,4 +405,79 @@ private extension PetSpecies {
             return .play
         }
     }
+
+    func effect(for action: PetAction) -> PetActionEffect {
+        switch (self, action) {
+        case (.cat, .feed):
+            return PetActionEffect(hungerDelta: -28, moodDelta: 6, energyDelta: -1, mode: .eat, durationFrames: 54)
+        case (.cat, .play), (.cat, .tap):
+            return PetActionEffect(hungerDelta: 8, moodDelta: 20, energyDelta: -8, mode: .play, durationFrames: 58)
+        case (.cat, .rest):
+            return PetActionEffect(hungerDelta: 4, moodDelta: 5, energyDelta: 24, mode: .sleep, durationFrames: 90)
+
+        case (.pufferFish, .feed):
+            return PetActionEffect(hungerDelta: -24, moodDelta: 4, energyDelta: -1, mode: .eat, durationFrames: 54)
+        case (.pufferFish, .play):
+            return PetActionEffect(hungerDelta: 8, moodDelta: 18, energyDelta: -7, mode: .play, durationFrames: 58)
+        case (.pufferFish, .tap):
+            return PetActionEffect(hungerDelta: 2, moodDelta: 10, energyDelta: -3, mode: .special, durationFrames: 44)
+        case (.pufferFish, .rest):
+            return PetActionEffect(hungerDelta: 3, moodDelta: 4, energyDelta: 20, mode: .sleep, durationFrames: 86)
+
+        case (.ghost, .feed):
+            return PetActionEffect(hungerDelta: -22, moodDelta: 8, energyDelta: -1, mode: .eat, durationFrames: 52)
+        case (.ghost, .play):
+            return PetActionEffect(hungerDelta: 6, moodDelta: 20, energyDelta: -6, mode: .play, durationFrames: 58)
+        case (.ghost, .tap):
+            return PetActionEffect(hungerDelta: 1, moodDelta: 12, energyDelta: -2, mode: .special, durationFrames: 42)
+        case (.ghost, .rest):
+            return PetActionEffect(hungerDelta: 2, moodDelta: 5, energyDelta: 18, mode: .sleep, durationFrames: 82)
+
+        case (.dragon, .feed):
+            return PetActionEffect(hungerDelta: -30, moodDelta: 6, energyDelta: -2, mode: .eat, durationFrames: 54)
+        case (.dragon, .play):
+            return PetActionEffect(hungerDelta: 10, moodDelta: 22, energyDelta: -11, mode: .special, durationFrames: 62)
+        case (.dragon, .tap):
+            return PetActionEffect(hungerDelta: 2, moodDelta: 12, energyDelta: -5, mode: .special, durationFrames: 46)
+        case (.dragon, .rest):
+            return PetActionEffect(hungerDelta: 5, moodDelta: 5, energyDelta: 26, mode: .sleep, durationFrames: 96)
+
+        case (.plantBuddy, .feed):
+            return PetActionEffect(hungerDelta: -30, moodDelta: 8, energyDelta: 2, mode: .eat, durationFrames: 58)
+        case (.plantBuddy, .play), (.plantBuddy, .tap):
+            return PetActionEffect(hungerDelta: 3, moodDelta: 16, energyDelta: 12, mode: .play, durationFrames: 72)
+        case (.plantBuddy, .rest):
+            return PetActionEffect(hungerDelta: 2, moodDelta: 3, energyDelta: 8, mode: .idle, durationFrames: 60)
+        }
+    }
+}
+
+private enum PetAction {
+    case feed
+    case play
+    case tap
+    case rest
+}
+
+private struct PetActionEffect {
+    let hungerDelta: Int
+    let moodDelta: Int
+    let energyDelta: Int
+    let mode: PetBehaviorMode
+    let durationFrames: Int
+}
+
+private struct PetProfile {
+    let baseMovementSpeed: Double
+    let defaultPositionX: Double
+    let snackPositionX: Double
+    let sleepEnergyThreshold: Int
+    let wakeEnergyThreshold: Int
+    let behaviorCycleFrames: Int
+    let activeFrames: Int
+    let automaticSpecialFrames: Int
+    var idleEnergyDrain: Int = 1
+    var walkEnergyDrain: Int = 1
+    var specialEnergyDrain: Int = 2
+    var sleepEnergyRecovery: Int = 2
 }
