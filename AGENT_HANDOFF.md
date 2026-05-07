@@ -42,6 +42,7 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
 - `Sources/TouchBarPet/Resources/PixelArt/Sprites/`: extracted PNG pet poses used by the app.
 - `Scripts/extract-pixel-sprites.py`: regenerates the PNG sprites from `Assets/PixelArt/pet-background-concept-sheet.png`.
+- Ghost crop rectangles are intentionally shorter than the full row so the extracted ghost sprites do not include dragon-row pixels underneath.
 
 ## Architecture Notes
 
@@ -65,6 +66,7 @@ open "Build/TouchBar Pet.app"
 - Do not alternate incompatible bitmap poses frame-by-frame; Cat/Ghost/Dragon now keep one moving pose until the behavior mode changes.
 - `PetBitmapArt` also applies procedural sprite motion over the bitmap poses: bobbing, squash/stretch, drift, hover, and plant sway. This is the current replacement for true same-canvas walk frames.
 - `AppDelegate` currently redraws at roughly 18 FPS; care/stat updates are still accumulated separately in `PetEngine`.
+- `PetState.touchBarStatsLine` uses compact labels like `Gl8 Hu2 Mo7` because full words were clipped by the Touch Bar Control Strip.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

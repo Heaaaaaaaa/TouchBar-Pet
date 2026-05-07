@@ -51,7 +51,7 @@ final class PetTouchBarSceneView: NSView {
             origin: petOrigin,
             scale: petScale
         )
-        drawStats(in: NSRect(x: trackRect.maxX + 14, y: 3, width: statsWidth, height: 24))
+        drawStats(in: NSRect(x: trackRect.maxX + 8, y: 4, width: statsWidth, height: 22))
     }
 
     private func drawTrack(in rect: NSRect) {
@@ -368,7 +368,7 @@ final class PetTouchBarSceneView: NSView {
         paragraph.alignment = .left
 
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 16, weight: .semibold),
+            .font: NSFont.monospacedSystemFont(ofSize: 14, weight: .semibold),
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraph
         ]

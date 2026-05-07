@@ -463,3 +463,18 @@ What can be improved:
 
 What next:
 - Test another short physical Touch Bar video and tune motion strength from what is visible.
+
+### 2026-05-07 - Clean Ghost Crops And Compact Stats
+
+What was done:
+- Tightened the generated ghost sprite crop rectangles so `ghost-idle`, `ghost-dash`, and `ghost-sleep` no longer include dragon-row pixels below the ghost.
+- Regenerated all extracted asset sprites with `Scripts/extract-pixel-sprites.py`.
+- Shortened Touch Bar stats from long words to compact labels such as `Gl8 Hu2 Mo7`.
+- Reduced the Touch Bar stats font size and moved the stats closer to the scene strip so the text is less likely to be hidden by the Control Strip.
+
+What can be improved:
+- Hand-clean the extracted PNG edges if any source-sheet background pixels remain visible.
+- Add a user setting to hide stats entirely if the Control Strip leaves too little room.
+
+What next:
+- Test the ghost again on the physical Touch Bar and confirm the stat text is readable.

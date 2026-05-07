@@ -96,6 +96,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Stable bitmap sprite slots to avoid movement jitter between animation frames
 - Stable per-behavior asset poses to avoid rapid walk/idle flicker
 - Procedural natural motion over bitmap sprites: bobbing, squash/stretch, hover, drift, and sway
+- Compact Touch Bar stat labels so text stays visible beside the Control Strip
 
 ## Development Log
 

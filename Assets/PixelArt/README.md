@@ -63,6 +63,8 @@ The extraction script crops 15 pet poses:
 
 The Swift renderer loads these PNGs first and falls back to code-drawn sprites if a file is missing.
 
+Note: the ghost crop rectangles are intentionally tight vertically because the generated sheet places the dragon row close underneath. Looser ghost crops can pull dragon pixels into the extracted ghost sprites.
+
 ## Original Generation Prompt
 
 ```text
