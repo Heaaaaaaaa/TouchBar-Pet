@@ -17,7 +17,12 @@ final class PetEngine {
     }
 
     func feed() {
-        applyAction(.feed)
+        feed(at: state.species.defaultSnackPositionX)
+    }
+
+    func feed(at positionX: Double) {
+        state.snackPositionX = positionX.clamped(to: 0.06...0.94)
+        applyAction(.feed, minimumDurationFrames: 108)
     }
 
     func play() {
@@ -189,7 +194,12 @@ final class PetEngine {
         case .walk:
             moveInCurrentDirection(step: baseSpeed * elapsed)
         case .eat:
-            moveTowardSnack(step: max(baseSpeed * 1.4, 0.040) * elapsed)
+            if state.species == .plantBuddy {
+                state.velocityX = 0
+                state.positionX = 0.5
+            } else {
+                moveTowardSnack(step: max(baseSpeed * 3.2, 0.12) * elapsed)
+            }
         case .play:
             if state.species == .plantBuddy {
                 state.velocityX = 0
@@ -230,13 +240,13 @@ final class PetEngine {
         }
     }
 
-    private func applyAction(_ action: PetAction) {
+    private func applyAction(_ action: PetAction, minimumDurationFrames: Int = 0) {
         let effect = state.species.effect(for: action)
         state.hunger = (state.hunger + effect.hungerDelta).clamped(to: 0...100)
         state.mood = (state.mood + effect.moodDelta).clamped(to: 0...100)
         state.energy = (state.energy + effect.energyDelta).clamped(to: 0...100)
         state.behaviorMode = effect.mode
-        state.actionTicksRemaining = effect.durationFrames
+        state.actionTicksRemaining = max(effect.durationFrames, minimumDurationFrames)
 
         if effect.mode == .sleep || state.species == .plantBuddy {
             state.velocityX = 0
@@ -251,7 +261,7 @@ final class PetEngine {
     }
 
     private func moveTowardSnack(step: Double) {
-        let snackX = state.species.snackPositionX
+        let snackX = state.snackPositionX
         let distance = snackX - state.positionX
 
         guard abs(distance) > step else {
@@ -288,6 +298,7 @@ final class PetEngine {
         state.direction = .right
         state.positionX = state.species.defaultPositionX
         state.velocityX = state.species.baseMovementSpeed
+        state.snackPositionX = state.species.defaultSnackPositionX
         state.actionTicksRemaining = 0
     }
 

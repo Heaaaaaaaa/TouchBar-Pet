@@ -1,9 +1,8 @@
 import AppKit
 
 enum PetTouchBarSceneAction {
-    case petTap
-    case feed
-    case play
+    case playWithPet
+    case feedAt(Double)
     case rest
 }
 
@@ -13,18 +12,13 @@ final class PetTouchBarSceneView: NSControl {
         let trackRect: NSRect
         let motionRect: NSRect
         let statsRect: NSRect
-        let feedRect: NSRect?
-        let playRect: NSRect?
-        let restRect: NSRect?
     }
 
     private let statsWidth: CGFloat = 122
-    private let actionWidth: CGFloat = 112
-    private let actionGap: CGFloat = 4
 
     var state: PetState = .initial {
         didSet {
-            setAccessibilityLabel("TouchBar Pet. \(state.touchBarStatsLine). Touch the pet scene to play, or use Feed, Play, and Rest inside the strip.")
+            setAccessibilityLabel("TouchBar Pet. \(state.touchBarStatsLine). Touch the pet to play, touch empty space to place food, or touch the status badge to rest.")
             needsDisplay = true
         }
     }
@@ -68,7 +62,6 @@ final class PetTouchBarSceneView: NSControl {
             origin: petOrigin,
             scale: petScale
         )
-        drawActionChips(sceneLayout)
         drawStats(in: sceneLayout.statsRect)
     }
 
@@ -78,13 +71,7 @@ final class PetTouchBarSceneView: NSControl {
         let trackWidth = min(max(340, bounds.width - 4), 580)
         let trackRect = NSRect(x: 0, y: 1, width: trackWidth, height: 28)
         let statsRect = NSRect(x: trackRect.maxX - statsWidth - 8, y: 4, width: statsWidth, height: 22)
-        let availableForActions = trackRect.width - statsWidth - 232
-        let shouldShowActions = availableForActions >= actionWidth
-        let actionStartX = statsRect.minX - actionWidth - 10
-        let feedRect = shouldShowActions ? NSRect(x: actionStartX, y: 5, width: 34, height: 20) : nil
-        let playRect = shouldShowActions ? NSRect(x: actionStartX + 34 + actionGap, y: 5, width: 34, height: 20) : nil
-        let restRect = shouldShowActions ? NSRect(x: actionStartX + 68 + actionGap * 2, y: 5, width: 36, height: 20) : nil
-        let motionRightEdge = shouldShowActions ? actionStartX - 10 : statsRect.minX - 10
+        let motionRightEdge = statsRect.minX - 10
         let motionRect = NSRect(
             x: trackRect.minX,
             y: trackRect.minY,
@@ -95,29 +82,41 @@ final class PetTouchBarSceneView: NSControl {
         return SceneLayout(
             trackRect: trackRect,
             motionRect: motionRect,
-            statsRect: statsRect,
-            feedRect: feedRect,
-            playRect: playRect,
-            restRect: restRect
+            statsRect: statsRect
         )
     }
 
     private func action(at point: NSPoint) -> PetTouchBarSceneAction {
         let sceneLayout = layout(in: bounds)
+        let petScale = scaleForCurrentSpecies()
+        let petOrigin = petOrigin(in: sceneLayout.motionRect, scale: petScale)
+        let petHitRect = NSRect(
+            x: petOrigin.x - 10,
+            y: petOrigin.y - 8,
+            width: nominalSpriteWidth(for: state.species, scale: petScale) + 20,
+            height: nominalSpriteHeight(for: state.species, scale: petScale) + 16
+        )
 
-        if sceneLayout.feedRect?.contains(point) == true {
-            return .feed
-        }
-
-        if sceneLayout.playRect?.contains(point) == true {
-            return .play
-        }
-
-        if sceneLayout.restRect?.contains(point) == true {
+        if sceneLayout.statsRect.contains(point) {
             return .rest
         }
 
-        return .petTap
+        if petHitRect.contains(point) {
+            return .playWithPet
+        }
+
+        if sceneLayout.trackRect.contains(point) {
+            return .feedAt(normalizedTouchPosition(for: point, in: sceneLayout.motionRect, scale: petScale))
+        }
+
+        return .playWithPet
+    }
+
+    private func normalizedTouchPosition(for point: NSPoint, in rect: NSRect, scale: CGFloat) -> Double {
+        let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
+        let xInset = max(spriteWidth + 8, 28)
+        let usableWidth = max(1, rect.width - xInset * 2)
+        return Double((point.x - rect.minX - xInset) / usableWidth).clamped(to: 0.06...0.94)
     }
 
     private func drawTrack(in rect: NSRect) {
@@ -271,12 +270,17 @@ final class PetTouchBarSceneView: NSControl {
 
     private func petOrigin(in rect: NSRect, scale: CGFloat) -> NSPoint {
         let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
-        let xInset = max(spriteWidth + 8, 28)
-        let x = rect.minX + xInset + CGFloat(state.positionX) * max(1, rect.width - xInset * 2)
+        let x = sceneX(for: state.positionX, in: rect, scale: scale)
         let baseY = rect.maxY - nominalSpriteHeight(for: state.species, scale: scale) - 4
         let bob = verticalMotion()
 
         return NSPoint(x: x - spriteWidth / 2, y: baseY + bob)
+    }
+
+    private func sceneX(for normalizedPosition: Double, in rect: NSRect, scale: CGFloat) -> CGFloat {
+        let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
+        let xInset = max(spriteWidth + 8, 28)
+        return rect.minX + xInset + CGFloat(normalizedPosition) * max(1, rect.width - xInset * 2)
     }
 
     private func nominalSpriteWidth(for species: PetSpecies, scale: CGFloat) -> CGFloat {
@@ -363,25 +367,29 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func drawSnack(in rect: NSRect) {
-        let snackX = rect.minX + CGFloat(snackPositionX(for: state.species)) * rect.width
+        let snackCenterX = sceneX(for: state.snackPositionX, in: rect, scale: scaleForCurrentSpecies())
         let snackY = rect.midY - 3
 
         switch state.species {
         case .cat:
+            let snackX = snackCenterX - 5
             NSColor(calibratedRed: 0.16, green: 0.50, blue: 0.70, alpha: 1.0).setFill()
             NSRect(x: snackX, y: snackY, width: 11, height: 5).fill()
             NSRect(x: snackX - 3, y: snackY + 1, width: 3, height: 3).fill()
         case .pufferFish:
+            let snackX = snackCenterX - 2
             NSColor(calibratedRed: 1.0, green: 0.86, blue: 0.20, alpha: 1.0).setFill()
             NSRect(x: snackX, y: snackY, width: 5, height: 5).fill()
         case .ghost:
-            drawSparkle(at: NSPoint(x: snackX, y: snackY))
+            drawSparkle(at: NSPoint(x: snackCenterX - 3, y: snackY))
         case .dragon:
+            let snackX = snackCenterX - 4
             NSColor(calibratedRed: 0.95, green: 0.30, blue: 0.08, alpha: 1.0).setFill()
             NSRect(x: snackX, y: snackY, width: 8, height: 6).fill()
             NSColor(calibratedRed: 1.0, green: 0.80, blue: 0.28, alpha: 1.0).setFill()
             NSRect(x: snackX + 2, y: snackY + 1, width: 3, height: 3).fill()
         case .plantBuddy:
+            let snackX = snackCenterX - 3
             NSColor(calibratedRed: 0.40, green: 0.90, blue: 1.0, alpha: 1.0).setFill()
             NSRect(x: snackX, y: snackY - 5, width: 3, height: 6).fill()
             NSRect(x: snackX + 4, y: snackY - 1, width: 3, height: 6).fill()
@@ -391,7 +399,8 @@ final class PetTouchBarSceneView: NSControl {
     private func drawPlayCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
         switch state.species {
         case .cat:
-            let toyX = rect.minX + CGFloat(snackPositionX(for: state.species)) * rect.width
+            let toyPosition = (state.positionX + 0.10 * state.direction.multiplier).clamped(to: 0.06...0.94)
+            let toyX = sceneX(for: toyPosition, in: rect, scale: scale) - 3
             NSColor(calibratedRed: 1.0, green: 0.32, blue: 0.58, alpha: 1.0).setFill()
             NSBezierPath(ovalIn: NSRect(x: toyX, y: rect.midY - 2, width: 6, height: 6)).fill()
             NSColor.white.withAlphaComponent(0.8).setFill()
@@ -486,41 +495,6 @@ final class PetTouchBarSceneView: NSControl {
         NSRect(x: point.x + 8, y: point.y + 3, width: 3, height: 2).fill()
     }
 
-    private func drawActionChips(_ sceneLayout: SceneLayout) {
-        drawActionChip(title: "Feed", rect: sceneLayout.feedRect)
-        drawActionChip(title: "Play", rect: sceneLayout.playRect)
-        drawActionChip(title: "Rest", rect: sceneLayout.restRect)
-    }
-
-    private func drawActionChip(title: String, rect: NSRect?) {
-        guard let rect else {
-            return
-        }
-
-        let path = NSBezierPath(roundedRect: rect, xRadius: 6, yRadius: 6)
-        NSColor.black.withAlphaComponent(0.52).setFill()
-        path.fill()
-
-        NSColor.white.withAlphaComponent(0.42).setStroke()
-        path.lineWidth = 1
-        path.stroke()
-
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
-
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 9, weight: .heavy),
-            .foregroundColor: NSColor.white.withAlphaComponent(0.96),
-            .paragraphStyle: paragraph
-        ]
-
-        NSString(string: title).draw(
-            with: rect.insetBy(dx: 1, dy: 4),
-            options: [.usesLineFragmentOrigin],
-            attributes: attributes
-        )
-    }
-
     private func drawTinyText(_ text: String, at point: NSPoint, size: CGFloat, color: NSColor) {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.monospacedSystemFont(ofSize: size, weight: .bold),
@@ -528,21 +502,6 @@ final class PetTouchBarSceneView: NSControl {
         ]
 
         NSString(string: text).draw(at: point, withAttributes: attributes)
-    }
-
-    private func snackPositionX(for species: PetSpecies) -> Double {
-        switch species {
-        case .cat:
-            return 0.76
-        case .pufferFish:
-            return 0.68
-        case .ghost:
-            return 0.72
-        case .dragon:
-            return 0.70
-        case .plantBuddy:
-            return 0.50
-        }
     }
 
     private func drawStats(in rect: NSRect) {

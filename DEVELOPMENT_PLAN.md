@@ -619,3 +619,20 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and physically test tap scene, Feed, Play, and Rest from the Touch Bar while the app window is hidden.
+
+### 2026-05-07 - Natural Scene Touch Interaction
+
+What was done:
+- Replaced the visible inline action chips with gesture-style scene touches.
+- Touching the pet now plays with it.
+- Touching empty space on the Touch Bar strip drops food at that exact horizontal spot.
+- Added `snackPositionX` to saved pet state so the food cue and movement target can follow the user's touch.
+- Updated eating movement so pets walk/swim/fly toward the placed food instead of using only a fixed snack position.
+- Chose the right-side status badge as the rest/sleep touch zone, keeping Rest available without another button.
+
+What can be improved:
+- Add a tiny non-text sleep icon near the status badge if the rest touch zone is not discoverable enough.
+- Delay hunger reduction until the pet actually reaches the food if a stricter simulation feels better.
+
+What next:
+- Rebuild the app bundle and physically test three Touch Bar gestures: pet touch, empty-space food placement, and status-badge rest.

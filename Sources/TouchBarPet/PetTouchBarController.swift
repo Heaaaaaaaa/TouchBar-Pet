@@ -133,12 +133,10 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
     private func configureSceneView(_ view: PetTouchBarSceneView) {
         view.onAction = { [weak engine] action in
             switch action {
-            case .petTap:
-                engine?.tapPet()
-            case .feed:
-                engine?.feed()
-            case .play:
+            case .playWithPet:
                 engine?.play()
+            case .feedAt(let positionX):
+                engine?.feed(at: positionX)
             case .rest:
                 engine?.rest()
             }

@@ -91,6 +91,7 @@ struct PetState: Codable, Equatable {
     var direction: PetDirection
     var positionX: Double
     var velocityX: Double
+    var snackPositionX: Double
     var actionTicksRemaining: Int
 
     static let initial = PetState(
@@ -105,6 +106,7 @@ struct PetState: Codable, Equatable {
         direction: .right,
         positionX: 0.42,
         velocityX: 0.018,
+        snackPositionX: 0.76,
         actionTicksRemaining: 0
     )
 
@@ -231,6 +233,7 @@ struct PetState: Codable, Equatable {
         case direction
         case positionX
         case velocityX
+        case snackPositionX
         case actionTicksRemaining
     }
 
@@ -246,6 +249,7 @@ struct PetState: Codable, Equatable {
         direction: PetDirection = .right,
         positionX: Double = 0.42,
         velocityX: Double = 0.018,
+        snackPositionX: Double = 0.76,
         actionTicksRemaining: Int = 0
     ) {
         self.hunger = hunger
@@ -259,6 +263,7 @@ struct PetState: Codable, Equatable {
         self.direction = direction
         self.positionX = positionX
         self.velocityX = velocityX
+        self.snackPositionX = snackPositionX
         self.actionTicksRemaining = actionTicksRemaining
     }
 
@@ -276,11 +281,27 @@ struct PetState: Codable, Equatable {
         direction = try container.decodeIfPresent(PetDirection.self, forKey: .direction) ?? .right
         positionX = try container.decodeIfPresent(Double.self, forKey: .positionX) ?? 0.42
         velocityX = try container.decodeIfPresent(Double.self, forKey: .velocityX) ?? 0.018
+        snackPositionX = try container.decodeIfPresent(Double.self, forKey: .snackPositionX) ?? species.defaultSnackPositionX
         actionTicksRemaining = try container.decodeIfPresent(Int.self, forKey: .actionTicksRemaining) ?? 0
     }
 }
 
-private extension PetSpecies {
+extension PetSpecies {
+    var defaultSnackPositionX: Double {
+        switch self {
+        case .cat:
+            return 0.76
+        case .pufferFish:
+            return 0.68
+        case .ghost:
+            return 0.72
+        case .dragon:
+            return 0.70
+        case .plantBuddy:
+            return 0.50
+        }
+    }
+
     var primaryNeedName: String {
         switch self {
         case .plantBuddy:

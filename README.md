@@ -47,7 +47,11 @@ If you used the fallback bundle build, open `Build/TouchBar Pet.app` instead.
 
 The app runs as a menu-bar/background app. Use the `TBP` menu-bar item for Show Window, Hide Window, Feed, Play, Rest, and Show Touch Bar Pet.
 
-The expanded Touch Bar strip is also directly touchable: tap the moving pet/scene area for the species-specific pet action, or tap the inline `Feed`, `Play`, and `Rest` chips inside the strip.
+The expanded Touch Bar strip is also directly touchable:
+
+- Touch the pet to play with it.
+- Touch empty space on the strip to place food there; the pet will move toward that spot.
+- Touch the status badge on the right side to rest/sleep.
 
 The red close button on the small window only hides the window. The app keeps running from the `TBP` menu-bar item, and `TBP` -> `Show Touch Bar Pet` forces the persistent Touch Bar item to reinstall and show again.
 
@@ -82,12 +86,12 @@ Example: `P:0 H:10 C:0` means the puffer fish has very low health, is very hungr
 
 Pets normally move for a while, pause briefly, and keep using energy while awake. Sleep timing is species-specific: high-energy pets like dragons tire sooner, while ghosts and puffer fish float for longer. A sleeping pet now stays asleep until it has recovered enough energy, then wakes and starts moving again.
 
-Touch actions are also species-specific:
+Touch actions are also species-aware:
 
-- Tap the scene: Cat jumps, Puffer Fish puffs, Ghost says `boo`, Dragon breathes fire, Plant Buddy opens toward sun.
-- Feed: shows the right snack and lowers hunger/water need.
+- Touch the pet: plays with the pet and triggers happier/faster movement.
+- Touch empty space: shows the right snack at that touched place and lowers hunger/water need.
 - Play: increases mood and triggers faster or happier movement.
-- Rest: starts a nap or calm rest state.
+- Touch the status badge: starts a nap or calm rest state.
 
 ## Xcode Setup
 
@@ -131,7 +135,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Stable per-behavior asset poses to avoid rapid walk/idle flicker
 - Procedural natural motion over bitmap sprites: bobbing, squash/stretch, hover, drift, and sway
 - Inline high-contrast Touch Bar stat badge so text stays visible before the Control Strip
-- Inline Touch Bar action chips so Feed, Play, and Rest work from the physical Touch Bar scene
+- Direct scene touch actions: pet tap to play, empty strip tap to place food, status badge tap to rest
 
 ## Development Log
 

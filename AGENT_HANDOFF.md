@@ -62,8 +62,7 @@ open "Build/TouchBar Pet.app"
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - `PetState` now stores `PetBehaviorMode`, direction, normalized Touch Bar position, velocity, and action countdown so movement survives redraws/saves.
 - `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions. Species-specific movement/touch behavior is centralized in compact `PetProfile` and `PetActionEffect` helpers inside `PetEngine.swift`.
-- `PetTouchBarController` scene taps call `engine.tapPet()` instead of generic Play, so Tap can mean cat jump, puffer puff, ghost boo, dragon fire, or plant sun sparkle.
-- `PetTouchBarSceneView` is now a custom drawn `NSButton` with inline `Feed`, `Play`, and `Rest` hit zones. Physical Touch Bar actions should be handled inside the scene strip, not only by the main window buttons.
+- `PetTouchBarSceneView` is a custom drawn `NSControl` with gesture-style hit zones. Touching the pet plays with it, touching empty track space calls `engine.feed(at:)` and drops food at that normalized X position, and touching the right status badge calls Rest.
 - The app loop calls `PetEngine.tick(elapsed:)` at roughly 18 FPS. `PetEngine` separately accumulates care/stat ticks every 3.0 seconds so animation is smooth without making hunger/energy change too fast.
 - Automatic sleep uses species-specific hysteresis from `PetProfile`; pets enter sleep at low energy and stay asleep until the species wake threshold is reached. This avoids rapid walk/sleep flicker.
 - `AppDelegate` throttles state saves to every 6 seconds instead of saving on every animation frame.
@@ -79,7 +78,7 @@ open "Build/TouchBar Pet.app"
 - `PetTouchBarSceneView` draws the status as a darker in-scene badge inside a capped scene strip. Do not move it back into a separate trailing Touch Bar item unless there is a better Control Strip-safe layout.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
-- Feed, Play, and Rest are available in the app window, the `TBP` menu, and as inline touch chips inside the expanded Touch Bar scene.
+- Feed, Play, and Rest are available in the app window and the `TBP` menu. In the expanded Touch Bar scene, avoid visible action buttons: empty-space taps place food, pet taps play, and status-badge taps rest.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.
 
 ## Known Issue / User Blocker
