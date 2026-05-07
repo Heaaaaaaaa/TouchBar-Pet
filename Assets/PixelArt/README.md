@@ -5,6 +5,7 @@
 File:
 
 - `pet-background-concept-sheet.png`
+- `food-concept-sheet.png`
 
 Generated with the built-in `imagegen` tool for the TouchBar Pet project.
 
@@ -20,11 +21,19 @@ Contents:
   - night sky
   - grassy daytime
   - cozy room/fireplace
+- Food concept sheet:
+  - blue fish snack for Cat
+  - golden pellet cluster for Puffer Fish
+  - glowing soul-star for Ghost
+  - flame/meat snack for Dragon
+  - water drops and sprout cue for Plant Buddy
 
 Dimensions:
 
 - `1254 x 1254`
 - PNG, RGB
+
+The food concept sheet is also `1254 x 1254`, PNG, RGB.
 
 ## Intended Use
 
@@ -70,6 +79,21 @@ The Swift renderer loads these PNGs first and falls back to code-drawn sprites i
 The background renderer loads the extracted aquarium, night, grass, and cozy PNG strips first and falls back to AppKit-drawn background details if a file is missing.
 
 Note: the ghost crop rectangles are intentionally tight vertically because the generated sheet places the dragon row close underneath. Looser ghost crops can pull dragon pixels into the extracted ghost sprites.
+
+## Food Asset Sheet Prompt
+
+```text
+Use case: stylized-concept
+Asset type: pixel-art game asset sheet for a macOS Touch Bar pet app
+Primary request: Create a compact pixel-art food sprite sheet matching the provided TouchBar Pet asset genre: chunky cute pixel art, dark navy presentation background, crisp black pixel outlines, bright highlights, soft tiny glow, no text.
+Subject: five pet food/snack sprites, arranged in one clean row with generous spacing: 1) tiny blue fish snack for an orange cat, 2) three golden fish pellets for a puffer fish, 3) glowing pale-blue soul star for a ghost, 4) small red-orange flame meat snack for a dragon, 5) two blue water drops with a tiny green sprout sparkle for a plant buddy.
+Style/medium: high-quality cute pixel art sprite sheet, 16-bit/32-bit game asset style, same visual language as a cute Touch Bar pet concept sheet.
+Composition/framing: square canvas, dark navy background, each food icon centered in its own invisible cell, all sprites small and readable at Touch Bar size, each sprite around 48x48 visual footprint, no labels.
+Lighting/mood: playful, clean, charming, clear silhouettes, bright highlights.
+Color palette: vivid cyan/blue fish, warm golden pellets, icy blue ghost star, hot red-orange dragon snack, aqua water drops with fresh green accent.
+Materials/textures: crisp pixel clusters, black outline, 1-2 pixel highlights, minimal glow, tiny shadow under each food.
+Constraints: no text, no watermark, no UI frame, no pets, food sprites only, keep every sprite separated and easy to crop, background must be flat dark navy.
+```
 
 ## Original Generation Prompt
 

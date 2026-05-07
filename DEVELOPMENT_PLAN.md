@@ -685,3 +685,17 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and test each pet species on the physical Touch Bar.
+
+### 2026-05-07 - Generated Food Concept Sheet
+
+What was done:
+- Used the built-in `imagegen` skill to create a matching pixel-art food concept sheet.
+- Saved the selected generated sheet to `Assets/PixelArt/food-concept-sheet.png`.
+- Added the food sheet prompt and contents to `Assets/PixelArt/README.md`.
+
+What can be improved:
+- Crop these concept foods into app-ready transparent sprites later.
+- Replace the current code-drawn snacks with bitmap food assets after the crop workflow is added.
+
+What next:
+- Decide whether to keep the current AppKit-drawn food or extract/crop this generated sheet into `Resources/PixelArt/Foods/`.

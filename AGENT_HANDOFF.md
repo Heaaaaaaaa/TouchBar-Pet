@@ -37,6 +37,7 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPrivate/`: Objective-C bridge for private Touch Bar system-tray/modal APIs.
 - `PET_DESIGN_PLAN.md`: pet species and movement design plan.
 - `Assets/PixelArt/pet-background-concept-sheet.png`: generated pixel-art concept sheet.
+- `Assets/PixelArt/food-concept-sheet.png`: generated pixel-art food concept sheet matching the pet/background asset genre.
 - `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
 - `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
 - `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
