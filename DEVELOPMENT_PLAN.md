@@ -715,3 +715,20 @@ What can be improved:
 
 What next:
 - Build the app bundle and physically test each species food on the Touch Bar backgrounds.
+
+### 2026-05-07 - App And Menu-Bar Icon Design
+
+What was done:
+- Used the built-in `imagegen` skill to generate a polished macOS app icon source and a tiny menu-bar/toolbar glyph source.
+- Saved icon design sources and previews under `Assets/AppIcon/`.
+- Converted the app icon into `Resources/AppIcon.icns` and added `CFBundleIconFile` to `Resources/Info.plist`.
+- Removed the chroma-key background from the toolbar glyph, resized it to a 36 px transparent template icon, and saved it to `Sources/TouchBarPet/Resources/Icons/menu-bar-icon.png`.
+- Updated `AppDelegate` so the menu-bar item shows the generated icon instead of the plain `TBP` text, with `TBP` retained as the tooltip/menu identity.
+- Updated `Scripts/build-app.sh` so the app bundle includes both the `.icns` app icon and the menu-bar icon resource.
+
+What can be improved:
+- Create a second menu-bar icon variant with an even simpler single-face silhouette if the 18 px physical menu-bar read is still too detailed.
+- Add a signed/exported app build workflow so Finder and Launchpad always refresh the icon cleanly.
+
+What next:
+- Rebuild the app bundle, quit the old app, reopen the rebuilt app, and confirm the menu bar shows the new icon.

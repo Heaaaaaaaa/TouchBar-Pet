@@ -39,6 +39,8 @@ open "Build/TouchBar Pet.app"
 - `Assets/PixelArt/pet-background-concept-sheet.png`: generated pixel-art concept sheet.
 - `Assets/PixelArt/food-concept-sheet.png`: generated pixel-art food concept sheet matching the pet/background asset genre.
 - `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
+- `Assets/AppIcon/`: generated app icon source, menu-bar icon source, and preview images.
+- `Resources/AppIcon.icns`: generated macOS app icon used by the manual `.app` bundle.
 - `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
 - `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
 - `Sources/TouchBarPet/PetBitmapBackground.swift`: direct PNG background-strip loader/renderer for extracted concept-sheet Touch Bar backgrounds.
@@ -46,6 +48,7 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/Resources/PixelArt/Sprites/`: extracted PNG pet poses used by the app.
 - `Sources/TouchBarPet/Resources/PixelArt/Backgrounds/`: extracted PNG Touch Bar background strips used by the app.
 - `Sources/TouchBarPet/Resources/PixelArt/Foods/`: extracted PNG food sprites used by the app.
+- `Sources/TouchBarPet/Resources/Icons/menu-bar-icon.png`: 36 px transparent menu-bar template icon.
 - `Scripts/extract-pixel-sprites.py`: regenerates pet, background, and food PNG assets from the generated concept sheets.
 - Ghost crop rectangles are intentionally shorter than the full row so the extracted ghost sprites do not include dragon-row pixels underneath.
 
@@ -53,6 +56,7 @@ open "Build/TouchBar Pet.app"
 
 - The app is AppKit, not SwiftUI.
 - It now launches as a menu-bar/accessory app with `TBP` in the menu bar and no normal window by default.
+- The menu-bar item now uses a generated template icon; `TBP` remains the tooltip/menu identity.
 - The normal public Touch Bar fallback is provided through `TouchBarHostingView.makeTouchBar()`.
 - The experimental always-present mode uses private APIs through `TouchBarPrivate`.
 - The persistent Control Strip item is intentionally compact; tapping it or choosing `TBP` -> `Show Touch Bar Pet` should present the full modal Touch Bar.

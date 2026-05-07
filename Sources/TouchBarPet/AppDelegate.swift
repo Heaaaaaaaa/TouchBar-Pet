@@ -89,7 +89,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func buildStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.title = "TBP"
+
+        if let image = statusBarIcon() {
+            item.length = NSStatusItem.squareLength
+            item.button?.image = image
+            item.button?.imagePosition = .imageOnly
+            item.button?.title = ""
+        } else {
+            item.button?.title = "TBP"
+        }
+
         item.button?.toolTip = "TouchBar Pet"
 
         let menu = NSMenu()
@@ -110,6 +119,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         item.menu = menu
         statusItem = item
         updateMenuSelection(engine.state)
+    }
+
+    private func statusBarIcon() -> NSImage? {
+        guard let url = iconResourceURL(named: "menu-bar-icon"), let image = NSImage(contentsOf: url) else {
+            return nil
+        }
+
+        image.size = NSSize(width: 18, height: 18)
+        image.isTemplate = true
+        return image
+    }
+
+    private func iconResourceURL(named name: String) -> URL? {
+        if let bundledURL = Bundle.main.url(
+            forResource: name,
+            withExtension: "png",
+            subdirectory: "Icons"
+        ) {
+            return bundledURL
+        }
+
+        let sourceResourceURL = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("Resources/Icons/\(name).png")
+
+        if FileManager.default.fileExists(atPath: sourceResourceURL.path) {
+            return sourceResourceURL
+        }
+
+        return nil
     }
 
     private func speciesMenuItem() -> NSMenuItem {

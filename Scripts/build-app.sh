@@ -25,8 +25,11 @@ fi
 
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
 cp "$INFO_PLIST" "$CONTENTS_DIR/Info.plist"
+cp "$ROOT_DIR/Resources/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
 rm -rf "$RESOURCES_DIR/PixelArt"
 cp -R "$ROOT_DIR/Sources/TouchBarPet/Resources/PixelArt" "$RESOURCES_DIR/PixelArt"
+rm -rf "$RESOURCES_DIR/Icons"
+cp -R "$ROOT_DIR/Sources/TouchBarPet/Resources/Icons" "$RESOURCES_DIR/Icons"
 
 clang \
   -fobjc-arc \

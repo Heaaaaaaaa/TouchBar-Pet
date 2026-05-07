@@ -137,6 +137,7 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 - Procedural natural motion over bitmap sprites: bobbing, squash/stretch, hover, drift, and sway
 - Inline high-contrast Touch Bar stat badge so text stays visible before the Control Strip
 - Direct scene touch actions: pet tap to play, empty strip tap to place food, status badge tap to rest
+- Generated app icon and menu-bar icon assets
 
 ## Development Log
 
