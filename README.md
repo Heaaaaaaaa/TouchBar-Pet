@@ -72,6 +72,12 @@ Species badges:
 
 Example: `P:0 H:10 C:0` means the puffer fish has very low health, is very hungry, and has low calm.
 
+## Pet Behavior Logic
+
+Pets normally move for a while, pause briefly, and keep using energy while awake. When energy reaches `18` or lower, the pet goes to sleep. It stays asleep until energy recovers to `58`, then wakes up and starts moving again.
+
+Feed lowers hunger, Play increases mood but uses energy, and Rest forces a short nap.
+
 ## Xcode Setup
 
 After installing full Xcode:

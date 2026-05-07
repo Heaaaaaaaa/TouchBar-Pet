@@ -537,3 +537,19 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and compare all four backgrounds on the physical Touch Bar.
+
+### 2026-05-07 - Pet Activity And Sleep Logic
+
+What was done:
+- Slowed the care/stat tick from `1.5` seconds to `3.0` seconds so pets do not get tired too quickly.
+- Added a clearer activity cycle: pets spend a longer stretch moving, then idle briefly.
+- Added sleep hysteresis: pets sleep only when energy is `18` or lower and stay asleep until energy recovers to `58`.
+- Made sleep recover energy faster than normal activity drains it, so sleep feels like a real nap instead of flickering.
+- Kept Plant Buddy centered during play/flowering so the pot does not slide across the Touch Bar like a walking pet.
+
+What can be improved:
+- Add a menu item to reset the pet's hunger, mood, and energy for testing.
+- Add per-species logic later, such as puffer fish swimming more often and ghost sleeping less often.
+
+What next:
+- Rebuild the app bundle and watch a longer physical Touch Bar test to tune the exact sleep timing.

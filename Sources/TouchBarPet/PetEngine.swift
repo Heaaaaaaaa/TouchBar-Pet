@@ -1,7 +1,11 @@
 import Foundation
 
 final class PetEngine {
-    private let careTickInterval: TimeInterval = 1.5
+    private let careTickInterval: TimeInterval = 3.0
+    private let sleepEnergyThreshold = 18
+    private let wakeEnergyThreshold = 58
+    private let behaviorCycleFrames = 360
+    private let activeWalkFrames = 250
     private var careAccumulator: TimeInterval = 0
 
     private(set) var state: PetState
@@ -92,14 +96,23 @@ final class PetEngine {
     private func applyCareTick() {
         state.hunger = (state.hunger + 1).clamped(to: 0...100)
 
-        if state.behaviorMode == .sleep {
-            state.energy = (state.energy + 1).clamped(to: 0...100)
-        } else {
+        switch state.behaviorMode {
+        case .sleep:
+            state.energy = (state.energy + 2).clamped(to: 0...100)
+        case .play, .special:
+            state.energy = (state.energy - 2).clamped(to: 0...100)
+        case .walk, .eat:
             state.energy = (state.energy - 1).clamped(to: 0...100)
+        case .idle:
+            if state.species != .plantBuddy {
+                state.energy = (state.energy - 1).clamped(to: 0...100)
+            }
         }
 
-        if state.hunger > 70 || state.energy < 30 {
+        if state.hunger > 70 || (state.energy < 30 && state.behaviorMode != .sleep) {
             state.mood = (state.mood - 2).clamped(to: 0...100)
+        } else if state.behaviorMode == .sleep && state.hunger < 82 {
+            state.mood = (state.mood + 1).clamped(to: 0...100)
         } else {
             state.mood = (state.mood + 1).clamped(to: 0...100)
         }
@@ -110,13 +123,18 @@ final class PetEngine {
             return
         }
 
-        if state.energy <= 16 {
-            state.behaviorMode = .sleep
+        if state.species == .plantBuddy {
+            choosePlantBehaviorMode()
             return
         }
 
-        if state.species == .plantBuddy {
-            state.behaviorMode = .idle
+        if state.behaviorMode == .sleep && state.energy < wakeEnergyThreshold {
+            state.velocityX = 0
+            return
+        }
+
+        if state.energy <= sleepEnergyThreshold {
+            beginSleep()
             return
         }
 
@@ -125,7 +143,25 @@ final class PetEngine {
             return
         }
 
-        state.behaviorMode = state.animationFrame % 72 < 54 ? .walk : .idle
+        let cycleFrame = state.animationFrame % behaviorCycleFrames
+        state.behaviorMode = cycleFrame < activeWalkFrames ? .walk : .idle
+    }
+
+    private func choosePlantBehaviorMode() {
+        state.velocityX = 0
+        state.positionX = 0.5
+
+        if state.energy <= sleepEnergyThreshold || state.hunger >= 82 {
+            state.behaviorMode = .idle
+            return
+        }
+
+        state.behaviorMode = state.animationFrame % behaviorCycleFrames < activeWalkFrames ? .play : .idle
+    }
+
+    private func beginSleep() {
+        state.behaviorMode = .sleep
+        state.velocityX = 0
     }
 
     private func updateMovement(elapsed: TimeInterval) {
@@ -141,7 +177,12 @@ final class PetEngine {
         case .eat:
             moveTowardSnack(step: max(baseSpeed * 1.4, 0.040) * elapsed)
         case .play:
-            moveInCurrentDirection(step: max(baseSpeed * 2.1, 0.055) * elapsed)
+            if state.species == .plantBuddy {
+                state.velocityX = 0
+                state.positionX = 0.5
+            } else {
+                moveInCurrentDirection(step: max(baseSpeed * 2.1, 0.055) * elapsed)
+            }
         case .special:
             updateSpecialMovement(baseSpeed: baseSpeed, elapsed: elapsed)
         }
