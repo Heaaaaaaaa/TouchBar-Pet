@@ -16,7 +16,7 @@ final class PetTouchBarSceneView: NSView {
     }
 
     override var intrinsicContentSize: NSSize {
-        NSSize(width: 560, height: 30)
+        NSSize(width: 640, height: 30)
     }
 
     override init(frame frameRect: NSRect) {
@@ -36,15 +36,15 @@ final class PetTouchBarSceneView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        let statsWidth: CGFloat = 88
+        let statsWidth: CGFloat = 122
         // Keep the status badge in the part of the physical Touch Bar that remains
         // visible before the Control Strip compresses or clips trailing content.
-        let trackWidth = min(max(320, bounds.width - 4), 500)
+        let trackWidth = min(max(340, bounds.width - 4), 580)
         let trackRect = NSRect(x: 0, y: 1, width: trackWidth, height: 28)
         let motionRect = NSRect(
             x: trackRect.minX,
             y: trackRect.minY,
-            width: max(190, trackRect.width - statsWidth - 16),
+            width: max(190, trackRect.width - statsWidth - 22),
             height: trackRect.height
         )
         let petScale = scaleForCurrentSpecies()
@@ -59,7 +59,7 @@ final class PetTouchBarSceneView: NSView {
             origin: petOrigin,
             scale: petScale
         )
-        drawStats(in: NSRect(x: trackRect.maxX - statsWidth - 8, y: 6, width: statsWidth, height: 18))
+        drawStats(in: NSRect(x: trackRect.maxX - statsWidth - 8, y: 4, width: statsWidth, height: 22))
     }
 
     private func drawTrack(in rect: NSRect) {
@@ -375,18 +375,24 @@ final class PetTouchBarSceneView: NSView {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
 
-        let pill = NSBezierPath(roundedRect: rect.insetBy(dx: 0, dy: 1), xRadius: 6, yRadius: 6)
-        NSColor.black.withAlphaComponent(0.24).setFill()
+        let pill = NSBezierPath(roundedRect: rect.insetBy(dx: 0, dy: 1), xRadius: 7, yRadius: 7)
+        NSColor.black.withAlphaComponent(0.58).setFill()
         pill.fill()
 
-        NSColor.white.withAlphaComponent(0.18).setStroke()
+        NSColor.white.withAlphaComponent(0.38).setStroke()
         pill.lineWidth = 1
         pill.stroke()
 
+        let textShadow = NSShadow()
+        textShadow.shadowColor = NSColor.black.withAlphaComponent(0.85)
+        textShadow.shadowOffset = NSSize(width: 0, height: 0)
+        textShadow.shadowBlurRadius = 1
+
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .bold),
-            .foregroundColor: NSColor.white.withAlphaComponent(0.95),
-            .paragraphStyle: paragraph
+            .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .heavy),
+            .foregroundColor: NSColor.white,
+            .paragraphStyle: paragraph,
+            .shadow: textShadow
         ]
 
         NSString(string: state.touchBarStatsLine).draw(

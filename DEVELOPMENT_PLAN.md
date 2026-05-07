@@ -493,3 +493,18 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle, reopen it, and verify from a physical Touch Bar photo that the compact badge is visible.
+
+### 2026-05-07 - Wider Scene And Clearer Badge
+
+What was done:
+- Extended the Touch Bar scene width after confirming the inline badge no longer needs a separate right-side status item.
+- Increased the safe scene cap so the bar reaches farther across the Touch Bar while still leaving room before the Control Strip.
+- Changed stat labels to clearer colon-separated text such as `P:0 H:10 C:0`.
+- Made the status capsule darker, wider, slightly taller, and used heavier white monospaced text with a small shadow.
+
+What can be improved:
+- Add small stat icons later if letter labels still feel unclear on the physical Touch Bar.
+- Tune the exact scene cap again from another straight-on Touch Bar photo.
+
+What next:
+- Rebuild the app bundle and verify the aquarium background/status badge on the physical Touch Bar.

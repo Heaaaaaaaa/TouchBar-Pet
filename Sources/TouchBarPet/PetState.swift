@@ -151,15 +151,15 @@ struct PetState: Codable, Equatable {
     var touchBarStatsLine: String {
         switch species {
         case .cat:
-            return "P\(healthLevel) H\(hungerLevel) S\(socialLevel)"
+            return "P:\(healthLevel) H:\(hungerLevel) S:\(socialLevel)"
         case .pufferFish:
-            return "P\(healthLevel) H\(hungerLevel) C\(calmLevel)"
+            return "P:\(healthLevel) H:\(hungerLevel) C:\(calmLevel)"
         case .ghost:
-            return "G\(glowLevel) H\(hungerLevel) M\(socialLevel)"
+            return "G:\(glowLevel) H:\(hungerLevel) M:\(socialLevel)"
         case .dragon:
-            return "P\(healthLevel) H\(hungerLevel) F\(fireLevel)"
+            return "P:\(healthLevel) H:\(hungerLevel) F:\(fireLevel)"
         case .plantBuddy:
-            return "W\(waterLevel) S\(sunLevel) G\(growthLevel)"
+            return "W:\(waterLevel) S:\(sunLevel) G:\(growthLevel)"
         }
     }
 
