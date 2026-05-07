@@ -62,7 +62,7 @@ open "Build/TouchBar Pet.app"
 - `PetTouchBarSceneView` draws the reference-style strip manually.
 - `PetState` now stores `PetBehaviorMode`, direction, normalized Touch Bar position, velocity, and action countdown so movement survives redraws/saves.
 - `PetEngine` chooses walk, eat, play, sleep, and special modes during ticks and user actions. Species-specific movement/touch behavior is centralized in compact `PetProfile` and `PetActionEffect` helpers inside `PetEngine.swift`.
-- `PetTouchBarSceneView` is a custom drawn `NSButton` with gesture-style hit zones. Touching the pet plays with it, touching empty track space calls `engine.feed(at:)` and drops food at that normalized X position, and touching the right status badge calls Rest. Keep the pet data property named `petState`; `NSButton` already owns `state`.
+- `PetTouchBarSceneView` is a custom drawn `NSView` with invisible `NSButton` overlay hit zones. The moving pet has its own button for Play, the right status badge has a Rest button, and 12 hidden food-zone buttons across the empty track call `engine.feed(at:)` with their midpoint position. Keep the pet data property named `petState` if converting this view again; `NSButton` already owns `state`.
 - The app loop calls `PetEngine.tick(elapsed:)` at roughly 18 FPS. `PetEngine` separately accumulates care/stat ticks every 3.0 seconds so animation is smooth without making hunger/energy change too fast.
 - Automatic sleep uses species-specific hysteresis from `PetProfile`; pets enter sleep at low energy and stay asleep until the species wake threshold is reached. This avoids rapid walk/sleep flicker.
 - `AppDelegate` throttles state saves to every 6 seconds instead of saving on every animation frame.

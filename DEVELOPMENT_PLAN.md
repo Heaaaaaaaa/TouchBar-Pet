@@ -651,3 +651,19 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle, quit the old app, reopen the rebuilt app, and retest physical Touch Bar touches.
+
+### 2026-05-07 - Food Placement Hit Zones
+
+What was done:
+- Adjusted the physical Touch Bar interaction after testing showed every touch fired Play because the single scene button did not provide reliable touch coordinates.
+- Changed the scene back to a custom drawn `NSView`, but added invisible `NSButton` overlay zones so the physical Touch Bar still receives standard button actions.
+- Added 12 hidden food zones across the motion track; tapping empty track space now feeds at the touched zone's midpoint.
+- Added a hidden moving pet button above the food zones so touching the pet still plays.
+- Kept the hidden status badge button for Rest.
+
+What can be improved:
+- Increase the number of food zones if the food placement feels too coarse.
+- Add a tiny flash at the chosen food position so touch feedback is obvious even before the pet arrives.
+
+What next:
+- Rebuild, reopen the app, and test touching left/middle/right empty spaces to confirm food appears in different positions.

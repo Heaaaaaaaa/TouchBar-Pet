@@ -7,7 +7,7 @@ enum PetTouchBarSceneAction {
 }
 
 @MainActor
-final class PetTouchBarSceneView: NSButton {
+final class PetTouchBarSceneView: NSView {
     private struct SceneLayout {
         let trackRect: NSRect
         let motionRect: NSRect
@@ -15,10 +15,17 @@ final class PetTouchBarSceneView: NSButton {
     }
 
     private let statsWidth: CGFloat = 122
+    private let foodZoneCount = 12
+    private lazy var foodZoneButtons: [NSButton] = (0..<foodZoneCount).map { index in
+        makeTouchZoneButton(tag: index, action: #selector(foodZonePressed(_:)))
+    }
+    private lazy var petTouchButton = makeTouchZoneButton(tag: -1, action: #selector(petPressed))
+    private lazy var restTouchButton = makeTouchZoneButton(tag: -2, action: #selector(restPressed))
 
     var petState: PetState = .initial {
         didSet {
             setAccessibilityLabel("TouchBar Pet. \(petState.touchBarStatsLine). Touch the pet to play, touch empty space to place food, or touch the status badge to rest.")
+            updateTouchZones()
             needsDisplay = true
         }
     }
@@ -35,27 +42,18 @@ final class PetTouchBarSceneView: NSButton {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        title = ""
-        isBordered = false
-        bezelStyle = .regularSquare
-        target = self
-        action = #selector(scenePressed)
-        sendAction(on: [.leftMouseDown])
         setContentHuggingPriority(.defaultLow, for: .horizontal)
         setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        installTouchZones()
     }
 
     required init?(coder: NSCoder) {
         nil
     }
 
-    @objc private func scenePressed() {
-        if let event = NSApp.currentEvent {
-            let point = convert(event.locationInWindow, from: nil)
-            onAction?(action(at: point))
-        } else {
-            onAction?(.playWithPet)
-        }
+    override func layout() {
+        super.layout()
+        updateTouchZones()
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -73,6 +71,75 @@ final class PetTouchBarSceneView: NSButton {
             scale: petScale
         )
         drawStats(in: sceneLayout.statsRect)
+    }
+
+    private func installTouchZones() {
+        for button in foodZoneButtons {
+            addSubview(button)
+        }
+
+        addSubview(petTouchButton)
+        addSubview(restTouchButton)
+        updateTouchZones()
+    }
+
+    private func makeTouchZoneButton(tag: Int, action: Selector) -> NSButton {
+        let button = NSButton(frame: .zero)
+        button.title = ""
+        button.tag = tag
+        button.target = self
+        button.action = action
+        button.isBordered = false
+        button.isTransparent = true
+        button.bezelStyle = .regularSquare
+        button.setButtonType(.momentaryChange)
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        button.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return button
+    }
+
+    private func updateTouchZones() {
+        guard bounds.width > 0, bounds.height > 0 else {
+            return
+        }
+
+        let sceneLayout = layout(in: bounds)
+        let petScale = scaleForCurrentSpecies()
+        let petOrigin = petOrigin(in: sceneLayout.motionRect, scale: petScale)
+        let petHitRect = NSRect(
+            x: petOrigin.x - 12,
+            y: petOrigin.y - 8,
+            width: nominalSpriteWidth(for: petState.species, scale: petScale) + 24,
+            height: nominalSpriteHeight(for: petState.species, scale: petScale) + 16
+        )
+        let zoneWidth = sceneLayout.motionRect.width / CGFloat(foodZoneCount)
+
+        for (index, button) in foodZoneButtons.enumerated() {
+            button.frame = NSRect(
+                x: sceneLayout.motionRect.minX + CGFloat(index) * zoneWidth,
+                y: sceneLayout.motionRect.minY,
+                width: zoneWidth,
+                height: sceneLayout.motionRect.height
+            )
+        }
+
+        petTouchButton.frame = petHitRect
+        restTouchButton.frame = sceneLayout.statsRect
+    }
+
+    @objc private func foodZonePressed(_ sender: NSButton) {
+        let sceneLayout = layout(in: bounds)
+        let petScale = scaleForCurrentSpecies()
+        let point = NSPoint(x: sender.frame.midX, y: sceneLayout.motionRect.midY)
+        onAction?(.feedAt(normalizedTouchPosition(for: point, in: sceneLayout.motionRect, scale: petScale)))
+    }
+
+    @objc private func petPressed() {
+        onAction?(.playWithPet)
+    }
+
+    @objc private func restPressed() {
+        onAction?(.rest)
     }
 
     private func layout(in bounds: NSRect) -> SceneLayout {
@@ -94,32 +161,6 @@ final class PetTouchBarSceneView: NSButton {
             motionRect: motionRect,
             statsRect: statsRect
         )
-    }
-
-    private func action(at point: NSPoint) -> PetTouchBarSceneAction {
-        let sceneLayout = layout(in: bounds)
-        let petScale = scaleForCurrentSpecies()
-        let petOrigin = petOrigin(in: sceneLayout.motionRect, scale: petScale)
-        let petHitRect = NSRect(
-            x: petOrigin.x - 10,
-            y: petOrigin.y - 8,
-            width: nominalSpriteWidth(for: petState.species, scale: petScale) + 20,
-            height: nominalSpriteHeight(for: petState.species, scale: petScale) + 16
-        )
-
-        if sceneLayout.statsRect.contains(point) {
-            return .rest
-        }
-
-        if petHitRect.contains(point) {
-            return .playWithPet
-        }
-
-        if sceneLayout.trackRect.contains(point) {
-            return .feedAt(normalizedTouchPosition(for: point, in: sceneLayout.motionRect, scale: petScale))
-        }
-
-        return .playWithPet
     }
 
     private func normalizedTouchPosition(for point: NSPoint, in rect: NSRect, scale: CGFloat) -> Double {
