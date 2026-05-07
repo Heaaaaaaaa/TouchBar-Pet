@@ -35,8 +35,8 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
 
     func render(_ state: PetState) {
         latestState = state
-        persistentSceneView.state = state
-        windowSceneView.state = state
+        persistentSceneView.petState = state
+        windowSceneView.petState = state
         trayView.petState = state
     }
 
@@ -98,7 +98,7 @@ final class PetTouchBarController: NSObject, NSTouchBarDelegate {
         isPersistentInstalled = false
         persistentSceneView = PetTouchBarSceneView()
         configureSceneView(persistentSceneView)
-        persistentSceneView.state = latestState
+        persistentSceneView.petState = latestState
         persistentTouchBar = makeTouchBar()
     }
 

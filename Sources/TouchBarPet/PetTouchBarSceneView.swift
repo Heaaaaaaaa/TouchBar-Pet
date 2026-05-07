@@ -7,7 +7,7 @@ enum PetTouchBarSceneAction {
 }
 
 @MainActor
-final class PetTouchBarSceneView: NSControl {
+final class PetTouchBarSceneView: NSButton {
     private struct SceneLayout {
         let trackRect: NSRect
         let motionRect: NSRect
@@ -16,9 +16,9 @@ final class PetTouchBarSceneView: NSControl {
 
     private let statsWidth: CGFloat = 122
 
-    var state: PetState = .initial {
+    var petState: PetState = .initial {
         didSet {
-            setAccessibilityLabel("TouchBar Pet. \(state.touchBarStatsLine). Touch the pet to play, touch empty space to place food, or touch the status badge to rest.")
+            setAccessibilityLabel("TouchBar Pet. \(petState.touchBarStatsLine). Touch the pet to play, touch empty space to place food, or touch the status badge to rest.")
             needsDisplay = true
         }
     }
@@ -35,6 +35,12 @@ final class PetTouchBarSceneView: NSControl {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        title = ""
+        isBordered = false
+        bezelStyle = .regularSquare
+        target = self
+        action = #selector(scenePressed)
+        sendAction(on: [.leftMouseDown])
         setContentHuggingPriority(.defaultLow, for: .horizontal)
         setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
@@ -43,9 +49,13 @@ final class PetTouchBarSceneView: NSControl {
         nil
     }
 
-    override func mouseDown(with event: NSEvent) {
-        let point = convert(event.locationInWindow, from: nil)
-        onAction?(action(at: point))
+    @objc private func scenePressed() {
+        if let event = NSApp.currentEvent {
+            let point = convert(event.locationInWindow, from: nil)
+            onAction?(action(at: point))
+        } else {
+            onAction?(.playWithPet)
+        }
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -57,8 +67,8 @@ final class PetTouchBarSceneView: NSControl {
         drawInteractionCue(in: sceneLayout.motionRect, petOrigin: petOrigin, scale: petScale)
         drawPetShadow(in: sceneLayout.trackRect, petOrigin: petOrigin, scale: petScale)
         PetPixelArt.drawPet(
-            species: state.species,
-            state: state,
+            species: petState.species,
+            state: petState,
             origin: petOrigin,
             scale: petScale
         )
@@ -93,8 +103,8 @@ final class PetTouchBarSceneView: NSControl {
         let petHitRect = NSRect(
             x: petOrigin.x - 10,
             y: petOrigin.y - 8,
-            width: nominalSpriteWidth(for: state.species, scale: petScale) + 20,
-            height: nominalSpriteHeight(for: state.species, scale: petScale) + 16
+            width: nominalSpriteWidth(for: petState.species, scale: petScale) + 20,
+            height: nominalSpriteHeight(for: petState.species, scale: petScale) + 16
         )
 
         if sceneLayout.statsRect.contains(point) {
@@ -113,7 +123,7 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func normalizedTouchPosition(for point: NSPoint, in rect: NSRect, scale: CGFloat) -> Double {
-        let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
+        let spriteWidth = nominalSpriteWidth(for: petState.species, scale: scale)
         let xInset = max(spriteWidth + 8, 28)
         let usableWidth = max(1, rect.width - xInset * 2)
         return Double((point.x - rect.minX - xInset) / usableWidth).clamped(to: 0.06...0.94)
@@ -121,12 +131,12 @@ final class PetTouchBarSceneView: NSControl {
 
     private func drawTrack(in rect: NSRect) {
         let path = NSBezierPath(roundedRect: rect, xRadius: 8, yRadius: 8)
-        let drewAssetBackground = PetBitmapBackground.drawBackground(state.activeBackground, in: rect)
+        let drewAssetBackground = PetBitmapBackground.drawBackground(petState.activeBackground, in: rect)
 
         if !drewAssetBackground {
-            color(for: state.activeBackground).setFill()
+            color(for: petState.activeBackground).setFill()
             path.fill()
-            drawBackgroundDetails(in: rect, background: state.activeBackground)
+            drawBackgroundDetails(in: rect, background: petState.activeBackground)
         }
 
         NSColor.black.withAlphaComponent(0.42).setStroke()
@@ -145,7 +155,7 @@ final class PetTouchBarSceneView: NSControl {
     private func color(for background: PetBackground) -> NSColor {
         switch background {
         case .auto:
-            return color(for: state.species.defaultBackground)
+            return color(for: petState.species.defaultBackground)
         case .aquarium:
             return NSColor(calibratedRed: 0.16, green: 0.88, blue: 0.98, alpha: 1.0)
         case .night:
@@ -160,7 +170,7 @@ final class PetTouchBarSceneView: NSControl {
     private func drawBackgroundDetails(in rect: NSRect, background: PetBackground) {
         switch background {
         case .auto:
-            drawBackgroundDetails(in: rect, background: state.species.defaultBackground)
+            drawBackgroundDetails(in: rect, background: petState.species.defaultBackground)
         case .aquarium:
             drawAquariumDetails(in: rect)
         case .night:
@@ -254,11 +264,11 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func scaleForCurrentSpecies() -> CGFloat {
-        switch state.species {
+        switch petState.species {
         case .cat:
             return 2.75
         case .pufferFish:
-            return state.behaviorMode != .sleep && (state.behaviorMode == .special || state.hunger > 72) ? 2.55 : 3.0
+            return petState.behaviorMode != .sleep && (petState.behaviorMode == .special || petState.hunger > 72) ? 2.55 : 3.0
         case .ghost:
             return 2.95
         case .dragon:
@@ -269,22 +279,22 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func petOrigin(in rect: NSRect, scale: CGFloat) -> NSPoint {
-        let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
-        let x = sceneX(for: state.positionX, in: rect, scale: scale)
-        let baseY = rect.maxY - nominalSpriteHeight(for: state.species, scale: scale) - 4
+        let spriteWidth = nominalSpriteWidth(for: petState.species, scale: scale)
+        let x = sceneX(for: petState.positionX, in: rect, scale: scale)
+        let baseY = rect.maxY - nominalSpriteHeight(for: petState.species, scale: scale) - 4
         let bob = verticalMotion()
 
         return NSPoint(x: x - spriteWidth / 2, y: baseY + bob)
     }
 
     private func sceneX(for normalizedPosition: Double, in rect: NSRect, scale: CGFloat) -> CGFloat {
-        let spriteWidth = nominalSpriteWidth(for: state.species, scale: scale)
+        let spriteWidth = nominalSpriteWidth(for: petState.species, scale: scale)
         let xInset = max(spriteWidth + 8, 28)
         return rect.minX + xInset + CGFloat(normalizedPosition) * max(1, rect.width - xInset * 2)
     }
 
     private func nominalSpriteWidth(for species: PetSpecies, scale: CGFloat) -> CGFloat {
-        if let assetSize = PetBitmapArt.preferredSize(species: species, state: state, scale: scale) {
+        if let assetSize = PetBitmapArt.preferredSize(species: species, state: petState, scale: scale) {
             return assetSize.width
         }
 
@@ -303,7 +313,7 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func nominalSpriteHeight(for species: PetSpecies, scale: CGFloat) -> CGFloat {
-        if let assetSize = PetBitmapArt.preferredSize(species: species, state: state, scale: scale) {
+        if let assetSize = PetBitmapArt.preferredSize(species: species, state: petState, scale: scale) {
             return assetSize.height
         }
 
@@ -311,7 +321,7 @@ final class PetTouchBarSceneView: NSControl {
         case .cat:
             return 6.0 * scale
         case .pufferFish:
-            return (state.behaviorMode != .sleep && (state.behaviorMode == .special || state.hunger > 72) ? 7.0 : 5.0) * scale
+            return (petState.behaviorMode != .sleep && (petState.behaviorMode == .special || petState.hunger > 72) ? 7.0 : 5.0) * scale
         case .ghost:
             return 6.0 * scale
         case .dragon:
@@ -322,55 +332,55 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func verticalMotion() -> CGFloat {
-        let frame = Double(state.animationFrame)
+        let frame = Double(petState.animationFrame)
 
-        switch state.species {
+        switch petState.species {
         case .cat:
-            return state.behaviorMode == .play ? -5 : 0
+            return petState.behaviorMode == .play ? -5 : 0
         case .pufferFish:
-            if state.behaviorMode == .sleep {
+            if petState.behaviorMode == .sleep {
                 return CGFloat(sin(frame * 0.28) * 0.6)
             }
 
             return CGFloat(sin(frame * 0.9) * 2.2)
         case .ghost:
             let float = CGFloat(sin(frame * 0.7) * 2.7)
-            return state.behaviorMode == .special ? float - 2 : float
+            return petState.behaviorMode == .special ? float - 2 : float
         case .dragon:
-            return state.behaviorMode == .special ? CGFloat(sin(frame * 1.2) * 2.5) - 3 : 0
+            return petState.behaviorMode == .special ? CGFloat(sin(frame * 1.2) * 2.5) - 3 : 0
         case .plantBuddy:
             return 0
         }
     }
 
     private func drawInteractionCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
-        if state.behaviorMode == .eat {
+        if petState.behaviorMode == .eat {
             drawSnack(in: rect)
         }
 
-        if state.behaviorMode == .play {
+        if petState.behaviorMode == .play {
             drawPlayCue(in: rect, petOrigin: petOrigin, scale: scale)
         }
 
-        if state.behaviorMode == .sleep {
+        if petState.behaviorMode == .sleep {
             drawTinyText(
                 "z",
-                at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 4, y: rect.minY + 4),
+                at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 4, y: rect.minY + 4),
                 size: 12,
                 color: NSColor(calibratedRed: 0.70, green: 0.90, blue: 1.0, alpha: 0.95)
             )
         }
 
-        if state.behaviorMode == .special {
+        if petState.behaviorMode == .special {
             drawSpecialCue(in: rect, petOrigin: petOrigin, scale: scale)
         }
     }
 
     private func drawSnack(in rect: NSRect) {
-        let snackCenterX = sceneX(for: state.snackPositionX, in: rect, scale: scaleForCurrentSpecies())
+        let snackCenterX = sceneX(for: petState.snackPositionX, in: rect, scale: scaleForCurrentSpecies())
         let snackY = rect.midY - 3
 
-        switch state.species {
+        switch petState.species {
         case .cat:
             let snackX = snackCenterX - 5
             NSColor(calibratedRed: 0.16, green: 0.50, blue: 0.70, alpha: 1.0).setFill()
@@ -397,9 +407,9 @@ final class PetTouchBarSceneView: NSControl {
     }
 
     private func drawPlayCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
-        switch state.species {
+        switch petState.species {
         case .cat:
-            let toyPosition = (state.positionX + 0.10 * state.direction.multiplier).clamped(to: 0.06...0.94)
+            let toyPosition = (petState.positionX + 0.10 * petState.direction.multiplier).clamped(to: 0.06...0.94)
             let toyX = sceneX(for: toyPosition, in: rect, scale: scale) - 3
             NSColor(calibratedRed: 1.0, green: 0.32, blue: 0.58, alpha: 1.0).setFill()
             NSBezierPath(ovalIn: NSRect(x: toyX, y: rect.midY - 2, width: 6, height: 6)).fill()
@@ -412,15 +422,15 @@ final class PetTouchBarSceneView: NSControl {
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
             drawSparkle(at: NSPoint(x: petOrigin.x + 30, y: rect.minY + 5))
         case .dragon:
-            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) - 2, y: rect.minY + 11))
+            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) - 2, y: rect.minY + 11))
         case .plantBuddy:
-            drawSunSpark(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 5, y: rect.minY + 6))
+            drawSunSpark(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 5, y: rect.minY + 6))
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 10))
         }
     }
 
     private func drawSpecialCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
-        switch state.species {
+        switch petState.species {
         case .cat:
             drawPlayCue(in: rect, petOrigin: petOrigin, scale: scale)
         case .pufferFish:
@@ -430,28 +440,28 @@ final class PetTouchBarSceneView: NSControl {
         case .ghost:
             drawTinyText(
                 "boo",
-                at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 3, y: rect.minY + 5),
+                at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 3, y: rect.minY + 5),
                 size: 10,
                 color: NSColor(calibratedRed: 0.78, green: 0.92, blue: 1.0, alpha: 0.98)
             )
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
         case .dragon:
-            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: state.species, scale: scale) + 1, y: rect.minY + 9))
+            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 1, y: rect.minY + 9))
         case .plantBuddy:
             drawSunSpark(at: NSPoint(x: petOrigin.x + 24, y: rect.minY + 5))
         }
     }
 
     private func drawPetShadow(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
-        guard state.species != .ghost else {
+        guard petState.species != .ghost else {
             return
         }
 
-        let phase = abs(sin(Double(state.animationFrame) * .pi / 4))
-        let isMoving = state.behaviorMode == .walk || state.behaviorMode == .eat || state.behaviorMode == .play || state.behaviorMode == .special
-        var width = nominalSpriteWidth(for: state.species, scale: scale) * 0.68
+        let phase = abs(sin(Double(petState.animationFrame) * .pi / 4))
+        let isMoving = petState.behaviorMode == .walk || petState.behaviorMode == .eat || petState.behaviorMode == .play || petState.behaviorMode == .special
+        var width = nominalSpriteWidth(for: petState.species, scale: scale) * 0.68
         var height: CGFloat = 3
-        var alpha: CGFloat = state.species == .pufferFish ? 0.12 : 0.22
+        var alpha: CGFloat = petState.species == .pufferFish ? 0.12 : 0.22
 
         if isMoving {
             width *= 1.0 + CGFloat(phase) * 0.10
@@ -528,7 +538,7 @@ final class PetTouchBarSceneView: NSControl {
             .shadow: textShadow
         ]
 
-        NSString(string: state.touchBarStatsLine).draw(
+        NSString(string: petState.touchBarStatsLine).draw(
             with: rect,
             options: [.usesLineFragmentOrigin, .usesFontLeading],
             attributes: attributes

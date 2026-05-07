@@ -636,3 +636,18 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and physically test three Touch Bar gestures: pet touch, empty-space food placement, and status-badge rest.
+
+### 2026-05-07 - Physical Touch Event Receiver Fix
+
+What was done:
+- Inspected the user's physical Touch Bar video and confirmed the pet scene stayed visible but touches did not change behavior.
+- Changed `PetTouchBarSceneView` back to a custom drawn `NSButton`, which is a more reliable event receiver for physical Touch Bar items than a plain custom control.
+- Renamed the scene's pet data property from `state` to `petState` so it no longer collides with `NSButton.state`.
+- Routed button press events through the existing gesture hit zones: pet play, empty-space food placement, and status-badge rest.
+
+What can be improved:
+- Add a temporary debug flash or small cue on touch if physical testing still makes it hard to tell whether an event fired.
+- Add an optional debug menu that shows the last Touch Bar action received.
+
+What next:
+- Rebuild the app bundle, quit the old app, reopen the rebuilt app, and retest physical Touch Bar touches.
