@@ -66,7 +66,8 @@ open "Build/TouchBar Pet.app"
 - Do not alternate incompatible bitmap poses frame-by-frame; Cat/Ghost/Dragon now keep one moving pose until the behavior mode changes.
 - `PetBitmapArt` also applies procedural sprite motion over the bitmap poses: bobbing, squash/stretch, drift, hover, and plant sway. This is the current replacement for true same-canvas walk frames.
 - `AppDelegate` currently redraws at roughly 18 FPS; care/stat updates are still accumulated separately in `PetEngine`.
-- `PetState.touchBarStatsLine` uses compact labels like `Gl8 Hu2 Mo7` because full words were clipped by the Touch Bar Control Strip.
+- `PetState.touchBarStatsLine` uses compact labels like `G8 H2 M7` because full words were clipped by the Touch Bar Control Strip.
+- `PetTouchBarSceneView` draws the status as a small badge inside a capped scene strip. Do not move it back into a separate trailing Touch Bar item unless there is a better Control Strip-safe layout.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

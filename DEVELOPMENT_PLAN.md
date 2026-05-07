@@ -478,3 +478,18 @@ What can be improved:
 
 What next:
 - Test the ghost again on the physical Touch Bar and confirm the stat text is readable.
+
+### 2026-05-07 - Inline Touch Bar Status Badge
+
+What was done:
+- Moved the Touch Bar status text into the pet scene strip instead of drawing it beside the strip near the Control Strip.
+- Shortened the status labels again to compact forms such as `G10 H2 M7`.
+- Capped the drawn scene width so the status badge stays in the visible Touch Bar area even when macOS clips trailing content.
+- Reserved space inside the scene track so the pet movement does not run under the status badge.
+
+What can be improved:
+- Add a menu toggle to hide the status badge completely for users who want maximum pet/background space.
+- Add an auto-width badge if future stats need longer names or icons.
+
+What next:
+- Rebuild the app bundle, reopen it, and verify from a physical Touch Bar photo that the compact badge is visible.

@@ -16,7 +16,7 @@ final class PetTouchBarSceneView: NSView {
     }
 
     override var intrinsicContentSize: NSSize {
-        NSSize(width: 860, height: 30)
+        NSSize(width: 560, height: 30)
     }
 
     override init(frame frameRect: NSRect) {
@@ -36,14 +36,22 @@ final class PetTouchBarSceneView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
-        let statsWidth: CGFloat = bounds.width >= 780 ? 265 : 210
-        let trackWidth = max(360, bounds.width - statsWidth - 14)
+        let statsWidth: CGFloat = 88
+        // Keep the status badge in the part of the physical Touch Bar that remains
+        // visible before the Control Strip compresses or clips trailing content.
+        let trackWidth = min(max(320, bounds.width - 4), 500)
         let trackRect = NSRect(x: 0, y: 1, width: trackWidth, height: 28)
+        let motionRect = NSRect(
+            x: trackRect.minX,
+            y: trackRect.minY,
+            width: max(190, trackRect.width - statsWidth - 16),
+            height: trackRect.height
+        )
         let petScale = scaleForCurrentSpecies()
-        let petOrigin = petOrigin(in: trackRect, scale: petScale)
+        let petOrigin = petOrigin(in: motionRect, scale: petScale)
 
         drawTrack(in: trackRect)
-        drawInteractionCue(in: trackRect, petOrigin: petOrigin, scale: petScale)
+        drawInteractionCue(in: motionRect, petOrigin: petOrigin, scale: petScale)
         drawPetShadow(in: trackRect, petOrigin: petOrigin, scale: petScale)
         PetPixelArt.drawPet(
             species: state.species,
@@ -51,7 +59,7 @@ final class PetTouchBarSceneView: NSView {
             origin: petOrigin,
             scale: petScale
         )
-        drawStats(in: NSRect(x: trackRect.maxX + 8, y: 4, width: statsWidth, height: 22))
+        drawStats(in: NSRect(x: trackRect.maxX - statsWidth - 8, y: 6, width: statsWidth, height: 18))
     }
 
     private func drawTrack(in rect: NSRect) {
@@ -365,11 +373,19 @@ final class PetTouchBarSceneView: NSView {
 
     private func drawStats(in rect: NSRect) {
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .left
+        paragraph.alignment = .center
+
+        let pill = NSBezierPath(roundedRect: rect.insetBy(dx: 0, dy: 1), xRadius: 6, yRadius: 6)
+        NSColor.black.withAlphaComponent(0.24).setFill()
+        pill.fill()
+
+        NSColor.white.withAlphaComponent(0.18).setStroke()
+        pill.lineWidth = 1
+        pill.stroke()
 
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 14, weight: .semibold),
-            .foregroundColor: NSColor.white,
+            .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .bold),
+            .foregroundColor: NSColor.white.withAlphaComponent(0.95),
             .paragraphStyle: paragraph
         ]
 
