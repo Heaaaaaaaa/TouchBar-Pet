@@ -56,6 +56,22 @@ Use the `TBP` menu-bar item:
 
 `Auto` chooses a matching background for the selected pet.
 
+## Touch Bar Status Badge
+
+The small badge inside the Touch Bar scene shows three short stats. Each number is from `0` to `10`.
+
+Important: `H` means hunger, so a higher `H` means the pet is more hungry and should be fed. Most other stats are better when higher.
+
+Species badges:
+
+- Cat: `P` = pet health, `H` = hunger, `S` = social mood
+- Puffer Fish: `P` = pet health, `H` = hunger, `C` = calm
+- Ghost: `G` = glow, `H` = hunger, `M` = mood
+- Dragon: `P` = pet health, `H` = hunger, `F` = fire
+- Plant Buddy: `W` = water, `S` = sun, `G` = growth
+
+Example: `P:0 H:10 C:0` means the puffer fish has very low health, is very hungry, and has low calm.
+
 ## Xcode Setup
 
 After installing full Xcode:

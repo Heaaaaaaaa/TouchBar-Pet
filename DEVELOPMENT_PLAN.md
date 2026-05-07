@@ -508,3 +508,17 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle and verify the aquarium background/status badge on the physical Touch Bar.
+
+### 2026-05-07 - README Status Legend
+
+What was done:
+- Added a README section explaining the Touch Bar status badge.
+- Documented that badge numbers run from `0` to `10`.
+- Clarified that `H` is hunger, so higher `H` means the pet is more hungry.
+- Listed the per-species stat letters for Cat, Puffer Fish, Ghost, Dragon, and Plant Buddy.
+
+What can be improved:
+- Replace letter labels with tiny stat icons in the Touch Bar UI if the text remains hard to remember.
+
+What next:
+- Keep the README legend in sync if the badge labels change again.
