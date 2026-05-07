@@ -761,3 +761,17 @@ What can be improved:
 
 What next:
 - Rebuild and retest the dragon sleeping/background state and dragon fire pose on the physical Touch Bar.
+
+### 2026-05-07 - Repository About Text
+
+What was done:
+- Updated the GitHub repository About description.
+- Added the release page as the repository homepage URL.
+- Added repo topics: `macos`, `swift`, `appkit`, `touch-bar`, `virtual-pet`, `pixel-art`, and `menu-bar-app`.
+- Added a matching README `About` section describing the project, pets, touch interactions, and AppKit Touch Bar focus.
+
+What can be improved:
+- Add a short GIF or screenshot strip to the README so visitors can see the Touch Bar experience immediately.
+
+What next:
+- Keep the About text aligned with future releases if the app gains signing, auto-update, or more pet interactions.

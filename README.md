@@ -4,6 +4,12 @@ TouchBar Pet is a native macOS AppKit app for MacBook models with a Touch Bar. I
 
 GitHub repo: https://github.com/Heaaaaaaaa/TouchBar-Pet
 
+## About
+
+TouchBar Pet turns the MacBook Touch Bar into a tiny interactive pixel-pet space. Pick a cat, puffer fish, ghost, dragon, or plant buddy, then feed, play, and rest it directly from the Touch Bar. The app runs quietly from the menu bar, saves the pet state between launches, and includes generated pixel-art pets, foods, backgrounds, and app icons.
+
+This project is built as a personal macOS experiment around AppKit `NSTouchBar`, persistent Touch Bar presentation, and small-screen pixel animation.
+
 ## Current Status
 
 The first MVP scaffold is implemented as a Swift package. It builds with the full Xcode toolchain and can also create a clickable fallback app bundle with `Scripts/build-app.sh`.
