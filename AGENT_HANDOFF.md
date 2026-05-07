@@ -51,6 +51,9 @@ open "Build/TouchBar Pet.app"
 - `Sources/TouchBarPet/Resources/Icons/menu-bar-icon.png`: 36 px transparent menu-bar template icon.
 - `Scripts/extract-pixel-sprites.py`: regenerates pet, background, and food PNG assets from the generated concept sheets.
 - Ghost crop rectangles are intentionally shorter than the full row so the extracted ghost sprites do not include dragon-row pixels underneath.
+- Dragon fire is intentionally cropped short so the generated fireball does not read as a yellow block and the next-row blue fragment does not appear under the dragon foot.
+- The cozy background is cleaned by the extraction script to remove generated fireplace/candle/sleeping-pet leftovers.
+- Plant Buddy food is isolated to blue water pixels and rendered smaller than the other food sprites.
 
 ## Architecture Notes
 

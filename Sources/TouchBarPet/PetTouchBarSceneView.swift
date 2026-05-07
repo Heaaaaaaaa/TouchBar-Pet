@@ -602,7 +602,7 @@ final class PetTouchBarSceneView: NSView {
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
             drawSparkle(at: NSPoint(x: petOrigin.x + 30, y: rect.minY + 5))
         case .dragon:
-            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) - 2, y: rect.minY + 11))
+            drawSparkle(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) - 3, y: rect.minY + 8))
         case .plantBuddy:
             drawSunSpark(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 5, y: rect.minY + 6))
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 10))
@@ -626,7 +626,7 @@ final class PetTouchBarSceneView: NSView {
             )
             drawSparkle(at: NSPoint(x: petOrigin.x - 8, y: rect.minY + 9))
         case .dragon:
-            drawFlame(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 1, y: rect.minY + 9))
+            drawSparkle(at: NSPoint(x: petOrigin.x + nominalSpriteWidth(for: petState.species, scale: scale) + 1, y: rect.minY + 8))
         case .plantBuddy:
             drawSunSpark(at: NSPoint(x: petOrigin.x + 24, y: rect.minY + 5))
         }

@@ -67,7 +67,7 @@ enum PetBitmapFood {
         case .dragon:
             return NSSize(width: 25, height: 21)
         case .plantBuddy:
-            return NSSize(width: 27, height: 21)
+            return NSSize(width: 18, height: 15)
         }
     }
 
@@ -80,7 +80,7 @@ enum PetBitmapFood {
         case .dragon:
             return -0.5
         case .plantBuddy:
-            return -1
+            return 1
         }
     }
 

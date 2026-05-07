@@ -732,3 +732,19 @@ What can be improved:
 
 What next:
 - Rebuild the app bundle, quit the old app, reopen the rebuilt app, and confirm the menu bar shows the new icon.
+
+### 2026-05-07 - Touch Bar Asset Cleanup
+
+What was done:
+- Used Computer Use to inspect the user's Touch Bar video.
+- Tightened the dragon fire sprite crop so the large generated fireball no longer reads as a yellow block and the blue next-row fragment no longer appears under the dragon foot.
+- Removed the extra procedural dragon flame cue that was stacking on top of the bitmap fire pose.
+- Cleaned the cozy background during extraction so fireplace/candle/sleeping-pet leftovers do not appear behind the dragon.
+- Cropped and isolated Plant Buddy's food to blue water pixels and reduced its render size.
+
+What can be improved:
+- If the dragon still needs more fire expression, create a dedicated smaller dragon flame sprite instead of using the oversized generated fireball.
+- Add an automated sprite-preview sheet that renders every species/background/food combination at Touch Bar size before testing on hardware.
+
+What next:
+- Rebuild the app bundle and retest the dragon fire pose, cozy background, and Plant Buddy food on the physical Touch Bar.
