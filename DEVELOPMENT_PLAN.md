@@ -667,3 +667,21 @@ What can be improved:
 
 What next:
 - Rebuild, reopen the app, and test touching left/middle/right empty spaces to confirm food appears in different positions.
+
+### 2026-05-07 - Refined Pixel Food Design
+
+What was done:
+- Replaced simple block snacks with species-specific pixel food drawings.
+- Cat now gets a tiny blue fish snack with tail, stripe, and eye.
+- Puffer Fish gets glowing golden pellet clusters.
+- Ghost gets a glowing soul-star snack.
+- Dragon gets a small flame/meat snack.
+- Plant Buddy gets water-drop food with a small green sprout cue.
+- Added shared snack glow and shadow helpers so placed food reads clearly on bright and dark backgrounds.
+
+What can be improved:
+- Extract food sprites from a generated asset sheet later if the code-drawn versions still look too simple.
+- Add a short sparkle/flash when food is first placed.
+
+What next:
+- Rebuild the app bundle and test each pet species on the physical Touch Bar.

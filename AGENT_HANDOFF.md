@@ -78,6 +78,7 @@ open "Build/TouchBar Pet.app"
 - `PetTouchBarSceneView` draws the status as a darker in-scene badge inside a capped scene strip. Do not move it back into a separate trailing Touch Bar item unless there is a better Control Strip-safe layout.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
+- Touch Bar food is code-drawn per species in `PetTouchBarSceneView.drawSnack(...)`: cat fish, puffer pellets, ghost soul-star, dragon flame/meat snack, and plant water drops.
 - Feed, Play, and Rest are available in the app window and the `TBP` menu. In the expanded Touch Bar scene, avoid visible action buttons: empty-space taps place food, pet taps play, and status-badge taps rest.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.
 

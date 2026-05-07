@@ -419,32 +419,166 @@ final class PetTouchBarSceneView: NSView {
 
     private func drawSnack(in rect: NSRect) {
         let snackCenterX = sceneX(for: petState.snackPositionX, in: rect, scale: scaleForCurrentSpecies())
-        let snackY = rect.midY - 3
+        let snackCenter = NSPoint(x: snackCenterX, y: rect.midY)
+        drawSnackShadow(center: snackCenter)
 
         switch petState.species {
         case .cat:
-            let snackX = snackCenterX - 5
-            NSColor(calibratedRed: 0.16, green: 0.50, blue: 0.70, alpha: 1.0).setFill()
-            NSRect(x: snackX, y: snackY, width: 11, height: 5).fill()
-            NSRect(x: snackX - 3, y: snackY + 1, width: 3, height: 3).fill()
+            drawFishSnack(center: snackCenter)
         case .pufferFish:
-            let snackX = snackCenterX - 2
-            NSColor(calibratedRed: 1.0, green: 0.86, blue: 0.20, alpha: 1.0).setFill()
-            NSRect(x: snackX, y: snackY, width: 5, height: 5).fill()
+            drawPelletSnack(center: snackCenter)
         case .ghost:
-            drawSparkle(at: NSPoint(x: snackCenterX - 3, y: snackY))
+            drawSoulStarSnack(center: snackCenter)
         case .dragon:
-            let snackX = snackCenterX - 4
-            NSColor(calibratedRed: 0.95, green: 0.30, blue: 0.08, alpha: 1.0).setFill()
-            NSRect(x: snackX, y: snackY, width: 8, height: 6).fill()
-            NSColor(calibratedRed: 1.0, green: 0.80, blue: 0.28, alpha: 1.0).setFill()
-            NSRect(x: snackX + 2, y: snackY + 1, width: 3, height: 3).fill()
+            drawDragonSnack(center: snackCenter)
         case .plantBuddy:
-            let snackX = snackCenterX - 3
-            NSColor(calibratedRed: 0.40, green: 0.90, blue: 1.0, alpha: 1.0).setFill()
-            NSRect(x: snackX, y: snackY - 5, width: 3, height: 6).fill()
-            NSRect(x: snackX + 4, y: snackY - 1, width: 3, height: 6).fill()
+            drawWaterSnack(center: snackCenter)
         }
+    }
+
+    private func drawSnackShadow(center: NSPoint) {
+        NSColor.black.withAlphaComponent(0.22).setFill()
+        NSBezierPath(ovalIn: NSRect(x: center.x - 8, y: center.y + 5, width: 16, height: 3)).fill()
+    }
+
+    private func drawFishSnack(center: NSPoint) {
+        let body = NSRect(x: center.x - 8, y: center.y - 4, width: 13, height: 8)
+        let tail = NSBezierPath()
+        tail.move(to: NSPoint(x: center.x + 5, y: center.y))
+        tail.line(to: NSPoint(x: center.x + 10, y: center.y - 4))
+        tail.line(to: NSPoint(x: center.x + 10, y: center.y + 4))
+        tail.close()
+
+        NSColor.black.withAlphaComponent(0.55).setFill()
+        NSBezierPath(ovalIn: body.insetBy(dx: -1, dy: -1)).fill()
+        tail.fill()
+
+        NSColor(calibratedRed: 0.12, green: 0.70, blue: 0.95, alpha: 1.0).setFill()
+        NSBezierPath(ovalIn: body).fill()
+        NSColor(calibratedRed: 0.05, green: 0.48, blue: 0.88, alpha: 1.0).setFill()
+        tail.fill()
+
+        NSColor.white.withAlphaComponent(0.95).setFill()
+        NSRect(x: center.x - 4, y: center.y - 2, width: 2, height: 5).fill()
+        NSColor.black.withAlphaComponent(0.78).setFill()
+        NSRect(x: center.x - 7, y: center.y - 1, width: 2, height: 2).fill()
+    }
+
+    private func drawPelletSnack(center: NSPoint) {
+        let pelletPoints = [
+            NSPoint(x: center.x - 5, y: center.y + 1),
+            NSPoint(x: center.x, y: center.y - 3),
+            NSPoint(x: center.x + 5, y: center.y + 2)
+        ]
+
+        drawSnackGlow(center: center, color: NSColor(calibratedRed: 1.0, green: 0.82, blue: 0.22, alpha: 1.0))
+
+        for point in pelletPoints {
+            NSColor.black.withAlphaComponent(0.55).setFill()
+            NSBezierPath(ovalIn: NSRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)).fill()
+            NSColor(calibratedRed: 1.0, green: 0.76, blue: 0.20, alpha: 1.0).setFill()
+            NSBezierPath(ovalIn: NSRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4)).fill()
+            NSColor.white.withAlphaComponent(0.85).setFill()
+            NSRect(x: point.x - 1, y: point.y - 2, width: 1, height: 1).fill()
+        }
+    }
+
+    private func drawSoulStarSnack(center: NSPoint) {
+        drawSnackGlow(center: center, color: NSColor(calibratedRed: 0.80, green: 0.92, blue: 1.0, alpha: 1.0))
+
+        NSColor.black.withAlphaComponent(0.45).setFill()
+        drawDiamond(center: center, radius: 8)
+        NSColor(calibratedRed: 0.78, green: 0.92, blue: 1.0, alpha: 1.0).setFill()
+        drawDiamond(center: center, radius: 6)
+
+        NSColor.white.withAlphaComponent(0.95).setFill()
+        NSRect(x: center.x - 1, y: center.y - 6, width: 2, height: 12).fill()
+        NSRect(x: center.x - 6, y: center.y - 1, width: 12, height: 2).fill()
+
+        NSColor(calibratedRed: 0.64, green: 0.56, blue: 1.0, alpha: 0.9).setFill()
+        NSRect(x: center.x + 8, y: center.y + 3, width: 2, height: 2).fill()
+        NSRect(x: center.x - 10, y: center.y - 4, width: 2, height: 2).fill()
+    }
+
+    private func drawDragonSnack(center: NSPoint) {
+        let meat = NSRect(x: center.x - 6, y: center.y - 5, width: 12, height: 9)
+        drawSnackGlow(center: center, color: NSColor(calibratedRed: 1.0, green: 0.32, blue: 0.08, alpha: 1.0))
+
+        NSColor.black.withAlphaComponent(0.55).setFill()
+        NSBezierPath(ovalIn: meat.insetBy(dx: -1, dy: -1)).fill()
+        NSColor(calibratedRed: 0.92, green: 0.18, blue: 0.08, alpha: 1.0).setFill()
+        NSBezierPath(ovalIn: meat).fill()
+
+        NSColor(calibratedRed: 1.0, green: 0.82, blue: 0.28, alpha: 1.0).setFill()
+        NSRect(x: center.x - 2, y: center.y - 7, width: 4, height: 9).fill()
+        NSColor(calibratedRed: 1.0, green: 0.95, blue: 0.52, alpha: 1.0).setFill()
+        NSRect(x: center.x - 1, y: center.y - 5, width: 2, height: 4).fill()
+
+        NSColor(calibratedRed: 1.0, green: 0.78, blue: 0.58, alpha: 1.0).setFill()
+        NSRect(x: center.x + 2, y: center.y - 2, width: 3, height: 3).fill()
+    }
+
+    private func drawWaterSnack(center: NSPoint) {
+        drawSnackGlow(center: center, color: NSColor(calibratedRed: 0.32, green: 0.92, blue: 1.0, alpha: 1.0))
+        drawWaterDrop(center: NSPoint(x: center.x - 4, y: center.y), size: 7)
+        drawWaterDrop(center: NSPoint(x: center.x + 5, y: center.y + 2), size: 5)
+
+        NSColor(calibratedRed: 0.72, green: 1.0, blue: 0.72, alpha: 0.9).setFill()
+        NSRect(x: center.x - 1, y: center.y + 5, width: 3, height: 2).fill()
+        NSRect(x: center.x + 1, y: center.y + 3, width: 4, height: 2).fill()
+    }
+
+    private func drawSnackGlow(center: NSPoint, color: NSColor) {
+        color.withAlphaComponent(0.22).setFill()
+        NSBezierPath(ovalIn: NSRect(x: center.x - 10, y: center.y - 9, width: 20, height: 18)).fill()
+    }
+
+    private func drawDiamond(center: NSPoint, radius: CGFloat) {
+        let path = NSBezierPath()
+        path.move(to: NSPoint(x: center.x, y: center.y - radius))
+        path.line(to: NSPoint(x: center.x + radius, y: center.y))
+        path.line(to: NSPoint(x: center.x, y: center.y + radius))
+        path.line(to: NSPoint(x: center.x - radius, y: center.y))
+        path.close()
+        path.fill()
+    }
+
+    private func drawWaterDrop(center: NSPoint, size: CGFloat) {
+        let outline = NSBezierPath()
+        outline.move(to: NSPoint(x: center.x, y: center.y - size))
+        outline.curve(
+            to: NSPoint(x: center.x, y: center.y + size * 0.72),
+            controlPoint1: NSPoint(x: center.x - size * 0.82, y: center.y - size * 0.05),
+            controlPoint2: NSPoint(x: center.x - size * 0.70, y: center.y + size * 0.72)
+        )
+        outline.curve(
+            to: NSPoint(x: center.x, y: center.y - size),
+            controlPoint1: NSPoint(x: center.x + size * 0.70, y: center.y + size * 0.72),
+            controlPoint2: NSPoint(x: center.x + size * 0.82, y: center.y - size * 0.05)
+        )
+        outline.close()
+
+        NSColor.black.withAlphaComponent(0.45).setFill()
+        outline.fill()
+
+        let fill = NSBezierPath()
+        fill.move(to: NSPoint(x: center.x, y: center.y - size + 1))
+        fill.curve(
+            to: NSPoint(x: center.x, y: center.y + size * 0.52),
+            controlPoint1: NSPoint(x: center.x - size * 0.60, y: center.y),
+            controlPoint2: NSPoint(x: center.x - size * 0.50, y: center.y + size * 0.52)
+        )
+        fill.curve(
+            to: NSPoint(x: center.x, y: center.y - size + 1),
+            controlPoint1: NSPoint(x: center.x + size * 0.50, y: center.y + size * 0.52),
+            controlPoint2: NSPoint(x: center.x + size * 0.60, y: center.y)
+        )
+        fill.close()
+
+        NSColor(calibratedRed: 0.30, green: 0.86, blue: 1.0, alpha: 1.0).setFill()
+        fill.fill()
+        NSColor.white.withAlphaComponent(0.9).setFill()
+        NSRect(x: center.x - 1, y: center.y - size * 0.35, width: 1, height: 2).fill()
     }
 
     private func drawPlayCue(in rect: NSRect, petOrigin: NSPoint, scale: CGFloat) {
