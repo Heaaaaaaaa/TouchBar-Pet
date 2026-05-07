@@ -4,6 +4,8 @@ TouchBar Pet is a native macOS AppKit app for MacBook models with a Touch Bar. I
 
 GitHub repo: https://github.com/Heaaaaaaaa/TouchBar-Pet
 
+Latest release: https://github.com/Heaaaaaaaa/TouchBar-Pet/releases/tag/v0.1.0
+
 ## About
 
 TouchBar Pet turns the MacBook Touch Bar into a tiny interactive pixel-pet space. Pick a cat, puffer fish, ghost, dragon, or plant buddy, then feed, play, and rest it directly from the Touch Bar. The app runs quietly from the menu bar, saves the pet state between launches, and includes generated pixel-art pets, foods, backgrounds, and app icons.
@@ -12,7 +14,7 @@ This project is built as a personal macOS experiment around AppKit `NSTouchBar`,
 
 ## Current Status
 
-The first MVP scaffold is implemented as a Swift package. It builds with the full Xcode toolchain and can also create a clickable fallback app bundle with `Scripts/build-app.sh`.
+`v0.1.0` is the first playable release. The project builds as a Swift package and can also create a clickable `.app` bundle with `Scripts/build-app.sh`.
 
 The background Touch Bar mode uses private macOS Touch Bar APIs because public `NSTouchBar` only stays visible for the frontmost app. This is for personal/local use, not App Store distribution.
 
@@ -22,6 +24,14 @@ The background Touch Bar mode uses private macOS Touch Bar APIs because public `
 - A MacBook with Touch Bar for real Touch Bar testing
 - Full Xcode for the intended development workflow
 - Accepted Xcode license agreement
+
+## Download
+
+Download the latest zip from the GitHub release page:
+
+https://github.com/Heaaaaaaaa/TouchBar-Pet/releases/tag/v0.1.0
+
+Unzip it, then open `TouchBar Pet.app`. Because this is an unsigned development build, macOS may ask you to right-click the app, choose `Open`, and approve it once.
 
 ## Build From Terminal
 
@@ -122,7 +132,7 @@ If the app window opens but the Touch Bar still shows only brightness, volume, o
 
 The app uses an experimental persistent Touch Bar path plus the normal active-window fallback. The Touch Bar should show a long pixel-art scene strip with a moving pet and compact stats.
 
-## MVP Features
+## Features
 
 - Background/menu-bar app with experimental persistent Touch Bar support
 - Animated pixel pet scene based on the generated concept asset sheet
@@ -148,3 +158,16 @@ The app uses an experimental persistent Touch Bar path plus the normal active-wi
 ## Development Log
 
 Project progress is tracked in `DEVELOPMENT_PLAN.md`.
+
+## Project Layout
+
+```text
+Assets/                 Generated source art, prompts, and previews
+Resources/              macOS bundle resources such as Info.plist and AppIcon.icns
+Scripts/                Build and asset extraction helpers
+Sources/TouchBarPet/    Main AppKit app source
+Sources/TouchBarPrivate/ Objective-C bridge for private Touch Bar APIs
+DEVELOPMENT_PLAN.md     Step-by-step implementation log
+PET_DESIGN_PLAN.md      Pet design and movement plan
+AGENT_HANDOFF.md        Compact handoff notes for future coding agents
+```

@@ -775,3 +775,20 @@ What can be improved:
 
 What next:
 - Keep the About text aligned with future releases if the app gains signing, auto-update, or more pet interactions.
+
+### 2026-05-07 - Repository Tidy Pass
+
+What was done:
+- Updated README status text so it reflects the playable `v0.1.0` release instead of the early MVP scaffold.
+- Added README download and project layout sections.
+- Tidied `.gitignore` with grouped Swift/Xcode, build, release, and icon-intermediate entries.
+- Removed the tracked generated `Resources/AppIcon.iconset/` intermediate while keeping the runtime `Resources/AppIcon.icns`.
+- Updated `AGENT_HANDOFF.md` to remove stale app-icon/signing tasks and clarify current persistent Touch Bar caveats.
+- Documented that the `.iconset` folder is intentionally not tracked.
+
+What can be improved:
+- Add a small tracked release checklist or script if release packaging becomes frequent.
+- Add README screenshots or a GIF once there is a polished physical Touch Bar capture.
+
+What next:
+- Build and verify the app still bundles `AppIcon.icns`, menu-bar icon resources, and pixel-art assets correctly.

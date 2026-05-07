@@ -1,9 +1,17 @@
 .DS_Store
+
+# Swift/Xcode build state
 /.build/
 /.swiftpm/
-/Build/
 DerivedData/
 *.xcuserdata/
 xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
+
+# Local app bundles and release packaging
+/Build/
+*.zip
+
+# Generated icon intermediates
+/Resources/AppIcon.iconset/

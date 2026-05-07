@@ -15,6 +15,8 @@ Runtime files:
 - `Resources/AppIcon.icns`
 - `Sources/TouchBarPet/Resources/Icons/menu-bar-icon.png`
 
+`Resources/AppIcon.icns` is tracked because the manual app-bundle builder copies it directly. The intermediate `.iconset` folder is intentionally not tracked; regenerate it from `app-icon-source.png` only when the `.icns` needs to be replaced.
+
 ## Prompts
 
 App icon:

@@ -5,7 +5,7 @@
 - Repo: `https://github.com/Heaaaaaaaa/TouchBar-Pet`
 - Local path: `/Users/hea/Library/CloudStorage/OneDrive-Heriot-WattUniversity/HW/TouchBar Pet`
 - Branch: `main`
-- Latest pushed commit before the asset-inspired movement work: `801ad21 Add selectable pixel pets and backgrounds`
+- Latest release: `v0.1.0`
 - Goal: native macOS Touch Bar pet for an M1 MacBook Pro Touch Bar.
 - User wants the pet to stay on the physical Touch Bar while other apps are frontmost, like Grace Avery's persistent Touchbar Pet: cyan strip, pixel pet, compact stats.
 
@@ -93,9 +93,9 @@ open "Build/TouchBar Pet.app"
 - Feed, Play, and Rest are available in the app window and the `TBP` menu. In the expanded Touch Bar scene, avoid visible action buttons: empty-space taps place food, pet taps play, and status-badge taps rest.
 - Saved state is stored in Application Support under `TouchBarPet/pet-state.json`.
 
-## Known Issue / User Blocker
+## Persistent Touch Bar Caveats
 
-The user reported: Touch Bar shows the pet only when this app is frontmost, then disappears when another app comes frontmost.
+The user originally reported: Touch Bar shows the pet only when this app is frontmost, then disappears when another app comes frontmost. The current app includes an experimental private persistent Touch Bar path, but this behavior is still macOS-version-sensitive.
 
 Most likely causes:
 
@@ -114,12 +114,11 @@ Tell user to check:
 
 ## Next Best Tasks
 
-1. Confirm whether the private persistent Touch Bar appears while another app is frontmost.
-2. If not, inspect runtime availability of `presentSystemModalFunctionBar:systemTrayItemIdentifier:` and `DFRElementSetControlStripPresenceForIdentifier`.
-3. Add a reset/debug action because testing can leave the pet hungry/tired.
-4. Tune sprite sizes/spacing from another physical Touch Bar photo.
-5. Add app icon and signing/export workflow.
-6. Decide whether to keep private persistent APIs in main or make them an opt-in build.
+1. Add a reset/debug action because testing can leave the pet hungry/tired.
+2. Tune sprite sizes/spacing from more physical Touch Bar photos.
+3. Add a signed/export workflow so release builds open with fewer macOS warnings.
+4. Add a screenshot/GIF strip to the README release page.
+5. Decide whether private persistent APIs should stay default or become an opt-in build.
 
 ## Do Not Forget
 
