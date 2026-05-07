@@ -64,10 +64,13 @@ final class PetTouchBarSceneView: NSView {
 
     private func drawTrack(in rect: NSRect) {
         let path = NSBezierPath(roundedRect: rect, xRadius: 8, yRadius: 8)
-        color(for: state.activeBackground).setFill()
-        path.fill()
+        let drewAssetBackground = PetBitmapBackground.drawBackground(state.activeBackground, in: rect)
 
-        drawBackgroundDetails(in: rect, background: state.activeBackground)
+        if !drewAssetBackground {
+            color(for: state.activeBackground).setFill()
+            path.fill()
+            drawBackgroundDetails(in: rect, background: state.activeBackground)
+        }
 
         NSColor.black.withAlphaComponent(0.42).setStroke()
         path.lineWidth = 2

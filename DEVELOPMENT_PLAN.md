@@ -522,3 +522,18 @@ What can be improved:
 
 What next:
 - Keep the README legend in sync if the badge labels change again.
+
+### 2026-05-07 - Asset Background Rendering
+
+What was done:
+- Extended the extraction script so it crops aquarium, night, grass, and cozy room Touch Bar strips from the generated asset sheet.
+- Added `PetBitmapBackground.swift` to load and draw the extracted background PNGs.
+- Updated the Touch Bar scene renderer so bitmap backgrounds are used first, with the old AppKit-drawn backgrounds kept as fallback.
+- Documented the new `PixelArt/Backgrounds` resource folder in the asset README.
+
+What can be improved:
+- Tune each background crop from another physical Touch Bar photo if any edge pixels look too thick after scaling.
+- Add an optional lower-detail mode if the asset strips look too busy behind the moving pet and status badge.
+
+What next:
+- Rebuild the app bundle and compare all four backgrounds on the physical Touch Bar.

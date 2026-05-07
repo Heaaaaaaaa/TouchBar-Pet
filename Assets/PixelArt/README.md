@@ -41,11 +41,15 @@ Recommended first extraction:
 
 ## Extracted App Sprites
 
-The app now uses extracted bitmap pets from this generated sheet.
+The app now uses extracted bitmap pets and Touch Bar backgrounds from this generated sheet.
 
 Generated sprite files live at:
 
 - `Sources/TouchBarPet/Resources/PixelArt/Sprites/`
+
+Generated background strip files live at:
+
+- `Sources/TouchBarPet/Resources/PixelArt/Backgrounds/`
 
 Regenerate them with:
 
@@ -62,6 +66,8 @@ The extraction script crops 15 pet poses:
 - Plant Buddy: sprout, flower, thirsty
 
 The Swift renderer loads these PNGs first and falls back to code-drawn sprites if a file is missing.
+
+The background renderer loads the extracted aquarium, night, grass, and cozy PNG strips first and falls back to AppKit-drawn background details if a file is missing.
 
 Note: the ghost crop rectangles are intentionally tight vertically because the generated sheet places the dragon row close underneath. Looser ghost crops can pull dragon pixels into the extracted ghost sprites.
 

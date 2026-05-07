@@ -40,7 +40,9 @@ open "Build/TouchBar Pet.app"
 - `Assets/PixelArt/README.md`: generated asset prompt and extraction notes.
 - `Sources/TouchBarPet/PetPixelArt.swift`: code-drawn pixel pets used by the Touch Bar and preview window.
 - `Sources/TouchBarPet/PetBitmapArt.swift`: direct PNG sprite loader/renderer for extracted concept-sheet pets.
+- `Sources/TouchBarPet/PetBitmapBackground.swift`: direct PNG background-strip loader/renderer for extracted concept-sheet Touch Bar backgrounds.
 - `Sources/TouchBarPet/Resources/PixelArt/Sprites/`: extracted PNG pet poses used by the app.
+- `Sources/TouchBarPet/Resources/PixelArt/Backgrounds/`: extracted PNG Touch Bar background strips used by the app.
 - `Scripts/extract-pixel-sprites.py`: regenerates the PNG sprites from `Assets/PixelArt/pet-background-concept-sheet.png`.
 - Ghost crop rectangles are intentionally shorter than the full row so the extracted ghost sprites do not include dragon-row pixels underneath.
 
@@ -62,6 +64,7 @@ open "Build/TouchBar Pet.app"
 - `PetPixelArt.swift` translates the generated concept sheet into larger code-drawn poses for every selected pet.
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.
 - `PetPixelArt.drawPet(...)` first tries `PetBitmapArt.drawPet(...)`; the code-drawn sprites are now the fallback path.
+- `PetTouchBarSceneView.drawTrack(...)` first tries `PetBitmapBackground.drawBackground(...)`; the old AppKit-drawn background details are now the fallback path.
 - `PetBitmapArt` uses stable per-species drawing slots so bitmap frames with different crop sizes do not make the pet jump during movement.
 - Do not alternate incompatible bitmap poses frame-by-frame; Cat/Ghost/Dragon now keep one moving pose until the behavior mode changes.
 - `PetBitmapArt` also applies procedural sprite motion over the bitmap poses: bobbing, squash/stretch, drift, hover, and plant sway. This is the current replacement for true same-canvas walk frames.

@@ -9,6 +9,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SHEET = ROOT / "Assets" / "PixelArt" / "pet-background-concept-sheet.png"
 OUT_DIR = ROOT / "Sources" / "TouchBarPet" / "Resources" / "PixelArt" / "Sprites"
+BACKGROUND_OUT_DIR = ROOT / "Sources" / "TouchBarPet" / "Resources" / "PixelArt" / "Backgrounds"
 
 # Crops are from the generated concept sheet. They intentionally keep a little
 # breathing room so the flood-fill background removal can find the dark canvas.
@@ -28,6 +29,13 @@ SPRITES = {
     "plant-sprout": (175, 675, 190, 155),
     "plant-flower": (490, 660, 200, 180),
     "plant-thirsty": (815, 665, 205, 175),
+}
+
+BACKGROUNDS = {
+    "aquarium": (30, 828, 1194, 82),
+    "night": (30, 928, 1194, 82),
+    "grass": (30, 1027, 1194, 82),
+    "cozy": (30, 1127, 1194, 82),
 }
 
 
@@ -96,6 +104,7 @@ def remove_connected_background(image, threshold=18):
 def main():
     source = Image.open(SHEET)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    BACKGROUND_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for name, crop in SPRITES.items():
         x, y, width, height = crop
@@ -103,7 +112,13 @@ def main():
         sprite = remove_connected_background(sprite)
         sprite.save(OUT_DIR / f"{name}.png")
 
+    for name, crop in BACKGROUNDS.items():
+        x, y, width, height = crop
+        background = source.crop((x, y, x + width, y + height))
+        background.save(BACKGROUND_OUT_DIR / f"{name}.png")
+
     print(f"Extracted {len(SPRITES)} sprites into {OUT_DIR}")
+    print(f"Extracted {len(BACKGROUNDS)} backgrounds into {BACKGROUND_OUT_DIR}")
 
 
 if __name__ == "__main__":
