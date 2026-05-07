@@ -49,7 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         lastFrameDate = Date()
 
         let timer = Timer(
-            timeInterval: 1.0 / 12.0,
+            timeInterval: 1.0 / 18.0,
             target: self,
             selector: #selector(tickPet),
             userInfo: nil,

@@ -425,3 +425,41 @@ What can be improved:
 
 What next:
 - Rebuild and test the Touch Bar movement again with the asset sprites.
+
+### 2026-05-06 - Asset Pose Flicker Fix
+
+What was done:
+- Inspected the new physical Touch Bar video in QuickTime using Computer Use.
+- Confirmed the visible movement issue was not only crop-size jitter: the renderer was also alternating incompatible asset poses every animation frame.
+- Stopped Cat from rapidly switching between `cat-walk` and `cat-idle` while moving.
+- Stopped Ghost from rapidly switching between `ghost-dash` and `ghost-idle` while moving.
+- Stopped Dragon from rapidly switching between `dragon-run` and `dragon-idle` while moving.
+- Each behavior now keeps one stable bitmap pose until the behavior mode changes.
+
+What can be improved:
+- Generate or hand-draw true same-canvas walk animation frames for each pet.
+- Add subtle code-driven bobbing/shadow movement so a single moving pose still feels alive without flicker.
+
+What next:
+- Rebuild and compare against the next physical Touch Bar video.
+
+### 2026-05-07 - Natural Bitmap Motion Layer
+
+What was done:
+- Inspected the latest physical Touch Bar video in QuickTime using Computer Use.
+- Confirmed the remaining issue: the pet looked like a static sticker sliding across the strip.
+- Increased the redraw loop from roughly 12 FPS to 18 FPS.
+- Added procedural motion on top of bitmap sprites:
+  - Cat gets walk bob, squash/stretch, and small body tilt.
+  - Puffer Fish gets swim bob, side wobble, and puff pulsing.
+  - Ghost gets float, subtle fade, and drift.
+  - Dragon gets run bounce, hover, and tilt.
+  - Plant Buddy gets gentle sway.
+- Added a matching animated shadow so walking/flying feels less pasted onto the strip.
+
+What can be improved:
+- Replace procedural transforms with true same-canvas multi-frame sprite sheets later.
+- Add a Smooth/Low Power menu setting if 18 FPS is too much for the Touch Bar.
+
+What next:
+- Test another short physical Touch Bar video and tune motion strength from what is visible.

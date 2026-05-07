@@ -62,6 +62,9 @@ open "Build/TouchBar Pet.app"
 - `PetPixelArt.drawPixels` now adds a one-pixel outline pass before drawing sprite colors; use the optional `outlineColor` argument for special cases such as the ghost.
 - `PetPixelArt.drawPet(...)` first tries `PetBitmapArt.drawPet(...)`; the code-drawn sprites are now the fallback path.
 - `PetBitmapArt` uses stable per-species drawing slots so bitmap frames with different crop sizes do not make the pet jump during movement.
+- Do not alternate incompatible bitmap poses frame-by-frame; Cat/Ghost/Dragon now keep one moving pose until the behavior mode changes.
+- `PetBitmapArt` also applies procedural sprite motion over the bitmap poses: bobbing, squash/stretch, drift, hover, and plant sway. This is the current replacement for true same-canvas walk frames.
+- `AppDelegate` currently redraws at roughly 18 FPS; care/stat updates are still accumulated separately in `PetEngine`.
 - `Package.swift` copies `Sources/TouchBarPet/Resources`; `Scripts/build-app.sh` copies `PixelArt` into the built app bundle.
 - `PetTouchBarSceneView` computes the pet position dynamically across the long strip and draws snacks, shadows, sleep cues, sparkles, and asset-inspired strip details.
 - Feed, Play, and Rest are still available in the app window and as Touch Bar items after the scene where space allows.

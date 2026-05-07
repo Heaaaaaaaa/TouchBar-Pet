@@ -2,6 +2,15 @@ import AppKit
 
 @MainActor
 enum PetBitmapArt {
+    private struct SpriteMotion {
+        var offsetX: CGFloat = 0
+        var offsetY: CGFloat = 0
+        var scaleX: CGFloat = 1
+        var scaleY: CGFloat = 1
+        var rotationDegrees: CGFloat = 0
+        var opacity: CGFloat = 1
+    }
+
     private static var imageCache: [String: NSImage] = [:]
 
     static func preferredSize(species: PetSpecies, state: PetState, scale: CGFloat) -> NSSize? {
@@ -23,8 +32,10 @@ enum PetBitmapArt {
             return false
         }
 
-        let rect = drawRect(for: image, species: species, state: state, in: NSRect(origin: origin, size: size))
-        draw(image: image, in: rect, direction: direction(for: species, state: state))
+        let motion = spriteMotion(species: species, state: state, scale: scale)
+        let baseRect = drawRect(for: image, species: species, state: state, in: NSRect(origin: origin, size: size))
+        let rect = animatedRect(baseRect, motion: motion)
+        draw(image: image, in: rect, direction: direction(for: species, state: state), motion: motion)
         return true
     }
 
@@ -35,8 +46,8 @@ enum PetBitmapArt {
                 return "cat-sleep"
             }
 
-            if state.behaviorMode == .play || state.behaviorMode == .special || state.behaviorMode == .walk {
-                return state.animationFrame.isMultiple(of: 2) ? "cat-walk" : "cat-idle"
+            if state.behaviorMode == .play || state.behaviorMode == .special || state.behaviorMode == .walk || state.behaviorMode == .eat {
+                return "cat-walk"
             }
 
             return "cat-idle"
@@ -56,7 +67,7 @@ enum PetBitmapArt {
             }
 
             if state.behaviorMode == .special || state.behaviorMode == .walk || state.behaviorMode == .play {
-                return state.animationFrame.isMultiple(of: 2) ? "ghost-dash" : "ghost-idle"
+                return "ghost-dash"
             }
 
             return "ghost-idle"
@@ -66,7 +77,7 @@ enum PetBitmapArt {
             }
 
             if state.behaviorMode == .walk || state.behaviorMode == .eat {
-                return state.animationFrame.isMultiple(of: 2) ? "dragon-run" : "dragon-idle"
+                return "dragon-run"
             }
 
             return "dragon-idle"
@@ -118,6 +129,18 @@ enum PetBitmapArt {
         )
     }
 
+    private static func animatedRect(_ rect: NSRect, motion: SpriteMotion) -> NSRect {
+        let width = rect.width * motion.scaleX
+        let height = rect.height * motion.scaleY
+
+        return NSRect(
+            x: rect.midX - width / 2 + motion.offsetX,
+            y: rect.maxY - height + motion.offsetY,
+            width: width,
+            height: height
+        )
+    }
+
     private static func heightFill(species: PetSpecies, state: PetState) -> CGFloat {
         switch species {
         case .cat:
@@ -146,6 +169,129 @@ enum PetBitmapArt {
 
     private static func direction(for species: PetSpecies, state: PetState) -> PetDirection {
         species == .plantBuddy ? .right : state.direction
+    }
+
+    private static func spriteMotion(species: PetSpecies, state: PetState, scale: CGFloat) -> SpriteMotion {
+        let frame = Double(state.animationFrame)
+
+        switch species {
+        case .cat:
+            return catMotion(state: state, frame: frame, scale: scale)
+        case .pufferFish:
+            return pufferMotion(state: state, frame: frame, scale: scale)
+        case .ghost:
+            return ghostMotion(state: state, frame: frame, scale: scale)
+        case .dragon:
+            return dragonMotion(state: state, frame: frame, scale: scale)
+        case .plantBuddy:
+            return plantMotion(state: state, frame: frame, scale: scale)
+        }
+    }
+
+    private static func catMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        switch state.behaviorMode {
+        case .walk, .eat:
+            let phase = frame * .pi / 4
+            let lift = abs(sin(phase)) * 0.42 * scale
+            let contact = abs(cos(phase))
+            return SpriteMotion(
+                offsetY: -lift,
+                scaleX: 1.0 + CGFloat(contact) * 0.018,
+                scaleY: 1.0 - CGFloat(contact) * 0.012,
+                rotationDegrees: CGFloat(sin(phase)) * 1.0
+            )
+        case .play, .special:
+            let phase = frame * .pi / 6
+            return SpriteMotion(
+                offsetY: -abs(sin(phase)) * 1.1 * scale,
+                scaleX: 1.0 - CGFloat(abs(sin(phase))) * 0.018,
+                scaleY: 1.0 + CGFloat(abs(sin(phase))) * 0.024,
+                rotationDegrees: CGFloat(sin(phase)) * 2.2
+            )
+        case .idle:
+            let breath = CGFloat(sin(frame * .pi / 20))
+            return SpriteMotion(offsetY: -breath * 0.08 * scale, scaleY: 1.0 + breath * 0.010)
+        case .sleep:
+            let breath = CGFloat(sin(frame * .pi / 24))
+            return SpriteMotion(offsetY: -breath * 0.05 * scale, scaleX: 1.0 + breath * 0.006)
+        }
+    }
+
+    private static func pufferMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        if state.behaviorMode == .special || state.hunger > 72 {
+            let puff = CGFloat(sin(frame * .pi / 8))
+            return SpriteMotion(
+                offsetY: -puff * 0.12 * scale,
+                scaleX: 1.0 + puff * 0.026,
+                scaleY: 1.0 + puff * 0.026
+            )
+        }
+
+        let wave = CGFloat(sin(frame * .pi / 7))
+        return SpriteMotion(
+            offsetX: CGFloat(cos(frame * .pi / 9)) * 0.16 * scale,
+            offsetY: -wave * 0.32 * scale,
+            scaleX: 1.0 + wave * 0.010,
+            rotationDegrees: wave * 1.2
+        )
+    }
+
+    private static func ghostMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        let float = CGFloat(sin(frame * .pi / 10))
+
+        if state.behaviorMode == .special || state.behaviorMode == .play || state.behaviorMode == .walk {
+            return SpriteMotion(
+                offsetX: CGFloat(cos(frame * .pi / 5)) * 0.18 * scale,
+                offsetY: -0.45 * scale - float * 0.32 * scale,
+                scaleX: 1.0 + float * 0.012,
+                scaleY: 1.0 - float * 0.010,
+                opacity: 0.92 + abs(float) * 0.08
+            )
+        }
+
+        return SpriteMotion(
+            offsetY: -float * 0.34 * scale,
+            scaleX: 1.0 + float * 0.010,
+            opacity: 0.88 + abs(float) * 0.12
+        )
+    }
+
+    private static func dragonMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        if state.behaviorMode == .special || state.behaviorMode == .play {
+            let hover = CGFloat(sin(frame * .pi / 5))
+            return SpriteMotion(
+                offsetY: -0.7 * scale - hover * 0.32 * scale,
+                scaleX: 1.0 + hover * 0.010,
+                rotationDegrees: hover * 1.3
+            )
+        }
+
+        if state.behaviorMode == .walk || state.behaviorMode == .eat {
+            let phase = frame * .pi / 4
+            let lift = abs(sin(phase)) * 0.35 * scale
+            return SpriteMotion(
+                offsetY: -lift,
+                scaleX: 1.0 + CGFloat(abs(cos(phase))) * 0.012,
+                rotationDegrees: CGFloat(sin(phase)) * 0.9
+            )
+        }
+
+        return SpriteMotion(offsetY: -CGFloat(sin(frame * .pi / 18)) * 0.08 * scale)
+    }
+
+    private static func plantMotion(state: PetState, frame: Double, scale: CGFloat) -> SpriteMotion {
+        let sway = CGFloat(sin(frame * .pi / 14))
+
+        if state.hunger > 72 || state.energy < 22 {
+            return SpriteMotion(offsetY: abs(sway) * 0.06 * scale, rotationDegrees: sway * 0.7)
+        }
+
+        return SpriteMotion(
+            offsetY: -abs(sway) * 0.08 * scale,
+            scaleX: 1.0 + sway * 0.012,
+            scaleY: 1.0 - abs(sway) * 0.008,
+            rotationDegrees: sway * 0.9
+        )
     }
 
     private static func image(for name: String) -> NSImage? {
@@ -181,15 +327,24 @@ enum PetBitmapArt {
         return nil
     }
 
-    private static func draw(image: NSImage, in rect: NSRect, direction: PetDirection) {
+    private static func draw(image: NSImage, in rect: NSRect, direction: PetDirection, motion: SpriteMotion) {
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current?.imageInterpolation = .none
 
-        if direction == .left {
+        if direction == .left || motion.rotationDegrees != 0 {
+            let signedRotation = direction == .left ? -motion.rotationDegrees : motion.rotationDegrees
             let transform = NSAffineTransform()
-            transform.translateX(by: rect.midX, yBy: rect.midY)
-            transform.scaleX(by: -1, yBy: 1)
-            transform.translateX(by: -rect.midX, yBy: -rect.midY)
+            transform.translateX(by: rect.midX, yBy: rect.maxY)
+
+            if direction == .left {
+                transform.scaleX(by: -1, yBy: 1)
+            }
+
+            if signedRotation != 0 {
+                transform.rotate(byDegrees: signedRotation)
+            }
+
+            transform.translateX(by: -rect.midX, yBy: -rect.maxY)
             transform.concat()
         }
 
@@ -197,7 +352,7 @@ enum PetBitmapArt {
             in: rect,
             from: .zero,
             operation: .sourceOver,
-            fraction: 1,
+            fraction: motion.opacity,
             respectFlipped: true,
             hints: [.interpolation: NSImageInterpolation.none]
         )

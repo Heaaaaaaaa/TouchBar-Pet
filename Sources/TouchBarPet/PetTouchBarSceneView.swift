@@ -317,9 +317,20 @@ final class PetTouchBarSceneView: NSView {
             return
         }
 
-        NSColor.black.withAlphaComponent(0.22).setFill()
-        let width = nominalSpriteWidth(for: state.species, scale: scale) * 0.75
-        NSBezierPath(ovalIn: NSRect(x: petOrigin.x + width * 0.15, y: rect.maxY - 5, width: width, height: 3)).fill()
+        let phase = abs(sin(Double(state.animationFrame) * .pi / 4))
+        let isMoving = state.behaviorMode == .walk || state.behaviorMode == .eat || state.behaviorMode == .play || state.behaviorMode == .special
+        var width = nominalSpriteWidth(for: state.species, scale: scale) * 0.68
+        var height: CGFloat = 3
+        var alpha: CGFloat = state.species == .pufferFish ? 0.12 : 0.22
+
+        if isMoving {
+            width *= 1.0 + CGFloat(phase) * 0.10
+            height = 2.4 + CGFloat(1.0 - phase) * 0.9
+            alpha *= 0.75 + CGFloat(1.0 - phase) * 0.25
+        }
+
+        NSColor.black.withAlphaComponent(alpha).setFill()
+        NSBezierPath(ovalIn: NSRect(x: petOrigin.x + width * 0.18, y: rect.maxY - 5, width: width, height: height)).fill()
     }
 
     private func drawSparkle(at point: NSPoint) {
